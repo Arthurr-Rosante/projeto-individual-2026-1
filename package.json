@@ -1,0 +1,30 @@
+{
+  "name": "projeto-individual-2026-1",
+  "version": "1.0.0",
+  "description": "Este projeto diz respeito ao **Projeto Individual** desenvolvido por mim durante o **1° Semestre de 2026** na SPTech.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon --exec node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Arthurr-Rosante/projeto-individual-2026-1.git"
+  },
+  "keywords": [],
+  "author": "arthurr-rosante",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Arthurr-Rosante/projeto-individual-2026-1/issues"
+  },
+  "homepage": "https://github.com/Arthurr-Rosante/projeto-individual-2026-1#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.22.0",
+    "nodemon": "^3.1.14",
+    "path": "^0.12.7"
+  }
+}
