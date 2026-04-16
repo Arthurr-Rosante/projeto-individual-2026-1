@@ -1,10 +1,12 @@
 import express from "express";
 
+import {userRoutes} from "./users.js";
+
 // === Router CENTRALIZADOR === //
 export const routes = express.Router();
 
 // === ROTAS DA APLICAÇÃO === //
-// routes.use("/users", userRoutes);
+routes.use("/users", userRoutes);
 // routes.use("/parks", parkRoutes);
 // routes.use("/structures", structureRoutes);
 // routes.use("/enclosures", enclosureRoutes);
