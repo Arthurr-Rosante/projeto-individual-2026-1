@@ -69,19 +69,6 @@ CREATE TABLE IF NOT EXISTS enclosure(
     CONSTRAINT chkEnclosureLevel CHECK(level IN(1, 2, 3))
 );
 
-CREATE TABLE IF NOT EXISTS dinosaur(
-	id          INT NOT NULL AUTO_INCREMENT,
-    idEnclosure INT NOT NULL UNIQUE,
-    idSpecies   INT NOT NULL, 
-    
-    createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
-    updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
-
-    PRIMARY KEY (id, idEnclosure),
-    CONSTRAINT fkDinosaurEnclosure FOREIGN KEY (idEnclosure) REFERENCES enclosure(id),
-    CONSTRAINT fkDinosaurSpecies   FOREIGN KEY (idSpecies)   REFERENCES species(id)
-);
-
 CREATE TABLE IF NOT EXISTS species(
     id                  INT NOT NULL AUTO_INCREMENT,
 
@@ -108,4 +95,17 @@ CREATE TABLE IF NOT EXISTS species(
     CONSTRAINT chkSpeciesHatchCostAndTime CHECK(hatchCost > 0 AND hatchTimeInSeconds > 0),
     CONSTRAINT chkSpeciesHatchSuccessRatio CHECK(hatchSuccessRatio BETWEEN 0 AND 1)
 
+);
+
+CREATE TABLE IF NOT EXISTS dinosaur(
+	id          INT NOT NULL AUTO_INCREMENT,
+    idEnclosure INT NOT NULL UNIQUE,
+    idSpecies   INT NOT NULL, 
+    
+    createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
+    updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+
+    PRIMARY KEY (id, idEnclosure),
+    CONSTRAINT fkDinosaurEnclosure FOREIGN KEY (idEnclosure) REFERENCES enclosure(id),
+    CONSTRAINT fkDinosaurSpecies   FOREIGN KEY (idSpecies)   REFERENCES species(id)
 );
