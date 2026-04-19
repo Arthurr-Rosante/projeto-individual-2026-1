@@ -7,18 +7,10 @@
     "start": "node app.js",
     "dev": "nodemon --exec node app.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Arthurr-Rosante/projeto-individual-2026-1.git"
-  },
   "keywords": [],
   "author": "arthurr-rosante",
   "license": "MIT",
   "type": "module",
-  "bugs": {
-    "url": "https://github.com/Arthurr-Rosante/projeto-individual-2026-1/issues"
-  },
-  "homepage": "https://github.com/Arthurr-Rosante/projeto-individual-2026-1#readme",
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
