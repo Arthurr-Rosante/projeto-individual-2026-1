@@ -74,9 +74,10 @@ CREATE TABLE IF NOT EXISTS species(
 
     name                VARCHAR(120) NOT NULL,
     description         VARCHAR(255) NOT NULL,
-    period              VARCHAR(60) NOT NULL,
+    temporalRange       VARCHAR(60) NOT NULL,
+    locomotionType		VARCHAR(60) NOT NULL,
     height              DECIMAL(10, 3) NOT NULL,
-    weight              DECIMAL (10, 3) NOT NULL,
+    weight              DECIMAL(10, 3) NOT NULL,
     diet                VARCHAR(60) NOT NULL,
     aggressiveness      INTEGER NOT NULL,
     hatchCost           INTEGER NOT NULL,
@@ -89,7 +90,7 @@ CREATE TABLE IF NOT EXISTS species(
     PRIMARY KEY (id),
 
     -- | CHECK Constraints | --
-    CONSTRAINT chkSpeciesPeriod CHECK(period IN('cretaceous', 'jurassic', 'triassic')),
+	CONSTRAINT chkSpeciesDiet CHECK(diet IN('herbivorous', 'carnivorous', 'omnivorous')),
     CONSTRAINT chkSpeciesHeightAndWeight CHECK(height > 0 AND weight > 0),
     CONSTRAINT chkSpeciesAggressiveness CHECK(aggressiveness BETWEEN 0 AND 1),
     CONSTRAINT chkSpeciesHatchCostAndTime CHECK(hatchCost > 0 AND hatchTimeInSeconds > 0),
