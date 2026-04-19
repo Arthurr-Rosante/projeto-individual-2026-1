@@ -1,5 +1,22 @@
+/* === DEFINIÇÃO/IMPORTAÇÃO DE FONTES CUSTOMIZADAS === */
+@font-face {
+  font-family: 'Jurassic Park';
+  src: url('../assets/fonts/Jurassic_Park.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-jurassic {
+    font-family: 'Jurassic Park', monospace;
+    font-weight: 300;
+}
+
+/* === RESET DOS ESTILOS === */
 * {
     margin: 0;
     border: 0;
     box-sizing: border-box;
 }
+
+/* === PALETA DE CORES === */
