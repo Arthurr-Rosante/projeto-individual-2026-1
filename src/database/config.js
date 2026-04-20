@@ -1,23 +1,35 @@
 import mysql from "mysql2";
 
-export const pool = mysql.createConnection({
+const mysqlConfig = {
     host: process.env.DB_HOST,
     database: process.env.DB_DATABASE,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
-});
+};
 
 export function execute(query, params = []) {
-    try {
-        pool.connect();
-        const [results] = pool.query(query, params);
-        pool.end();
-        return results;
-    } catch (error) {
-        console.error("ERRO No MySQL Server: ", error.sqlMessage || error.message);
-        throw error;
+    if(process.env.AMBIENTE_PROCESSO !== 'producao' || process.env.AMBIENTE_PROCESSO !== 'desenvolvimento') {
+        console.error("\n[config.js] Error: Não foi possível definir o Ambiente (producao OU desenvolvimento)\n");
+        return Promise.reject("AMBIENTE NÃO CONFIGURADO EM .env");
     }
+
+    return new Promise(() => {
+        let connection = mysql.createConnection(mysqlConfig);
+
+        connection.connect();
+        connection.query(query, params, (err, results) => {
+            connection.end();
+            if(err) reject(err);
+
+            console.log(results);
+            resolve(results);
+        });
+
+        connection.on("error", (err) => {
+            return ("ERRO NO MySQL SERVER: ", err.sqlMessage);
+        })
+    });
 }
 
 
