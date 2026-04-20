@@ -12,6 +12,51 @@
     font-weight: 300;
 }
 
+/* === PALETA DE CORES === */
+:root {
+--background: #f6eeda;
+--foreground: #3d2610;
+
+--card: #eee3c8;
+--card-foreground: #3d2610;
+
+--popover: #f6eeda;
+--popover-foreground: #3d2610;
+
+--primary: #b17d1b;
+--primary-foreground: #fef5dd;
+
+--secondary: #476742;
+--secondary-foreground: #aecea6;
+
+--accent: #9b381c;
+--accent-foreground: #fce3d9;
+
+--border: #d6c6a9;
+--input: #c8ae84;
+--ring: #b17d1b;
+--radius: 0.5rem;
+
+--muted: #eee3c8;
+--muted-foreground: #6a4a2a;
+
+--disabled: #d6d1c7;
+--disabled-foreground: #bfac8d;
+
+/* === UI Feedback === */
+--success: #2e4d28;
+--success-foreground: #aecea6;
+
+--warning: #b17d1b;
+--warning-foreground: #fef5dd;
+
+--destructive: #9b381c;
+--destructive-foreground: #fce3d9;
+
+--info: #415b68;
+--info-foreground: #adcadb;
+}
+
 /* === RESET DOS ESTILOS === */
 * {
     margin: 0;
@@ -19,4 +64,78 @@
     box-sizing: border-box;
 }
 
-/* === PALETA DE CORES === */
+body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Times New Roman', Times, serif;
+}
+
+ul,
+li {
+    list-style: none;
+}
+
+a {
+    color: var(--foreground);
+    text-decoration: none;
+}
+
+/* Inputs */
+input,
+textarea,
+select {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    border: 1px solid var(--input);
+    border-radius: var(--radius);
+    padding: 0.5rem 0.75rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus-visible, 
+textarea:focus-visible, 
+select:focus-visible {
+    outline: none;
+    border-color: var(--ring);
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+}
+
+input:disabled {
+    background-color: var(--disabled);
+    color: var(--disabled-foreground);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Buttons */
+button {
+    cursor: pointer;
+    border-radius: var(--radius);
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+}
+
+/* Cards & Popovers */
+.card {
+    background-color: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.popover {
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
