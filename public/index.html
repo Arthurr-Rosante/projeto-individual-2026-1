@@ -4,10 +4,212 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jurassic Park: Web Genesis</title>
+
+    <!-- === Importação de Estilos === -->
     <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/landing.css">
+
+    <!-- === Importação de funções === -->
+     <script defer src="./scripts/utils/formatDinoFields.js"></script>
+
+    <!-- === Importação de Bibliotecas === -->
+    <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/index.min.js"></script>
 </head>
 <body>
-    <h1>Welcome to the Jurassic Park!</h1>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="font-jurassic">JP Web Genesis</h1>
+            <nav class="navbar">
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="#about-section">Sobre</a></li>
+                    <li class="nav-item"><a href="#dinosaurs-section">Dinossauros</a></li>
+                    <li class="nav-item"><a href="#structures-section">Estruturas</a></li>
+                    <li class="nav-item"><a href="#events-section">Eventos</a></li>
+                </ul>
+                <button class="cta-btn"><span>Acessar</span><i class="ph ph-caret-circle-up"></i></button>
+            </nav>
+        </header>
+
+        <!-- Main -->
+        <main class="main">
+            <!-- Hero -->
+            <section id="hero-section">
+                <div class="hero-text">
+                    <h1>Crie Seu Próprio <span class="font-jurassic">Jurassic Park</span></h1>
+                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Modi <span>cupiditate</span> dolorum repudiandae neque veniam aperiam.</p>
+                    <div class="cta-container">
+                        <button class="cta-btn">Entrar</button>
+                        <button class="cta-btn">Ver Espécies</button>
+                    </div>
+                </div>
+                <img src="" alt="Parque dos Dinossauros">
+            </section>
+            
+            <!-- Sobre -->
+            <section id="about-section">
+                <!-- a ser desenvolvido... -->
+            </section>
+
+            <!-- Dinossauros -->
+            <section id="dinosaurs-section">
+                <div class="dinosaurs-text">
+                    <h2>Dinossauros Disponíveis</h2>
+                    <p>O Jurassic Park: Web Genesis conta, atualmente, com uma gama de <span>12 espécies</span> distintas para criar, conter e administrar em seu parque. Confira a lista abaixo</p>
+                </div>
+                <ul class="dinosaurs-list">
+                    <!-- <li> dinamicamente carregado -->
+                </ul>
+            </section>
+
+            <!-- Estruturas -->
+            <section id="structures-section">
+                <div class="structures-text">
+                    <h2>Estrutura Disponíveis</h2>
+                    <p>Para conter criaturas com as quais estamos lidando, o seu parque precisará de uma estrutura formidável! Veja abaixo quais são as construções disponíveis em JP: Web Genesis</p>
+                </div>
+                <ul class="structures-list">
+                    <!-- <li> dinamicamente carregado -->
+                </ul>
+            </section>
+
+            <!-- Eventos -->
+            <section id="events-section">
+                <div class="events-text">
+                    <h2>Eventos</h2>
+                    <p>Não importa o quanto tentemos controlar a natureza, a vida <span>sempre</span> encontra um meio. E é por isso que você deve estar preparado para qualquer tipo de emprevisto</p>
+                </div>
+                <ul class="events-list">
+                    <!-- <li> dinamicamente carregado -->
+                </ul>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="brand-name">JP: Web Genesis</div>
+                    <div class="brand-caption">Isla Nublar, Costa Rica<br>InGen Corporation</div>
+                    <p class="brand-text">A vida encontra um meio — Dr. Ian Malcolm</p>
+                </div>
+            
+                <div class="footer-col">
+                    <div class="col-label">Navegação</div>
+                    <a class="footer-link" href="#about-section">Sobre</a>
+                    <a class="footer-link" href="#dinosaurs-section">Dinossauros</a>
+                    <a class="footer-link" href="#structures-section">Estruturas</a>
+                    <a class="footer-link" href="#events-section">Eventos</a>
+                </div>
+            
+                <div class="footer-col">
+                    <div class="col-label">Acesso</div>
+                    <a class="footer-link" href="./login.html">Logar-se</a>
+                    <a class="footer-link" href="./register.html">Cadastrar-se</a>
+                </div>
+            
+            </div>
+        
+            <div class="footer-bottom">
+                <span class="footer-legal">&copy; 1993 InGen Corporation. All species reserved.</span>
+                <a class="footer-badge" href="https://github.com/arthurr-rosante" target="_blank">Por: Arthur Rocha Rosante</a>
+            </div>
+        </footer>
+    </div>
+
+<script>
+    // === Evento que carrega a lista de espécies disponíveis === //
+    document.addEventListener("DOMContentLoaded", () => {
+        const dinosaurSectionList = document.querySelector("#dinosaurs-section .dinosaurs-list");
+        const structureSectionList = document.querySelector("#structures-section .structures-list");
+        const eventSectionList = document.querySelector("#events-section .events-list");
+
+        // Carrega a Lista de Espécies
+        fetch("./assets/species.json")
+            .then((res) => res.json())
+            .then((dinos) => dinos.forEach((dino) => {
+                const dinoCard = document.createElement("li");
+
+                dinoCard.classList.add("list-item");
+
+                dinoCard.innerHTML = `
+                <img src="./assets/images/dinosaurs/${dino.name}_icon.png" alt="${dino.name.charAt(0).toUpperCase() + dino.name.slice(1)} Ícone">
+                <div class="item-content">
+                    <h3>Nome: ${dino.name.charAt(0).toUpperCase() + dino.name.slice(1)}</h3>
+                    <div class="item-info">
+                        <h3>Informação</h3>
+                        <ul>
+                            <li>Era: <span>${dino.temporalRange}</span></li>
+                            <li>Locomoção: <span>${dino.locomotionType}</span></li>
+                            <li>Dieta: <span>${dino.diet}</span></li>
+                            <li>Altura: <span>${formatDinoHeight(dino.heightInMeters)}</span></li>
+                            <li>Peso: <span>${formatDinoWeight(dino.weightInKilograms)}</span></li>
+                            <li>Agressividade: <span>${formatDinoAggressiveness(dino.aggressiveness)}</span></li>
+                            <li>Custo de Incubação: <span>${dino.hatchCost}</span></li>
+                            <li>Tempo de Eclosão: <span>${formatDinoHatchTime(dino.hatchTimeInSeconds)}</span></li>
+                            <li>Chance de Eclosão: <span>${formatDinoHatchSuccess(dino.hatchSuccessRatio)}</span></li>
+                        </ul>
+                    </div>
+                </div>`;
+
+                dinosaurSectionList.appendChild(dinoCard);
+            }))
+            .catch(() => console.log("Erro ao ler JSON de espécies. Verifique a integridade do arquivo."));
+
+        // Carrega a Lista de Estruturas
+        fetch("./assets/structures.json")
+            .then((res) => res.json())
+            .then((structures) => structures.forEach((struct) => {
+                const structCard = document.createElement("li");
+
+                structCard.classList.add("list-item");
+
+                structCard.innerHTML = `
+                <img src="./assets/images/structures/${struct.name}.png" alt="${struct.name.charAt(0).toUpperCase() + struct.name.slice(1)} Ícone">
+                <div class="item-content">
+                    <h3>Nome: ${struct.translatedName.charAt(0).toUpperCase() + struct.translatedName.slice(1)}</h3>
+                    <div class="item-info">
+                        <h3>Informação</h3>
+                        <ul>
+                            <li>Descrição: ${struct.description}</li>
+                            <li>Utilidade: ${struct.utility}</li>
+                            <li>Custo Inicial: <span>${struct.baseCost <= 0 ? "Já vem incluso" : struct.baseCost}</span></li>
+                            <li>Máximo de Unidades: <span>${struct.maxUnits === -1 ? "N" : struct.maxUnits}</span></li>
+                            <li>Removível: <span>${struct.removable ? "Sim" : "Não"}</span></li>
+                        </ul>
+                    </div>
+                </div>`;
+
+                structureSectionList.appendChild(structCard);
+            }))
+            .catch(() => console.log("Erro ao ler JSON de estruturas. Verifique a integridade do arquivo."));
+
+        // Carrega a Lista de Eventos
+        fetch("./assets/events.json")
+            .then((res) => res.json())
+            .then((events) => events.forEach((event) => {
+                const eventCard = document.createElement("li");
+
+                eventCard.classList.add("list-item");
+
+                eventCard.innerHTML = `
+                <img src="./assets/images/events/${event.name}.png" alt="${event.name.charAt(0).toUpperCase() + event.name.slice(1)} Ícone">
+                <div class="item-content">
+                    <h3>Nome: ${event.translatedName.charAt(0).toUpperCase() + event.translatedName.slice(1)}</h3>
+                    <div class="item-info">
+                        <h3>Informação</h3>
+                        <ul>
+                            <li>Descrição: ${event.description}</li>
+                            <li>Consequência(s): ${event.consequences}</li>
+                            <li>Chance de Ocorrer: <span>${formatDinoHatchSuccess(event.spawnChance)}</span></li>
+                        </ul>
+                    </div>
+                </div>`;
+
+                eventSectionList.appendChild(eventCard);
+            }))
+            .catch(() => console.log("Erro ao ler JSON de eventos. Verifique a integridade do arquivo."));
+    });
+</script>
 </body>
 </html>
