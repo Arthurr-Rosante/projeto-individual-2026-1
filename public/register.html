@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro | Jurassic Park: Web Genesis</title>
+
+    <!-- === Importação de Estilos === -->
+    <link rel="stylesheet" href="./styles/global.css">
+    <link rel="stylesheet" href="./styles/auth.css">
+
+    <!-- === Importação de funções === -->
+
+    <!-- === Importação de Bibliotecas === -->
+    <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/index.min.js"></script>
+</head>
+<body>
+    <div class="form-wrapper">
+        <!-- Formulário -->
+        <form method="post" class="auth-form">
+            <div class="form-header">
+                <h2>JP Web Genesis</h2>
+                <p>Realizar Cadastro</p>
+            </div>
+            <div class="form-body">
+                <div class="field-group">
+                    <div class="field">
+                        <label for="ipt-username">Nome Completo</label>
+                        <input id="ipt-username" type="text" placeholder="Ex: Alan Grant" minlength="3" required>
+                    </div>
+                    <div class="field">
+                        <label for="ipt-email">Endereço de Email</label>
+                        <input id="ipt-email" type="email" placeholder="Ex: drgrant@ingen.com" required>
+                    </div>
+                    <div class="field">
+                        <label for="ipt-password">Código de Acesso (Senha)</label>
+                        <input id="ipt-password" type="password" placeholder="Min. 8 caracteres" minlength="8" required>
+                        <i id="ipt-password-icon" class="ph ph-eye"></i>
+                    </div>
+                    <div class="field">
+                        <label for="ipt-password-confirm">Confirmar Código de Acesso</label>
+                        <input id="ipt-password-confirm" type="password" placeholder="Min. 8 caracteres" minlength="8" required>
+                        <i id="ipt-password-confirm-icon" class="ph ph-eye"></i>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn"><span>Requerer Acesso</span><i class="ph ph-caret-circle-up"></i></button>
+                </div>
+            </div>
+            <div class="form-footer">
+
+                <a href="./login.html">Já possui acesso? <span>Entre aqui</span></a>
+            </div>
+        </form>
+
+        <!-- Folhagens em Paralaxe -->
+        <div id="foliage-patch-1" class="foliage-patch">
+            <img src="/public/assets/svgs/foliage-1.svg" alt="Folhagem" data-parallax-score="-5" class="foliage foliage--light">
+            <img src="/public/assets/svgs/foliage-3.svg" alt="Folhagem" data-parallax-score="10" class="foliage foliage--mid">
+            <img src="/public/assets/svgs/foliage-5.svg" alt="Folhagem" data-parallax-score="-15" class="foliage foliage--dark">
+        </div>
+        <div id="foliage-patch-2" class="foliage-patch">
+            <img src="/public/assets/svgs/foliage-2.svg" alt="Folhagem" data-parallax-score="10" class="foliage foliage--mid">
+            <img src="/public/assets/svgs/foliage-4.svg" alt="Folhagem" data-parallax-score="-15" class="foliage foliage--light">
+            <img src="/public/assets/svgs/foliage-2.svg" alt="Folhagem" data-parallax-score="10" class="foliage foliage--dark">
+        </div>
+        <div id="foliage-patch-3" class="foliage-patch">
+            <img src="/public/assets/svgs/foliage-5.svg" alt="Folhagem" data-parallax-score="5" class="foliage foliage--dark">
+            <img src="/public/assets/svgs/foliage-1.svg" alt="Folhagem" data-parallax-score="-5" class="foliage foliage--mid">
+            <img src="/public/assets/svgs/foliage-3.svg" alt="Folhagem" data-parallax-score="15" class="foliage foliage--light">
+        </div>
+        <div id="foliage-patch-4" class="foliage-patch">
+            <img src="/public/assets/svgs/foliage-1.svg" alt="Folhagem" data-parallax-score="-10" class="foliage foliage--dark">
+            <img src="/public/assets/svgs/foliage-2.svg" alt="Folhagem" data-parallax-score="-5" class="foliage foliage--mid">
+            <img src="/public/assets/svgs/foliage-5.svg" alt="Folhagem" data-parallax-score="5" class="foliage foliage--light">
+        </div>
+        <div id="foliage-patch-5" class="foliage-patch">
+            <img src="/public/assets/svgs/foliage-2.svg" alt="Folhagem" data-parallax-score="15" class="foliage foliage--mid">
+            <img src="/public/assets/svgs/foliage-5.svg" alt="Folhagem" data-parallax-score="10" class="foliage foliage--dark">
+            <img src="/public/assets/svgs/foliage-4.svg" alt="Folhagem" data-parallax-score="-15" class="foliage foliage--light">
+        </div>
+        <div id="foliage-patch-6" class="foliage-patch">
+            <img src="/public/assets/svgs/foliage-4.svg" alt="Folhagem" data-parallax-score="-10" class="foliage foliage--mid">
+            <img src="/public/assets/svgs/foliage-1.svg" alt="Folhagem" data-parallax-score="10" class="foliage foliage--dark">
+            <img src="/public/assets/svgs/foliage-2.svg" alt="Folhagem" data-parallax-score="-5" class="foliage foliage--light">
+        </div>
+    </div>
+</body>
+</html>
