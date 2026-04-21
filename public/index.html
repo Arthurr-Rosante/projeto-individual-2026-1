@@ -16,10 +16,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/index.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <h1 class="font-jurassic">JP Web Genesis</h1>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="header-title font-jurassic"><a href="">JP Web Genesis</a></h1>
             <nav class="navbar">
                 <ul class="nav-list">
                     <li class="nav-item"><a href="#about-section">Sobre</a></li>
@@ -29,27 +29,31 @@
                 </ul>
                 <button class="cta-btn"><span>Acessar</span><i class="ph ph-caret-circle-up"></i></button>
             </nav>
-        </header>
-
+        </div>
+    </header>
+    
+    <div class="container">
         <!-- Main -->
         <main class="main">
             <!-- Hero -->
             <section id="hero-section">
                 <div class="hero-text">
-                    <h1>Crie Seu Próprio <span class="font-jurassic">Jurassic Park</span></h1>
+                    <h1>Crie Seu <br> Próprio <br> <span class="font-jurassic">Jurassic Park</span></h1>
                     <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Modi <span>cupiditate</span> dolorum repudiandae neque veniam aperiam.</p>
                     <div class="cta-container">
                         <button class="cta-btn">Entrar</button>
-                        <button class="cta-btn">Ver Espécies</button>
+                        <button class="cta-btn"><a href="#dinosaurs-section">Ver Espécies</a></button>
                     </div>
                 </div>
-                <img src="" alt="Parque dos Dinossauros">
+                <img src="./assets/images/hero-banner.jpg" alt="Parque dos Dinossauros">
             </section>
             
             <!-- Sobre -->
-            <section id="about-section">
-                <!-- a ser desenvolvido... -->
-            </section>
+            <!-- <section id="about-section">
+                <div class="about-text">
+                    <h2>Sobre a Franquia</h2>
+                </div>
+            </section> -->
 
             <!-- Dinossauros -->
             <section id="dinosaurs-section">
@@ -66,7 +70,7 @@
             <section id="structures-section">
                 <div class="structures-text">
                     <h2>Estrutura Disponíveis</h2>
-                    <p>Para conter criaturas com as quais estamos lidando, o seu parque precisará de uma estrutura formidável! Veja abaixo quais são as construções disponíveis em JP: Web Genesis</p>
+                    <p>Para conter criaturas com as quais estamos lidando, o seu parque precisará de uma estrutura formidável! Veja abaixo quais são as construções disponíveis em <span>JP: Web Genesis</span></p>
                 </div>
                 <ul class="structures-list">
                     <!-- <li> dinamicamente carregado -->
@@ -133,9 +137,12 @@
                 dinoCard.classList.add("list-item");
 
                 dinoCard.innerHTML = `
-                <img src="./assets/images/dinosaurs/${dino.name}_icon.png" alt="${dino.name.charAt(0).toUpperCase() + dino.name.slice(1)} Ícone">
+                <div class="item-image">
+                    <img src="./assets/images/dinosaurs/${dino.name}_icon.png" alt="${dino.name.charAt(0).toUpperCase() + dino.name.slice(1)} Ícone" class="species-img">
+                    <img src="./assets/images/frame.png" alt="Frame" class="frame"> 
+                </div>
                 <div class="item-content">
-                    <h3>Nome: ${dino.name.charAt(0).toUpperCase() + dino.name.slice(1)}</h3>
+                    <h3>Nome: <span>${dino.name.charAt(0).toUpperCase() + dino.name.slice(1)}</span></h3>
                     <div class="item-info">
                         <h3>Informação</h3>
                         <ul>
@@ -165,9 +172,9 @@
                 structCard.classList.add("list-item");
 
                 structCard.innerHTML = `
-                <img src="./assets/images/structures/${struct.name}.png" alt="${struct.name.charAt(0).toUpperCase() + struct.name.slice(1)} Ícone">
+                <img src="./assets/images/structures/${struct.name}.png" alt="${struct.name.charAt(0).toUpperCase() + struct.name.slice(1)} Ícone" class="structure-img">
                 <div class="item-content">
-                    <h3>Nome: ${struct.translatedName.charAt(0).toUpperCase() + struct.translatedName.slice(1)}</h3>
+                    <h3>Nome: <span>${struct.translatedName.charAt(0).toUpperCase() + struct.translatedName.slice(1)}</span></h3>
                     <div class="item-info">
                         <h3>Informação</h3>
                         <ul>
@@ -193,9 +200,9 @@
                 eventCard.classList.add("list-item");
 
                 eventCard.innerHTML = `
-                <img src="./assets/images/events/${event.name}.png" alt="${event.name.charAt(0).toUpperCase() + event.name.slice(1)} Ícone">
+                <img src="./assets/images/events/${event.name}.png" alt="${event.name.charAt(0).toUpperCase() + event.name.slice(1)} Ícone" class="event-img">
                 <div class="item-content">
-                    <h3>Nome: ${event.translatedName.charAt(0).toUpperCase() + event.translatedName.slice(1)}</h3>
+                    <h3>Nome: <span>${event.translatedName.charAt(0).toUpperCase() + event.translatedName.slice(1)}</span></h3>
                     <div class="item-info">
                         <h3>Informação</h3>
                         <ul>

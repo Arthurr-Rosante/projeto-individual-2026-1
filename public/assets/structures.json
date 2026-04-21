@@ -40,7 +40,7 @@
         "translatedName": "Caminhos",
         "description": "Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.",
         "utility": "Apenas para a estética.",
-        "baseCost": 0.9,
+        "baseCost": 50,
         "maxUnits": -1,
         "removable": true
     }

@@ -77,6 +77,11 @@ body {
     font-family: 'Playfair Display', serif;
 }
 
+section {
+    min-height: 100dvh;
+    padding: 1rem 0;
+}
+
 ul,
 li {
     list-style: none;
@@ -120,7 +125,7 @@ button {
     border-radius: var(--radius);
     font-weight: 500;
     padding: 0.5rem 0.75rem;
-    transition: opacity 0.2s, transform 0.1s;
+    transition: opacity 0.2s, transform 0.1s, border-color 0.2s, box-shadow 0.2s;
 }
 
 button:active {
@@ -145,4 +150,14 @@ button:focus-visible {
     color: var(--popover-foreground);
     border: 1px solid var(--border);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
 }
