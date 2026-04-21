@@ -16,46 +16,46 @@
 
 /* === PALETA DE CORES === */
 :root {
-    --background:               #f6eeda;
-    --foreground:               #3d2610;
-
-    --card:                     #ede3c8;
-    --card-foreground:          #3d2610;
-
-    --popover:                  #f6eeda;
-    --popover-foreground:       #3d2610;
-
-    --primary:                  #b17d1b;
-    --primary-foreground:       #fef5dd;
-
-    --secondary:                #476742;
-    --secondary-foreground:     #d5e8cc;
-
-    --accent:                   #9b381c;
-    --accent-foreground:        #fce3d9;
-
-    --border:                   #d9caab;
-    --input:                    #c4b08a;
-    --ring:                     #b17d1b;
+    --background:               #1A1407;
+    --foreground:               #F5EED8;
+ 
+    --card:                     #221A08;
+    --card-foreground:          #EDE3C8;
+ 
+    --popover:                  #2A1F0E;
+    --popover-foreground:       #EDE3C8;
+ 
+    --primary:                  #B8891A;
+    --primary-foreground:       #EDE3C8;
+ 
+    --secondary:                #4A6741;
+    --secondary-foreground:     #D5E8CC;
+ 
+    --accent:                   #9E3A1E;
+    --accent-foreground:        #FAE3D9;
+ 
+    --border:                   #3D2B0F;
+    --input:                    #4A3520;
+    --ring:                     #B8891A;
     --radius:                   0.5rem;
-
-    --muted:                    #ede3c8;
-    --muted-foreground:         #6b4f2a;
-
-    --disabled:                 #d6d0c4;
-    --disabled-foreground:      #c4b08a;
-
-    --success:                  #2e4628;
-    --success-foreground:       #d5e8cc;
-
-    --warning:                  #b17d1b;
-    --warning-foreground:       #fef5dd;
-
-    --destructive:              #9b381c;
-    --destructive-foreground:   #fce3d9;
-
-    --info:                     #425d6b;
-    --info-foreground:          #d4e6f0;
+ 
+    --muted:                    #221A08;
+    --muted-foreground:         #9E8060;
+ 
+    --disabled:                 #2A1F0E;
+    --disabled-foreground:      #6B4F2A;
+ 
+    --success:                  #2E4628;
+    --success-foreground:       #D5E8CC;
+ 
+    --warning:                  #8A7218;
+    --warning-foreground:       #FDF3DC;
+ 
+    --destructive:              #9E3A1E;
+    --destructive-foreground:   #FAE3D9;
+ 
+    --info:                     #425D6B;
+    --info-foreground:          #D4E6F0;
 }
 
 /* === RESET === */
@@ -137,7 +137,7 @@ button {
     font-weight: 700;
     letter-spacing: 0.06em;
     padding: 0.5rem 1rem;
-    transition: box-shadow 0.2s, transform 0.1s, column-gap 0.2s;
+    transition: box-shadow 0.2s, transform 0.1s, gap 0.2s;
 }
 
 button:active {
