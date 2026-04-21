@@ -1,5 +1,5 @@
 /* === DEFINIÇÃO/IMPORTAÇÃO DE FONTES CUSTOMIZADAS === */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;900&family=Courier+Prime:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=Courier+Prime:wght@400;700&display=swap');
 
 @font-face {
   font-family: 'Jurassic Park';
@@ -16,52 +16,54 @@
 
 /* === PALETA DE CORES === */
 :root {
---background: #f6eeda;
---foreground: #3d2610;
+    --background:               #f6eeda;
+    --foreground:               #3d2610;
 
---card: #eee3c8;
---card-foreground: #3d2610;
+    --card:                     #ede3c8;
+    --card-foreground:          #3d2610;
 
---popover: #f6eeda;
---popover-foreground: #3d2610;
+    --popover:                  #f6eeda;
+    --popover-foreground:       #3d2610;
 
---primary: #b17d1b;
---primary-foreground: #fef5dd;
+    --primary:                  #b17d1b;
+    --primary-foreground:       #fef5dd;
 
---secondary: #476742;
---secondary-foreground: #aecea6;
+    --secondary:                #476742;
+    --secondary-foreground:     #d5e8cc;
 
---accent: #9b381c;
---accent-foreground: #fce3d9;
+    --accent:                   #9b381c;
+    --accent-foreground:        #fce3d9;
 
---border: #d6c6a9;
---input: #c8ae84;
---ring: #b17d1b;
---radius: 0.5rem;
+    --border:                   #d9caab;
+    --input:                    #c4b08a;
+    --ring:                     #b17d1b;
+    --radius:                   0.5rem;
 
---muted: #eee3c8;
---muted-foreground: #6a4a2a;
+    --muted:                    #ede3c8;
+    --muted-foreground:         #6b4f2a;
 
---disabled: #d6d1c7;
---disabled-foreground: #bfac8d;
+    --disabled:                 #d6d0c4;
+    --disabled-foreground:      #c4b08a;
 
-/* === UI Feedback === */
---success: #2e4d28;
---success-foreground: #aecea6;
+    --success:                  #2e4628;
+    --success-foreground:       #d5e8cc;
 
---warning: #b17d1b;
---warning-foreground: #fef5dd;
+    --warning:                  #b17d1b;
+    --warning-foreground:       #fef5dd;
 
---destructive: #9b381c;
---destructive-foreground: #fce3d9;
+    --destructive:              #9b381c;
+    --destructive-foreground:   #fce3d9;
 
---info: #415b68;
---info-foreground: #adcadb;
+    --info:                     #425d6b;
+    --info-foreground:          #d4e6f0;
 }
 
-/* === RESET DOS ESTILOS === */
-* {
+/* === RESET === */
+*,
+*::before,
+*::after {
     margin: 0;
+    padding: 0;
     border: 0;
     box-sizing: border-box;
 }
@@ -73,8 +75,8 @@ html {
 body {
     background-color: var(--background);
     color: var(--foreground);
-    /* font-family: 'Courier Prime', monospace; */
     font-family: 'Playfair Display', serif;
+    line-height: 1.6;
 }
 
 section {
@@ -88,11 +90,16 @@ li {
 }
 
 a {
-    color: var(--foreground);
+    color: inherit;
     text-decoration: none;
 }
 
-/* Inputs */
+img {
+    display: block;
+    max-width: 100%;
+}
+
+/* === INPUTS === */
 input,
 textarea,
 select {
@@ -101,31 +108,36 @@ select {
     border: 1px solid var(--input);
     border-radius: var(--radius);
     padding: 0.5rem 0.75rem;
+    font-family: inherit;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-input:focus-visible, 
-textarea:focus-visible, 
+input:focus-visible,
+textarea:focus-visible,
 select:focus-visible {
     outline: none;
     border-color: var(--ring);
     box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
 }
 
-input:disabled {
+input:disabled,
+textarea:disabled,
+select:disabled {
     background-color: var(--disabled);
     color: var(--disabled-foreground);
     cursor: not-allowed;
     opacity: 0.7;
 }
 
-/* Buttons */
+/* === BUTTONS === */
 button {
     cursor: pointer;
     border-radius: var(--radius);
-    font-weight: 500;
-    padding: 0.5rem 0.75rem;
-    transition: opacity 0.2s, transform 0.1s, border-color 0.2s, box-shadow 0.2s;
+    font-family: 'Courier Prime', monospace;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 0.5rem 1rem;
+    transition: box-shadow 0.2s, transform 0.1s, column-gap 0.2s;
 }
 
 button:active {
@@ -137,7 +149,7 @@ button:focus-visible {
     box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
 }
 
-/* Cards & Popovers */
+/* === CARDS & POPOVERS === */
 .card {
     background-color: var(--card);
     color: var(--card-foreground);
@@ -149,14 +161,14 @@ button:focus-visible {
     background-color: var(--popover);
     color: var(--popover-foreground);
     border: 1px solid var(--border);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
+/* === LAYOUT === */
 .container {
     max-width: 1200px;
     width: 100%;
     margin: 0 auto;
-
     display: flex;
     flex-direction: column;
     row-gap: 1rem;
