@@ -1,0 +1,149 @@
+/* === COMPARTILHADOS === */
+.form-wrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    place-content: center;
+    overflow: hidden;
+}
+
+.bg-gradient {
+    position: absolute; 
+    inset: 0; 
+    z-index: 2;
+    background: radial-gradient(ellipse 60% 55% at 50% 50%, #2C1E08 0%, #281e0b 55%, #000000 100%);
+    opacity: 0.5;
+}
+
+#auth-form {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+    padding: 2rem;
+    z-index: 3;
+    box-shadow: 0 1rem 5rem rgba(0,0,0,0.8);
+}
+
+/* === REGISTRO === */
+
+/* === LOGIN === */
+
+/* === FOLHAGEM === */
+.foliage--dark {
+    filter: invert(13%) sepia(12%) saturate(2255%) hue-rotate(63deg) brightness(96%) contrast(94%);
+}
+
+.foliage--mid {
+    filter: invert(18%) sepia(21%) saturate(1478%) hue-rotate(60deg) brightness(96%) contrast(96%);
+}
+
+.foliage--light {
+    filter: invert(24%) sepia(12%) saturate(1833%) hue-rotate(60deg) brightness(93%) contrast(85%);
+}
+
+.foliage,
+.foliage-patch {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    scale: 0.85;
+}
+
+.foliage {
+    --fx: 0px;
+    --fy: 0px;
+    --r: 0deg;
+
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Grupo Lado Esquerdo */
+#foliage-patch-1 {
+    transform: translate(-125vh, -25vw);
+}
+#foliage-patch-2 {
+    transform: translate(-105vh, 18vw) rotate(45deg);
+}
+
+/* Grupo Lado Direito */
+#foliage-patch-3 {
+    transform: translate(125vh, -25vw) rotate(90deg);
+}
+#foliage-patch-4 {
+    transform: translate(125vh, 25vw) rotate(180deg);
+}
+
+/* Grupo Atrás do Form */
+#foliage-patch-5 {
+    transform: translateX(25vw) rotate(35deg);
+}
+#foliage-patch-6 {
+    transform: translateX(-25vw) rotate(-90deg);
+}
+
+/* Transformações Individuais */
+#foliage-patch-1 .foliage:nth-last-of-type(1) {
+    transform: translate(calc(-50% + var(--fx)), calc(-50% + var(--fy))) rotate(calc(var(--r) + 0deg));
+}
+#foliage-patch-1 .foliage:nth-last-of-type(2) {
+    transform: translate(calc(-25% + var(--fx)), calc(-60% + var(--fy))) rotate(calc(var(--r) + 0deg));
+}
+#foliage-patch-1 .foliage:nth-last-of-type(3) {
+    transform: translate(calc(-25% + var(--fx)), calc(-50% + var(--fy))) rotate(calc(var(--r) + 180deg));
+}
+
+#foliage-patch-2 .foliage:nth-last-of-type(1) {
+    transform: translate(calc(-50% + var(--fx)), calc(-50% + var(--fy))) rotate(calc(var(--r) + 0deg));
+}
+#foliage-patch-2 .foliage:nth-last-of-type(2) {
+    transform: translate(calc(-25% + var(--fx)), calc(-60% + var(--fy))) rotate(calc(var(--r) + 0deg));
+}
+#foliage-patch-2 .foliage:nth-last-of-type(3) {
+    transform: translate(calc(-95% + var(--fx)), calc(-50% + var(--fy))) rotate(calc(var(--r) + -25deg));
+}
+
+#foliage-patch-3 .foliage:nth-last-of-type(1) {
+    transform: translate(calc(-50% + var(--fx)), calc(-50% + var(--fy))) rotate(calc(var(--r) + 45deg));
+}
+#foliage-patch-3 .foliage:nth-last-of-type(2) {
+    transform: translate(calc(-60% + var(--fx)), calc(15% + var(--fy))) rotate(calc(var(--r) + 120deg));
+}
+#foliage-patch-3 .foliage:nth-last-of-type(3) {
+    transform: translate(calc(-45% + var(--fx)), calc(-25% + var(--fy))) rotate(calc(var(--r) + -25deg));
+}
+
+#foliage-patch-4 .foliage:nth-last-of-type(1) {
+    transform: translate(calc(-50% + var(--fx)), calc(-50% + var(--fy))) rotate(calc(var(--r) + 0deg));
+}
+#foliage-patch-4 .foliage:nth-last-of-type(2) {
+    transform: translate(calc(0% + var(--fx)), calc(-60% + var(--fy))) rotate(calc(var(--r) + 90deg));
+}
+#foliage-patch-4 .foliage:nth-last-of-type(3) {
+    transform: translate(calc(-25% + var(--fx)), calc(-25% + var(--fy))) rotate(calc(var(--r) + 165deg));
+}
+
+#foliage-patch-5 .foliage:nth-last-of-type(1) {
+    transform: translate(calc(-50% + var(--fx)), calc(-50% + var(--fy))) rotate(calc(var(--r) + 50deg));
+}
+#foliage-patch-5 .foliage:nth-last-of-type(2) {
+    transform: translate(calc(-100% + var(--fx)), calc(-60% + var(--fy))) rotate(calc(var(--r) + -150deg));
+}
+#foliage-patch-5 .foliage:nth-last-of-type(3) {
+    transform: translate(calc(-80% + var(--fx)), calc(-25% + var(--fy))) rotate(calc(var(--r) + 85deg));
+}
+
+#foliage-patch-6 .foliage:nth-last-of-type(1) {
+    transform: translate(calc(-60% + var(--fx)), calc(-50% + var(--fy))) rotate(calc(var(--r) + -20deg));
+}
+#foliage-patch-6 .foliage:nth-last-of-type(2) {
+    transform: translate(calc(-90% + var(--fx)), calc(-20% + var(--fy))) rotate(calc(var(--r) + -30deg));
+}
+#foliage-patch-6 .foliage:nth-last-of-type(3) {
+    transform: translate(calc(-25% + var(--fx)), calc(-35% + var(--fy))) rotate(calc(var(--r) + 45deg));
+}
