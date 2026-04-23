@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS building(
 	id 				INT NOT NULL AUTO_INCREMENT,
     
     name 			VARCHAR(120) NOT NULL,
+    translatedName 	VARCHAR(120) NOT NULL,
     description 	VARCHAR(255) NOT NULL,
     purpose 		VARCHAR(120) NOT NULL,
 	baseCost 		INTEGER NOT NULL DEFAULT 0,
@@ -56,10 +57,11 @@ CREATE TABLE IF NOT EXISTS building(
 CREATE TABLE IF NOT EXISTS events(
 	id INT NOT NULL AUTO_INCREMENT,
     
-	name VARCHAR(120) NOT NULL,
-	description VARCHAR(255) NOT NULL,
-	consequences VARCHAR(120) NOT NULL,
-    spawnChance FLOAT NOT NULL,
+	name 			VARCHAR(120) NOT NULL,
+    translatedName 	VARCHAR(120) NOT NULL,
+	description 	VARCHAR(255) NOT NULL,
+	consequences 	VARCHAR(255) NOT NULL,
+    spawnChance 	FLOAT NOT NULL,
     
 	createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
     updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),	
@@ -146,28 +148,147 @@ CREATE TABLE IF NOT EXISTS dinosaur(
 
 -- | POPULANDO TABELA 'species' | --
 
-INSERT INTO species (
-    name, 
-    description, 
-    temporalRange, 
-    locomotionType, 
-    heightInMeters, 
-    weightInKilograms, 
-    diet, 
-    aggressiveness, 
-    hatchCost, 
-    hatchTimeInSeconds, 
-    hatchSuccessRate) VALUES -- name		description                                                                                                             temporalRange           locomotionType    heightInMeters  weightInKilograms    diet        aggr    hchCost  hchTime  hchSuccess 
-    ('compsognathus', 	'Um gênero de pequenos dinossauros terópodes carnívoros bípedes do Jurássico Superior.', 								'Jurássico Superior', 	'Bípede', 				0.260, 		3.000, 			'carnívoro', 	0.2, 	50, 	30, 	0.9),
-    ('tiranossauro', 	'Um gênero de grandes dinossauros terópodes do Cretáceo Superior, amplamente conhecido como T. rex.', 					'Cretáceo Superior', 	'Bípede', 				4.000, 		8000.000, 		'carnívoro', 	1.0, 	1000, 	600, 	0.5),
-    ('espinossauro', 	'Um gênero de dinossauro espinossaurídeo que viveu no que hoje é o Norte da África durante o Cretáceo Superior.', 		'Cretáceo Superior', 	'Bípede', 				4.500, 		14000.000, 		'carnívoro', 	1.0, 	1200, 	600, 	0.4),
-    ('braquiossauro', 	'Um gênero de dinossauro saurópode que viveu na América do Norte durante o Jurássico Superior.', 						'Jurássico Superior', 	'Quadrúpede', 			12.000, 	40000.000, 		'herbívoro', 	0.2, 	950, 	720, 	0.5),
-    ('coritossauro', 	'Um gênero de dinossauro hadrossaurídeo do período Cretáceo Superior, conhecido por sua crista distinta.', 				'Cretáceo Superior', 	'Bípede/Quadrúpede', 	2.500, 		3000.000, 		'herbívoro', 	0.4, 	150, 	180, 	0.8),
-    ('parassaurolofo', 	'Um dinossauro ornitópode herbívoro que viveu na América do Norte durante o Cretáceo Superior.', 						'Cretáceo Superior', 	'Bípede/Quadrúpede', 	3.000, 		2500.000, 		'herbívoro', 	0.4, 	150, 	180, 	0.8),
-    ('triceratops', 	'Um gênero de dinossauro ceratopsídeo herbívoro que surgiu durante o Cretáceo Superior.', 								'Cretáceo Superior', 	'Quadrúpede', 			3.000, 		9000.000, 		'herbívoro', 	0.6, 	250, 	300, 	0.6),
-    ('velociraptor', 	'Um gênero de dinossauro terópode dromeossaurídeo que viveu durante a última parte do Cretáceo.', 						'Cretáceo Superior', 	'Bípede', 				0.500, 		15.000, 		'carnívoro', 	1.0, 	100, 	90, 	0.8),
-    ('dilofossauro', 	'Um gênero de dinossauros terópodes que viveu na América do Norte durante o Jurássico Inferior.', 						'Jurássico Inferior', 	'Bípede', 				2.000, 		400.000, 		'carnívoro', 	0.6, 	100, 	90, 	0.8),
-    ('anquilossauro', 	'Um gênero de dinossauro blindado do período Cretáceo Superior, conhecido por sua cauda pesada em forma de clava.', 	'Cretáceo Superior', 	'Quadrúpede', 			1.700, 		6000.000, 		'herbívoro', 	0.8, 	300, 	300, 	0.6),
-    ('ceratossauro', 	'Um dinossauro terópode predador do período Jurássico Superior, possuindo um chifre proeminente.', 						'Jurássico Superior', 	'Bípede', 				2.000, 		980.000, 		'carnívoro', 	0.8, 	250, 	300, 	0.8),
-    ('estegossauro', 	'Um gênero de dinossauro herbívoro quadrúpede e blindado do período Jurássico Superior.', 								'Jurássico Superior', 	'Quadrúpede', 			2.700, 		5300.000, 		'herbívoro', 	0.6, 	250, 	300, 	0.6);
+INSERT INTO species 
+    (name, description, temporalRange, locomotionType, heightInMeters, weightInKilograms, diet, aggressiveness, hatchCost, hatchTimeInSeconds, hatchSuccessRate) 
+VALUES 
+    (
+        'compsognathus', 
+        'Um gênero de pequenos dinossauros terópodes carnívoros bípedes do Jurássico Superior.', 
+        'Jurássico Superior', 'Bípede', 0.260, 3.000, 
+        'carnívoro', 0.2, 50, 30, 0.9
+    ),
+    (
+        'tiranossauro', 
+        'Um gênero de grandes dinossauros terópodes do Cretáceo Superior, amplamente conhecido como T. rex.', 
+        'Cretáceo Superior', 'Bípede', 4.000, 8000.000, 
+        'carnívoro', 1.0, 1000, 600, 0.5
+    ),
+    (
+        'espinossauro', 
+        'Um gênero de dinossauro espinossaurídeo que viveu no que hoje é o Norte da África durante o Cretáceo Superior.', 
+        'Cretáceo Superior', 'Bípede', 4.500, 14000.000, 
+        'carnívoro', 1.0, 1200, 600, 0.4
+    ),
+    (
+        'braquiossauro', 
+        'Um gênero de dinossauro saurópode que viveu na América do Norte durante o Jurássico Superior.', 
+        'Jurássico Superior', 'Quadrúpede', 12.000, 40000.000, 
+        'herbívoro', 0.2, 950, 720, 0.5
+    ),
+    (
+        'coritossauro', 
+        'Um gênero de dinossauro hadrossaurídeo do período Cretáceo Superior, conhecido por sua crista distinta.', 
+        'Cretáceo Superior', 'Bípede/Quadrúpede', 2.500, 3000.000, 
+        'herbívoro', 0.4, 150, 180, 0.8
+    ),
+    (
+        'parassaurolofo', 
+        'Um dinossauro ornitópode herbívoro que viveu na América do Norte durante o Cretáceo Superior.', 
+        'Cretáceo Superior', 'Bípede/Quadrúpede', 3.000, 2500.000, 
+        'herbívoro', 0.4, 150, 180, 0.8
+    ),
+    (
+        'triceratops', 
+        'Um gênero de dinossauro ceratopsídeo herbívoro que surgiu durante o Cretáceo Superior.', 
+        'Cretáceo Superior', 'Quadrúpede', 3.000, 9000.000, 
+        'herbívoro', 0.6, 250, 300, 0.6
+    ),
+    (
+        'velociraptor', 
+        'Um gênero de dinossauro terópode dromeossaurídeo que viveu durante a última parte do Cretáceo.', 
+        'Cretáceo Superior', 'Bípede', 0.500, 15.000, 
+        'carnívoro', 1.0, 100, 90, 0.8
+    ),
+    (
+        'dilofossauro', 
+        'Um gênero de dinossauros terópodes que viveu na América do Norte durante o Jurássico Inferior.', 
+        'Jurássico Inferior', 'Bípede', 2.000, 400.000, 
+        'carnívoro', 0.6, 100, 90, 0.8
+    ),
+    (
+        'anquilossauro', 
+        'Um gênero de dinossauro blindado do período Cretáceo Superior, conhecido por sua cauda pesada em forma de clava.', 
+        'Cretáceo Superior', 'Quadrúpede', 1.700, 6000.000, 
+        'herbívoro', 0.8, 300, 300, 0.6
+    ),
+    (
+        'ceratossauro', 
+        'Um dinossauro terópode predador do período Jurássico Superior, possuindo um chifre proeminente.', 
+        'Jurássico Superior', 'Bípede', 2.000, 980.000, 
+        'carnívoro', 0.8, 250, 300, 0.8
+    ),
+    (
+        'estegossauro', 
+        'Um gênero de dinossauro herbívoro quadrúpede e blindado do período Jurássico Superior.', 
+        'Jurássico Superior', 'Quadrúpede', 2.700, 5300.000, 
+        'herbívoro', 0.6, 250, 300, 0.6
+    );
 
+INSERT INTO building (name, translatedName, description, purpose, baseCost, maxUnits, removable, upgradable) 
+VALUES 
+    (
+		'entrance',
+        'Portão de Entrada', 
+        'Este portão de proporções colossais é como um bastião que guarda a entrada do seu Parque. Não há nada dentro da ilha (humano ou dinossauro) que não tenha passado por ele.', 
+        'Permite trocar o nome do Parque.', 
+        0, 1, 0, 0
+    ),
+    (
+		'visitor-center',
+        'Centro de Visitantes', 
+        'O coração de todo parque. O Centro de Visitantes não é apenas um grande hall pelo qual seus visitantes passam ao chegar no Parque, é um verdadeiro QG onde a Staff do Parque monitora tudo o que acontece na ilha.', 
+        'Permite visualizar a Avaliação do seu Parque e todas as Espécies nele.', 
+        0, 1, 0, 0
+    ),
+    (
+		'enclosure-1',
+        'Cercado', 
+        'Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...', 
+        'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.', 
+        100, NULL, 1, 1
+    ),
+	(
+		'enclosure-2',
+        'Cercado', 
+        'Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...', 
+        'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.', 
+        250, NULL, 1, 1
+    ),
+	(
+		'enclosure-3',
+        'Cercado', 
+        'Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...', 
+        'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.', 
+        500, NULL, 1, 0
+    ),
+    (
+		'laboratory',
+        'Laboratório de Incubação', 
+        'Trazer um dinossauro de volta à vida não é uma tarefa fácil. Para realizar tal façanha diariamente, seus cientistas precisarão de um lugar adequado para trabalhar.', 
+        'Permite incubar até 1 espécie de dinossauro por vez.', 
+        250, NULL, 1, 0
+    ),
+    (
+		'path',
+        'Caminho', 
+        'Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.', 
+        'Apenas para a estética.', 
+        50, NULL, 1, 0
+    );
+
+INSERT INTO events (name, translatedName, description, consequences, spawnChance) 
+VALUES 
+    (
+        'sabotage', 
+        'Sabotagem', 
+        'Todo cuidado é pouco. Um funcionário do seu Parque foi mandado embora e decidiu se vingar - ele desativou todos os sistemas de segurança do Parque!', 
+        'A durabilidade de todos os Cercados do seu Parque caem em 50%', 
+        0.2
+    ),
+    (
+        'pouring-rain', 
+        'Chuva Torrencial', 
+        'O Clima tropical da Costa Rica é extremamente instável. Sob uma tempestade dessas proporções, as coisas no Parque vão ter de esperar.', 
+        'Enquanto a chuva durar o atributo de Avaliação do seu Parque cai em 1 Estrela. Além disso, o tempo de incubação de todas as espécies aumenta em 33%', 
+        0.5
+    );
