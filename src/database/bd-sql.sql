@@ -33,44 +33,46 @@ CREATE TABLE IF NOT EXISTS park(
     CONSTRAINT chkParkDinoCoins CHECK(dinoCoins > 0)
 );
 
-CREATE TABLE IF NOT EXISTS structure(
+CREATE TABLE IF NOT EXISTS building(
 	id 				INT NOT NULL AUTO_INCREMENT,
-    idPark 			INT NOT NULL,
     
-    type 			INT NOT NULL,
-    position_col 	INT NOT NULL,
-    position_row 	INT NOT NULL,
+    name 			VARCHAR(120) NOT NULL,
+    description 	VARCHAR(255) NOT NULL,
+    purpose 		VARCHAR(120) NOT NULL,
+	baseCost 		INTEGER NOT NULL DEFAULT 0,
+    maxUnits 		INTEGER NULL,
+    removable 		TINYINT NOT NULL DEFAULT 1,
+    upgradable 		TINYINT NOT NULL DEFAULT 0,
     
     createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
-    updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
-
-    PRIMARY KEY (id, idPark),
-    CONSTRAINT fkStructurePark FOREIGN KEY (idPark) REFERENCES park(id),
+    updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),	
     
-    -- | CHECK Constraints | --
-    CONSTRAINT chkStructureType CHECK(type BETWEEN 0 AND 99)
+    PRIMARY KEY (id),
+    
+	-- | CHECK Constraints | --
+    CONSTRAINT chkBuildingBaseCost CHECK(baseCost >= 0)
 );
 
-CREATE TABLE IF NOT EXISTS enclosure(
-	id 			INT NOT NULL AUTO_INCREMENT,
-    idStructure INT NOT NULL UNIQUE,
+CREATE TABLE IF NOT EXISTS events(
+	id INT NOT NULL AUTO_INCREMENT,
     
-    level 		INT NOT NULL DEFAULT 1,
-    durability 	INT NOT NULL DEFAULT 100,
-    hp 			INT NOT NULL,
+	name VARCHAR(120) NOT NULL,
+	description VARCHAR(255) NOT NULL,
+	consequences VARCHAR(120) NOT NULL,
+    spawnChance FLOAT NOT NULL,
     
-    createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
-    updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
-
-    PRIMARY KEY (id, idStructure),
-    CONSTRAINT fkEnclosureStructure FOREIGN KEY (idStructure) REFERENCES structure(id),
+	createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
+    updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),	
     
-    -- | CHECK Constraints | --
-    CONSTRAINT chkEnclosureLevel CHECK(level IN(1, 2, 3))
+    PRIMARY KEY (id),
+    
+	-- | CHECK Constraints | --
+    CONSTRAINT chkEventsSpawnChance CHECK(spawnChance BETWEEN 0 AND 1)
 );
 
 CREATE TABLE IF NOT EXISTS species(
     id                  INT NOT NULL AUTO_INCREMENT,
+    id_ancestor			INT NULL,
 
     name                VARCHAR(120) NOT NULL,
     description         VARCHAR(255) NOT NULL,
@@ -82,20 +84,51 @@ CREATE TABLE IF NOT EXISTS species(
     aggressiveness      FLOAT NOT NULL,
     hatchCost           INT NOT NULL,
     hatchTimeInSeconds  INT NOT NULL,
-    hatchSuccessRatio   FLOAT NOT NULL,
+    hatchSuccessRate    FLOAT NOT NULL,
 
     createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
     updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
 
     PRIMARY KEY (id),
+    CONSTRAINT fkSpeciesSpecies FOREIGN KEY (id_ancestor) REFERENCES species(id),
 
     -- | CHECK Constraints | --
 	CONSTRAINT chkSpeciesDiet CHECK(diet IN('herbívoro', 'carnívoro', 'onívoro')),
     CONSTRAINT chkSpeciesHeightAndWeight CHECK(heightInMeters > 0 AND weightInKilograms > 0),
     CONSTRAINT chkSpeciesAggressiveness CHECK(aggressiveness BETWEEN 0 AND 1),
     CONSTRAINT chkSpeciesHatchCostAndTime CHECK(hatchCost > 0 AND hatchTimeInSeconds > 0),
-    CONSTRAINT chkSpeciesHatchSuccessRatio CHECK(hatchSuccessRatio BETWEEN 0 AND 1)
+    CONSTRAINT chkSpecieshatchSuccessRate CHECK(hatchSuccessRate BETWEEN 0 AND 1)
 
+);
+
+CREATE TABLE IF NOT EXISTS tile(
+	id 				INT NOT NULL AUTO_INCREMENT,
+    idPark 			INT NOT NULL,
+	idBuilding		INT NOT NULL,
+    
+    position_col 	INT NOT NULL,
+    position_row 	INT NOT NULL,
+    
+    createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
+    updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+
+    PRIMARY KEY (id, idPark),
+    CONSTRAINT fkTilePark 		FOREIGN KEY (idPark) REFERENCES park(id),
+    CONSTRAINT fkTileBuilding 	FOREIGN KEY (idBuilding) REFERENCES building(id)
+);
+
+CREATE TABLE IF NOT EXISTS enclosure(
+	id 			INT NOT NULL AUTO_INCREMENT,
+    idTile 		INT NOT NULL UNIQUE,
+    
+    durability 	INT NOT NULL DEFAULT 100,
+    hp 			INT NOT NULL,
+    
+    createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
+    updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+
+    PRIMARY KEY (id, idTile),
+    CONSTRAINT fkEnclosureTile FOREIGN KEY (idTile) REFERENCES tile(id)
 );
 
 CREATE TABLE IF NOT EXISTS dinosaur(
@@ -124,8 +157,7 @@ INSERT INTO species (
     aggressiveness, 
     hatchCost, 
     hatchTimeInSeconds, 
-    hatchSuccessRatio
-) VALUES -- name		description                                                                                                             temporalRange           locomotionType    heightInMeters  weightInKilograms    diet        aggr    hchCost  hchTime  hchSuccess 
+    hatchSuccessRate) VALUES -- name		description                                                                                                             temporalRange           locomotionType    heightInMeters  weightInKilograms    diet        aggr    hchCost  hchTime  hchSuccess 
     ('compsognathus', 	'Um gênero de pequenos dinossauros terópodes carnívoros bípedes do Jurássico Superior.', 								'Jurássico Superior', 	'Bípede', 				0.260, 		3.000, 			'carnívoro', 	0.2, 	50, 	30, 	0.9),
     ('tiranossauro', 	'Um gênero de grandes dinossauros terópodes do Cretáceo Superior, amplamente conhecido como T. rex.', 					'Cretáceo Superior', 	'Bípede', 				4.000, 		8000.000, 		'carnívoro', 	1.0, 	1000, 	600, 	0.5),
     ('espinossauro', 	'Um gênero de dinossauro espinossaurídeo que viveu no que hoje é o Norte da África durante o Cretáceo Superior.', 		'Cretáceo Superior', 	'Bípede', 				4.500, 		14000.000, 		'carnívoro', 	1.0, 	1200, 	600, 	0.4),
@@ -138,3 +170,4 @@ INSERT INTO species (
     ('anquilossauro', 	'Um gênero de dinossauro blindado do período Cretáceo Superior, conhecido por sua cauda pesada em forma de clava.', 	'Cretáceo Superior', 	'Quadrúpede', 			1.700, 		6000.000, 		'herbívoro', 	0.8, 	300, 	300, 	0.6),
     ('ceratossauro', 	'Um dinossauro terópode predador do período Jurássico Superior, possuindo um chifre proeminente.', 						'Jurássico Superior', 	'Bípede', 				2.000, 		980.000, 		'carnívoro', 	0.8, 	250, 	300, 	0.8),
     ('estegossauro', 	'Um gênero de dinossauro herbívoro quadrúpede e blindado do período Jurássico Superior.', 								'Jurássico Superior', 	'Quadrúpede', 			2.700, 		5300.000, 		'herbívoro', 	0.6, 	250, 	300, 	0.6);
+
