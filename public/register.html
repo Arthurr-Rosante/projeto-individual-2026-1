@@ -30,25 +30,29 @@
             <div class="form-body">
                 <div class="field-group">
                     <div class="field">
-                        <label for="ipt-username">Nome Completo</label>
+                        <label class="field-label" for="ipt-username">Nome Completo</label>
                         <input id="ipt-username" type="text" oninput="validateUsername(this)" data-has-auth-errors="true" placeholder="Ex: Alan Grant" minlength="3" class="field-input" required>
                         <p id="ipt-username-auth-message" class="auth-message"></p>
                     </div>
                     <div class="field">
-                        <label for="ipt-email">Endereço de Email</label>
+                        <label class="field-label" for="ipt-email">Endereço de Email</label>
                         <input id="ipt-email" type="email"  oninput="validateEmail(this)" data-has-auth-errors="true" placeholder="Ex: drgrant@ingen.com" class="field-input" required>
                         <p id="ipt-email-auth-message" class="auth-message"></p>
                     </div>
                     <div class="field">
-                        <label for="ipt-password">Código de Acesso (Senha)</label>
-                        <input id="ipt-password" type="password" oninput="validatePassword(this)" data-has-auth-errors="true" placeholder="Min. 8 caracteres" minlength="8" class="field-input" required>
-                        <i id="ipt-password-icon" class="ph ph-eye"></i>
+                        <label class="field-label" for="ipt-password">Código de Acesso (Senha)</label>
+                        <div class="password-wrapper">
+                            <input id="ipt-password" type="password" oninput="validatePassword(this)" data-has-auth-errors="true" placeholder="Min. 8 caracteres" minlength="8" class="field-input" required>
+                            <i id="ipt-password-icon" class="ph ph-eye"></i>
+                        </div>
                         <p id="ipt-password-auth-message" class="auth-message"></p>
                     </div>
                     <div class="field">
-                        <label for="ipt-password-confirm">Confirmar Código de Acesso</label>
-                        <input id="ipt-password-confirm" type="password"  oninput="validatePassword(this, true)" data-has-auth-errors="true" placeholder="Min. 8 caracteres" minlength="8" class="field-input" required>
-                        <i id="ipt-password-confirm-icon" class="ph ph-eye"></i>
+                        <label class="field-label" for="ipt-password-confirm">Confirmar Código de Acesso</label>
+                        <div class="password-wrapper">
+                            <input id="ipt-password-confirm" type="password"  oninput="validatePassword(this, true)" data-has-auth-errors="true" placeholder="Min. 8 caracteres" minlength="8" class="field-input" required>
+                            <i id="ipt-password-confirm-icon" class="ph ph-eye"></i>
+                        </div>
                         <p id="ipt-password-confirm-auth-message" class="auth-message"></p>
                     </div>
                 </div>
