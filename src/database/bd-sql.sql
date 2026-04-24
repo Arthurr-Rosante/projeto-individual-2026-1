@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS park(
 );
 
 CREATE TABLE IF NOT EXISTS building(
-	id 				INT NOT NULL AUTO_INCREMENT,
+	id 				INT NOT NULL,						-- único campo ID sem AUTO_INCREMENT: quero ter a liberdade de escolher o ID de cada tipo de construção
     
     name 			VARCHAR(120) NOT NULL,
     translatedName 	VARCHAR(120) NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS building(
 	baseCost 		INTEGER NOT NULL DEFAULT 0,
     maxUnits 		INTEGER NULL,
     removable 		TINYINT NOT NULL DEFAULT 1,
-    upgradable 		TINYINT NOT NULL DEFAULT 0,
+    upgradeable 	TINYINT NOT NULL DEFAULT 0,
     
     createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
     updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),	
@@ -147,7 +147,6 @@ CREATE TABLE IF NOT EXISTS dinosaur(
 );
 
 -- | POPULANDO TABELA 'species' | --
-
 INSERT INTO species 
     (name, description, temporalRange, locomotionType, heightInMeters, weightInKilograms, diet, aggressiveness, hatchCost, hatchTimeInSeconds, hatchSuccessRate) 
 VALUES 
@@ -224,58 +223,7 @@ VALUES
         'herbívoro', 0.6, 250, 300, 0.6
     );
 
-INSERT INTO building (name, translatedName, description, purpose, baseCost, maxUnits, removable, upgradable) 
-VALUES 
-    (
-		'entrance',
-        'Portão de Entrada', 
-        'Este portão de proporções colossais é como um bastião que guarda a entrada do seu Parque. Não há nada dentro da ilha (humano ou dinossauro) que não tenha passado por ele.', 
-        'Permite trocar o nome do Parque.', 
-        0, 1, 0, 0
-    ),
-    (
-		'visitor-center',
-        'Centro de Visitantes', 
-        'O coração de todo parque. O Centro de Visitantes não é apenas um grande hall pelo qual seus visitantes passam ao chegar no Parque, é um verdadeiro QG onde a Staff do Parque monitora tudo o que acontece na ilha.', 
-        'Permite visualizar a Avaliação do seu Parque e todas as Espécies nele.', 
-        0, 1, 0, 0
-    ),
-    (
-		'enclosure-1',
-        'Cercado', 
-        'Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...', 
-        'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.', 
-        100, NULL, 1, 1
-    ),
-	(
-		'enclosure-2',
-        'Cercado', 
-        'Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...', 
-        'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.', 
-        250, NULL, 1, 1
-    ),
-	(
-		'enclosure-3',
-        'Cercado', 
-        'Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...', 
-        'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.', 
-        500, NULL, 1, 0
-    ),
-    (
-		'laboratory',
-        'Laboratório de Incubação', 
-        'Trazer um dinossauro de volta à vida não é uma tarefa fácil. Para realizar tal façanha diariamente, seus cientistas precisarão de um lugar adequado para trabalhar.', 
-        'Permite incubar até 1 espécie de dinossauro por vez.', 
-        250, NULL, 1, 0
-    ),
-    (
-		'path',
-        'Caminho', 
-        'Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.', 
-        'Apenas para a estética.', 
-        50, NULL, 1, 0
-    );
-
+-- | POPULANDO TABELA 'events' | --
 INSERT INTO events (name, translatedName, description, consequences, spawnChance) 
 VALUES 
     (
@@ -292,3 +240,125 @@ VALUES
         'Enquanto a chuva durar o atributo de Avaliação do seu Parque cai em 1 Estrela. Além disso, o tempo de incubação de todas as espécies aumenta em 33%', 
         0.5
     );
+
+-- | POPULANDO TABELA 'building' | --
+INSERT INTO building (id, name, translatedName, description, purpose, baseCost, maxUnits, removable, upgradeable) 
+VALUES
+	-- | TERRENO | --
+	(
+		0,
+		'terrain-grass',
+        'Terreno Grama', 
+        'Toda a natureza intocada da Isla Nublar faz com que seus visitantes sintam como se tivessem retornado a 65 milhões de anos atrás.', 
+        'Apenas para a estética.', 
+        0, null, 1, 0
+    ),
+	(
+		1,
+		'terrain-trees',
+        'Terreno Árvores', 
+        'Toda a natureza intocada da Isla Nublar faz com que seus visitantes sintam como se tivessem retornado a 65 milhões de anos atrás.', 
+        'Apenas para a estética.', 
+        0, null, 1, 0
+    ),
+	(
+		2,
+		'terrain-dirt',
+        'Terreno Terra', 
+        'Toda a natureza intocada da Isla Nublar faz com que seus visitantes sintam como se tivessem retornado a 65 milhões de anos atrás.', 
+        'Apenas para a estética.', 
+        0, null, 1, 0
+    ),
+	(
+		3,
+		'terrain-pond',
+        'Terreno Lago', 
+        'Toda a natureza intocada da Isla Nublar faz com que seus visitantes sintam como se tivessem retornado a 65 milhões de anos atrás.', 
+        'Apenas para a estética.', 
+        0, null, 1, 0
+    ),
+    
+	-- | CAMINHO | --
+	(
+		20,
+		'path',
+        'Caminho Padrão', 
+        'Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.', 
+        'Apenas para a estética.', 
+        50, null, 1, 0
+    ),
+	(
+		21,
+		'path-l',
+        'Caminho L', 
+        'Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.', 
+        'Apenas para a estética.', 
+        50, null, 1, 0
+    ),
+	(
+		22,
+		'path-t',
+        'Caminho T', 
+        'Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.', 
+        'Apenas para a estética.', 
+        50, null, 1, 0
+    ),
+	(
+		23,
+		'path-cross',
+        'Caminho Encruzilhada', 
+        'Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.', 
+        'Apenas para a estética.', 
+        50, null, 1, 0
+    ),
+	-- | CERCADOS | --
+	(
+		40,
+		'enclosure-1',
+        'Cercado Nível 1', 
+        'Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...', 
+        'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.', 
+        100, null, 1, 1
+    ),
+	(
+		41,
+		'enclosure-2',
+        'Cercado Nível 2', 
+        'Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...', 
+        'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.', 
+        250, null, 1, 1
+    ),
+	(
+		42,
+		'enclosure-3',
+        'Cercado Nível 3', 
+        'Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...', 
+        'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.', 
+        500, null, 1, 0
+    ),
+	-- | CONSTRUÇÕES | --
+	(
+		60,
+		'entrance',
+        'Portão de Entrada', 
+        'Este portão de proporções colossais é como um bastião que guarda a entrada do seu Parque. Não há nada dentro da ilha (humano ou dinossauro) que não tenha passado por ele.', 
+        'Permite trocar o nome do Parque.', 
+        0, 1, 0, 0
+    ),
+	(
+		61,
+		'visitor-center',
+        'Centro de Visitantes', 
+        'O coração de todo parque. O Centro de Visitantes não é apenas um grande hall pelo qual seus visitantes passam ao chegar no Parque, é um verdadeiro QG onde a Staff do Parque monitora tudo o que acontece na ilha.', 
+        'Permite visualizar a Avaliação do seu Parque e todas as Espécies nele.', 
+        0, 1, 0, 0
+    ),
+	(
+		62,
+		'hatchery',
+        'Laboratório de Incubação', 
+        'Trazer um dinossauro de volta à vida não é uma tarefa fácil. Para realizar tal façanha diariamente, seus cientistas precisarão de um lugar adequado para trabalhar.', 
+        'Permite incubar até 1 espécie de dinossauro por vez.', 
+        250, null, 1, 0
+    );
+    
