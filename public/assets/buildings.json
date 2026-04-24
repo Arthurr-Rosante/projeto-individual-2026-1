@@ -3,45 +3,60 @@
         "name": "entrance",
         "translatedName": "Portão de Entrada",
         "description": "Este portão de proporções colossais é como um bastião que guarda a entrada do seu Parque. Não há nada dentro da ilha (humano ou dinossauro) que não tenha passado por ele.",
-        "utility": "Permite trocar o nome do Parque.",
+        "purpose": "Permite trocar o nome do Parque.",
         "baseCost": 0,
         "maxUnits": 1,
-        "removable": false
+        "removable": false,
+        "upgradeable": false
     },
     {
         "name": "visitor-center",
         "translatedName": "Centro de Visitantes",
         "description": "O coração de todo parque. O Centro de Visitantes não é apenas um grande hall pelo qual seus visitantes passam ao chegar no Parque, é um verdadeiro QG onde a Staff do Parque monitora tudo o que acontece na ilha.",
-        "utility": "Permite visualizar a Avaliação do seu Parque e todas as Espécies nele.",
+        "purpose": "Permite visualizar a Avaliação do seu Parque e todas as Espécies nele.",
         "baseCost": 0,
         "maxUnits": 1,
-        "removable": false
+        "removable": false,
+        "upgradeable": false
     },
     {
         "name": "enclosure",
         "translatedName": "Cercado",
         "description": "Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...",
-        "utility": "Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.",
+        "purpose": "Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.",
         "baseCost": 100,
-        "maxUnits": -1,
-        "removable": true
+        "maxUnits": null,
+        "removable": true,
+        "upgradeable": true
     },
-    {
+    {   
         "name": "hatchery",
         "translatedName": "Laboratório de Incubação",
         "description": "Trazer um dinossauro de volta à vida não é uma tarefa fácil. Para realizar tal façanha diariamente, seus cientistas precisarão de um lugar adequado para trabalhar.",
-        "utility": "Permite incubar até 1 espécie de dinossauro por vez.",
+        "purpose": "Permite incubar até 1 espécie de dinossauro por vez.",
         "baseCost": 250,
-        "maxUnits": -1,
-        "removable": true
+        "maxUnits": null,
+        "removable": true,
+        "upgradeable": false
     },
     {
         "name": "path",
         "translatedName": "Caminhos",
         "description": "Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.",
-        "utility": "Apenas para a estética.",
+        "purpose": "Apenas para a estética.",
         "baseCost": 50,
-        "maxUnits": -1,
-        "removable": true
+        "maxUnits": null,
+        "removable": true,
+        "upgradeable": false
+    },
+    {
+        "name": "terrain",
+        "translatedName": "Terreno",
+        "description": "Toda a natureza intocada da Isla Nublar faz com que seus visitantes sintam como se tivessem retornado a 65 milhões de anos atrás.",
+        "purpose": "Apenas para a estética.",
+        "baseCost": 0,
+        "maxUnits": null,
+        "removable": true,
+        "upgradeable": false
     }
 ]

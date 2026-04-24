@@ -262,7 +262,7 @@
     pointer-events: none;
 }
 
-.structure-img,
+.building-img,
 .event-img {
     width: 160px;
     height: 160px;
@@ -366,26 +366,26 @@
     background-color: var(--primary);
 }
 
-/* === STRUCTURES SECTION === */
-#structures-section {
+/* === BUILDINGS SECTION === */
+#buildings-section {
     display: flex;
     flex-direction: column;
     row-gap: 2.5rem;
     width: 100%;
 }
 
-#structures-section .section-header {
+#buildings-section .section-header {
     text-align: end;
     align-items: flex-end;
 }
 
-#structures-section .section-header h2::after {
+#buildings-section .section-header h2::after {
     left: auto;
     right: 0;
     background-color: var(--secondary);
 }
 
-#structures-section .section-header p span {
+#buildings-section .section-header p span {
     color: var(--secondary);
 }
 

@@ -24,7 +24,7 @@
                 <ul class="nav-list">
                     <li class="nav-item"><a href="#about-section">Sobre</a></li>
                     <li class="nav-item"><a href="#dinosaurs-section">Dinossauros</a></li>
-                    <li class="nav-item"><a href="#structures-section">Estruturas</a></li>
+                    <li class="nav-item"><a href="#buildings-section">Construções</a></li>
                     <li class="nav-item"><a href="#events-section">Eventos</a></li>
                 </ul>
                 <button class="cta-btn">
@@ -56,7 +56,7 @@
             <section id="about-section">
                 <div class="section-header">
                     <h2>Sobre o Projeto</h2>
-                    <p>O <span>Jurassic Park: Web Genesis</span> é um projeto desenvolvido como meio de <span>avaliação</span> para a matéria de <span>Pesquisa e Inovação</span> da SPTech.<br>O projeto se trata de um jogo no estilo <span>Park Builder</span> com a temática de Jurassic Park. Aqui, você vai contar com diversas estruturas e dinossauros para gerenciar o seu próprio Jurassic Park <span>— Sem poupar despesas!</span></p>
+                    <p>O <span>Jurassic Park: Web Genesis</span> é um projeto desenvolvido como meio de <span>avaliação</span> para a matéria de <span>Pesquisa e Inovação</span> da SPTech.<br>O projeto se trata de um jogo no estilo <span>Park Builder</span> com a temática de Jurassic Park. Aqui, você vai contar com diversas construções e dinossauros para gerenciar o seu próprio Jurassic Park <span>— Sem poupar despesas!</span></p>
                 </div>
             </section>
 
@@ -71,13 +71,13 @@
                 </ul>
             </section>
 
-            <!-- Estruturas -->
-            <section id="structures-section">
+            <!-- Construções -->
+            <section id="buildings-section">
                 <div class="section-header">
-                    <h2>Estruturas Disponíveis</h2>
+                    <h2>Construções Disponíveis</h2>
                     <p>Para conter criaturas com as quais estamos lidando, o seu parque precisará de uma estrutura formidável! Veja abaixo quais são as construções disponíveis em <span>JP: Web Genesis</span></p>
                 </div>
-                <ul class="section-list structures-list">
+                <ul class="section-list buildings-list">
                     <!-- <li> dinamicamente carregado -->
                 </ul>
             </section>
@@ -108,7 +108,7 @@
                 <div class="col-label">Navegação</div>
                 <a class="footer-link" href="#about-section">Sobre</a>
                 <a class="footer-link" href="#dinosaurs-section">Dinossauros</a>
-                <a class="footer-link" href="#structures-section">Estruturas</a>
+                <a class="footer-link" href="#buildings-section">Construções</a>
                 <a class="footer-link" href="#events-section">Eventos</a>
             </div>
 
@@ -132,7 +132,7 @@
     // === Evento que carrega a lista de espécies disponíveis === //
     document.addEventListener("DOMContentLoaded", () => {
         const dinosaurSectionList = document.querySelector("#dinosaurs-section .dinosaurs-list");
-        const structureSectionList = document.querySelector("#structures-section .structures-list");
+        const buildingsectionList = document.querySelector("#buildings-section .buildings-list");
         const eventSectionList = document.querySelector("#events-section .events-list");
 
         // Carrega a Lista de Espécies
@@ -170,33 +170,34 @@
             }))
             .catch(() => console.log("Erro ao ler JSON de espécies. Verifique a integridade do arquivo."));
 
-        // Carrega a Lista de Estruturas
-        fetch("./assets/structures.json")
+        // Carrega a Lista de Construções
+        fetch("./assets/buildings.json")
             .then((res) => res.json())
-            .then((structures) => structures.forEach((struct) => {
-                const structCard = document.createElement("li");
+            .then((buildings) => buildings.forEach((building) => {
+                const buildingCard = document.createElement("li");
 
-                structCard.classList.add("list-item");
+                buildingCard.classList.add("list-item");
 
-                structCard.innerHTML = `
-                <img src="./assets/images/structures/${struct.name}.png" alt="${struct.name.charAt(0).toUpperCase() + struct.name.slice(1)} Ícone" class="structure-img">
+                buildingCard.innerHTML = `
+                <img src="./assets/images/buildings/${building.name}.png" alt="${building.name.charAt(0).toUpperCase() + building.name.slice(1)} Ícone" class="building-img">
                 <div class="item-content">
-                    <h3>Nome: <span>${struct.translatedName.charAt(0).toUpperCase() + struct.translatedName.slice(1)}</span></h3>
+                    <h3>Nome: <span>${building.translatedName.charAt(0).toUpperCase() + building.translatedName.slice(1)}</span></h3>
                     <div class="item-info">
                         <h3><i class="ph ph-info"></i> Informação</h3>
                         <ul>
-                            <li>Descrição: ${struct.description}</li>
-                            <li>Utilidade: ${struct.utility}</li>
-                            <li>Custo Inicial: <span>${struct.baseCost <= 0 ? "Já vem incluso" : struct.baseCost}</span></li>
-                            <li>Máximo de Unidades: <span>${struct.maxUnits === -1 ? "N" : struct.maxUnits}</span></li>
-                            <li>Removível: <span>${struct.removable ? "Sim" : "Não"}</span></li>
+                            <li>Descrição: ${building.description}</li>
+                            <li>Utilidade: ${building.purpose}</li>
+                            <li>Custo Inicial: <span>${building.baseCost <= 0 ? "Já vem incluso" : building.baseCost}</span></li>
+                            <li>Máximo de Unidades: <span>${building.maxUnits === null ? "N" : building.maxUnits}</span></li>
+                            <li>Removível: <span>${building.removable ? "Sim" : "Não"}</span></li>
+                            <li>Possuí Melhorias: <span>${building.upgradeable ? "Sim" : "Não"}</span></li>
                         </ul>
                     </div>
                 </div>`;
 
-                structureSectionList.appendChild(structCard);
+                buildingsectionList.appendChild(buildingCard);
             }))
-            .catch(() => console.log("Erro ao ler JSON de estruturas. Verifique a integridade do arquivo."));
+            .catch(() => console.log("Erro ao ler JSON de construções. Verifique a integridade do arquivo."));
 
         // Carrega a Lista de Eventos
         fetch("./assets/events.json")
