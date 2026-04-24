@@ -1,5 +1,5 @@
 import * as tileModel from '../models/tileModel.js';
-import isUndefined from '../utils/isUndefined';
+import isUndefined from '../utils/isUndefined.js';
 
 // === FUNÇÃO: CRIAR === //
 export function create(req, res) {
