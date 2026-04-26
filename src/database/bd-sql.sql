@@ -26,11 +26,11 @@ CREATE TABLE IF NOT EXISTS park(
     updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
 
     PRIMARY KEY (id, idUser),
-    CONSTRAINT fkParkUser 		FOREIGN KEY (idUser) REFERENCES `user`(id),
+    CONSTRAINT fkParkUser 		FOREIGN KEY (idUser) REFERENCES `user`(id) ON DELETE CASCADE,
     
     -- | CHECK Constraints | --
     CONSTRAINT chkParkRating 	CHECK(rating BETWEEN 0 AND 5),
-    CONSTRAINT chkParkDinoCoins CHECK(dinoCoins > 0)
+    CONSTRAINT chkParkDinoCoins CHECK(dinoCoins >= 0)
 );
 
 CREATE TABLE IF NOT EXISTS building(
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS species(
 	CONSTRAINT chkSpeciesDiet CHECK(diet IN('herbívoro', 'carnívoro', 'onívoro')),
     CONSTRAINT chkSpeciesHeightAndWeight CHECK(heightInMeters > 0 AND weightInKilograms > 0),
     CONSTRAINT chkSpeciesAggressiveness CHECK(aggressiveness BETWEEN 0 AND 1),
-    CONSTRAINT chkSpeciesHatchCostAndTime CHECK(hatchCost > 0 AND hatchTimeInSeconds > 0),
+    CONSTRAINT chkSpeciesHatchCostAndTime CHECK(hatchCost >= 0 AND hatchTimeInSeconds >= 0),
     CONSTRAINT chkSpecieshatchSuccessRate CHECK(hatchSuccessRate BETWEEN 0 AND 1)
 
 );
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS tile(
     updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
 
     PRIMARY KEY (id, idPark),
-    CONSTRAINT fkTilePark 		FOREIGN KEY (idPark) REFERENCES park(id),
+    CONSTRAINT fkTilePark 		FOREIGN KEY (idPark) REFERENCES park(id) ON DELETE CASCADE,
     CONSTRAINT fkTileBuilding 	FOREIGN KEY (idBuilding) REFERENCES building(id)
 );
 
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS enclosure(
     updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
 
     PRIMARY KEY (id, idTile),
-    CONSTRAINT fkEnclosureTile FOREIGN KEY (idTile) REFERENCES tile(id)
+    CONSTRAINT fkEnclosureTile FOREIGN KEY (idTile) REFERENCES tile(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS dinosaur(
@@ -142,9 +142,76 @@ CREATE TABLE IF NOT EXISTS dinosaur(
     updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
 
     PRIMARY KEY (id, idEnclosure),
-    CONSTRAINT fkDinosaurEnclosure FOREIGN KEY (idEnclosure) REFERENCES enclosure(id),
+    CONSTRAINT fkDinosaurEnclosure FOREIGN KEY (idEnclosure) REFERENCES enclosure(id) ON DELETE CASCADE,
     CONSTRAINT fkDinosaurSpecies   FOREIGN KEY (idSpecies)   REFERENCES species(id)
 );
+
+/* -- | TRIGGER para registro de usuário | --
+DELIMITER $$
+
+CREATE TRIGGER afterRegisterUser
+AFTER INSERT ON `user`
+FOR EACH ROW
+BEGIN
+    DECLARE new_park_id INT;
+    DECLARE tile_id_for_enclosure INT;
+    DECLARE new_enclosure_id INT;
+    DECLARE col INT DEFAULT 0;
+    DECLARE row_idx INT DEFAULT 0;
+
+    -- 1. Cria um NOVO Parque
+    INSERT INTO park (idUser, name) 
+    VALUES (NEW.id, CONCAT(NEW.username, "'s Park"));
+    
+    SET new_park_id = LAST_INSERT_ID();
+
+    -- 2. Gera o GRID(5x4)
+    WHILE row_idx < 4 DO
+        SET col = 0;
+        WHILE col < 5 DO
+            INSERT INTO tile (idPark, idBuilding, position_col, position_row)
+            VALUE (new_park_id, FLOOR(RAND() * 4), col, row_idx);               -- FLOOR(RAND() * 4): randomiza os Tiles gerados 
+            SET col = col + 1;
+        END WHILE;
+        SET row_idx = row_idx + 1;
+    END WHILE;
+
+    -- 3. Cria Construções Importantes em tiles presetados
+    -- Portão de Entrada | idBuilding = 60 | posição =  (4,0)
+    UPDATE tile SET idBuilding = 60 
+    WHERE idPark = new_park_id AND position_col = 4 AND position_row = 0;
+    
+    -- Centro de Visitantes | idBuilding = 61 | posição =  (0,1)
+    UPDATE tile SET idBuilding = 61 
+    WHERE idPark = new_park_id AND position_col = 0 AND position_row = 1;
+    
+    -- Laboratório de Incubação | idBuilding = 62 | posição =  (0,2)
+    UPDATE tile SET idBuilding = 62 
+    WHERE idPark = new_park_id AND position_col = 0 AND position_row = 2;
+    
+    -- Cercado Nível 1 | idBuilding = 40 | posição =  (2,1)
+    UPDATE tile SET idBuilding = 40 
+    WHERE idPark = new_park_id AND position_col = 2 AND position_row = 1;
+
+    -- 4. Cria um registro na tabela 'enclosure'
+    -- Primeiro, pega o ID do Tile que foi convertido em cercado
+    SELECT id INTO tile_id_for_enclosure 
+    FROM tile 
+    WHERE idPark = new_park_id AND position_col = 2 AND position_row = 1;
+
+    INSERT INTO enclosure (idTile, durability, hp) 
+    VALUES (tile_id_for_enclosure, 100, 100);
+    
+    SET new_enclosure_id = LAST_INSERT_ID();
+
+    -- 5. Adiciona um Dinossauro Inicial | id = 6 - Parassaurolofo
+    INSERT INTO dinosaur (idEnclosure, idSpecies) 
+    VALUES (new_enclosure_id, 6);
+
+END$$
+
+DELIMITER ;
+*/
 
 -- | POPULANDO TABELA 'species' | --
 INSERT INTO species 
@@ -361,4 +428,4 @@ VALUES
         'Permite incubar até 1 espécie de dinossauro por vez.', 
         250, null, 1, 0
     );
-    
+
