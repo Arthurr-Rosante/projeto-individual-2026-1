@@ -10,8 +10,10 @@
     <link rel="stylesheet" href="./styles/auth.css">
 
     <!-- === Importação de funções === -->
+    <script defer src="./scripts/auth/toggle-password.js"></script>
     <script defer src="./scripts/auth/foliage-shake.js"></script>
     <script defer src="./scripts/auth/validations.js"></script>
+    <script defer src="./scripts/utils/storage.js"></script>
 
     <!-- === Importação de Bibliotecas === -->
     <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/index.min.js"></script>
@@ -43,7 +45,7 @@
                         <label class="field-label" for="ipt-password">Código de Acesso (Senha)</label>
                         <div class="password-wrapper">
                             <input id="ipt-password" type="password" oninput="validatePassword(this)" data-has-auth-errors="true" placeholder="Min. 8 caracteres" minlength="8" class="field-input" required>
-                            <i id="ipt-password-icon" class="ph ph-eye"></i>
+                            <i id="ipt-password-icon" class="ph ph-eye" onclick="togglePasswordVisiblity('ipt-password')"></i>
                         </div>
                         <p id="ipt-password-auth-message" class="auth-message"></p>
                     </div>
@@ -51,7 +53,7 @@
                         <label class="field-label" for="ipt-password-confirm">Confirmar Código de Acesso</label>
                         <div class="password-wrapper">
                             <input id="ipt-password-confirm" type="password"  oninput="validatePassword(this, true)" data-has-auth-errors="true" placeholder="Min. 8 caracteres" minlength="8" class="field-input" required>
-                            <i id="ipt-password-confirm-icon" class="ph ph-eye"></i>
+                            <i id="ipt-password-confirm-icon" class="ph ph-eye" onclick="togglePasswordVisiblity('ipt-password-confirm')"></i>
                         </div>
                         <p id="ipt-password-confirm-auth-message" class="auth-message"></p>
                     </div>
@@ -59,10 +61,11 @@
 
                 <div class="form-actions">
                     <button type="submit" id="submit-btn" disabled><span>Requerer Acesso</span><i class="ph ph-caret-circle-up"></i></button>
+                    <p id="form-auth-message" class="auth-message"></p>
                 </div>
             </div>
             <div class="form-footer">
-                <a href="./login.html">Já possui acesso? <span>Entre aqui</span></a>
+                <a href="./register.html">Já possui acesso? <span>Entre aqui</span></a>
             </div>
         </form>
 
@@ -103,6 +106,7 @@
 <script>
     const frm = document.getElementById("auth-form");
     const authBtn = document.getElementById("submit-btn");
+    const authMsg = document.getElementById("form-auth-message");
     
     // Habilita/Desabilita o botão de envio caso o Formulário esteja Válido/Inválido
     frm.addEventListener("input", () => {
@@ -114,6 +118,34 @@
     // Função que envia o Formulário
     frm.addEventListener("submit", (e) => {
         e.preventDefault();
+        authMsg.innerText = "";
+
+        const username = String(document.getElementById("ipt-username").value).trim();
+        const email = String(document.getElementById("ipt-email").value).trim();
+        const password = String(document.getElementById("ipt-password").value).trim();
+
+        console.log("[register.html] | Iniciando Cadastro...");
+
+        fetch("/api/users/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, email, password })
+        })
+        .then((response) => response.json().then((data) => {
+            if (!response.ok) {
+                const errorMsg = data.message || "Erro desconhecido ao realizar Cadastro.";
+                authMsg.innerText = errorMsg;
+                throw new Error(`Erro ao realizar Cadastro: ${errorMsg}`);
+            } else {
+                console.log("[register.html] | Sucesso!");
+                setItem("JPWG_USER", JSON.stringify(data));
+
+                window.location = "./login.html";
+            }
+        }))
+        .catch((err) => {
+            console.error("[register.html] | Falha no Cadastro:", err.message);
+        });
     });
 </script>
 </body>
