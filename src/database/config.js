@@ -1,21 +1,21 @@
 import mysql from "mysql2";
 
-const mysqlConfig = {
+const mySqlConfig = {
     host: process.env.DB_HOST,
     database: process.env.DB_DATABASE,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
+    port: process.env.DB_PORT
 };
 
 export function execute(query, params = []) {
-    if(process.env.AMBIENTE_PROCESSO !== 'producao' || process.env.AMBIENTE_PROCESSO !== 'desenvolvimento') {
+    if(process.env.AMBIENTE_PROCESSO !== 'producao' && process.env.AMBIENTE_PROCESSO !== 'desenvolvimento') {
         console.error("\n[config.js] Error: Não foi possível definir o Ambiente (producao OU desenvolvimento)\n");
         return Promise.reject("AMBIENTE NÃO CONFIGURADO EM .env");
     }
 
-    return new Promise(() => {
-        let connection = mysql.createConnection(mysqlConfig);
+    return new Promise((resolve, reject) => {
+        let connection = mysql.createConnection(mySqlConfig);
 
         connection.connect();
         connection.query(query, params, (err, results) => {
