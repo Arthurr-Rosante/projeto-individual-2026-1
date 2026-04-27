@@ -1,12 +1,12 @@
 function validateUsername(ipt) {
     ipt.setAttribute("data-has-auth-errors", true);
     
-    const username = ipt.value;
+    const username = String(ipt.value).trim();
     const authMessage = document.getElementById(`${ipt.id}-auth-message`);
     
     authMessage.innerText = "";
 
-    if(username == "") {
+    if(username === "") {
         authMessage.innerText = "Nome de Usuário é um campo obrigatório.";
         return
     }
@@ -22,7 +22,7 @@ function validateUsername(ipt) {
 function validateEmail(ipt) {
     ipt.setAttribute("data-has-auth-errors", true);
     
-    const email = ipt.value;
+    const email = String(ipt.value).trim();
     const emailRegex = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
     const authMessage = document.getElementById(`${ipt.id}-auth-message`);
     
@@ -44,7 +44,7 @@ function validateEmail(ipt) {
 function validatePassword(ipt, checkConfirm = false) {
     ipt.setAttribute("data-has-auth-errors", true);
     
-    const password = ipt.value;
+    const password = String(ipt.value).trim();
     const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[^\w\s]).{6,}$/;
     const authMessage = document.getElementById(`${ipt.id}-auth-message`);
     
