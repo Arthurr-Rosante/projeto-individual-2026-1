@@ -148,68 +148,68 @@ CREATE TABLE IF NOT EXISTS dinosaur(
 
 /* -- | TRIGGER para registro de usuário | --
 DELIMITER $$
-
-CREATE TRIGGER afterRegisterUser
+CREATE TRIGGER after_user_insert
 AFTER INSERT ON `user`
 FOR EACH ROW
 BEGIN
-    DECLARE new_park_id INT;
-    DECLARE tile_id_for_enclosure INT;
-    DECLARE new_enclosure_id INT;
+    -- VARIÁVEIS DO TRIGGER 
+    DECLARE v_parkId INT;
+    DECLARE v_tileId INT;
+    DECLARE v_enclosureId INT;
+    DECLARE v_speciesId INT;
+
+    -- VARIÁVEIS DO GRID(5x4) 
     DECLARE col INT DEFAULT 0;
     DECLARE row_idx INT DEFAULT 0;
 
-    -- 1. Cria um NOVO Parque
+    -- 1. CRIAR PARQUE ATRELADO AO USUARIO INSERIDO
     INSERT INTO park (idUser, name) 
-    VALUES (NEW.id, CONCAT(NEW.username, "'s Park"));
-    
-    SET new_park_id = LAST_INSERT_ID();
+    VALUES (NEW.id, CONCAT("Parque de ", NEW.username));
+    SET v_parkId = LAST_INSERT_ID();
 
-    -- 2. Gera o GRID(5x4)
+    -- 2. CRIAR GRID(5x4) DE TILES ATRELADOS AO PARQUE CRIADO
     WHILE row_idx < 4 DO
         SET col = 0;
         WHILE col < 5 DO
             INSERT INTO tile (idPark, idBuilding, position_col, position_row)
-            VALUE (new_park_id, FLOOR(RAND() * 4), col, row_idx);               -- FLOOR(RAND() * 4): randomiza os Tiles gerados 
+            VALUE (v_parkId, FLOOR(RAND() * 4), col, row_idx);               -- FLOOR(RAND() * 4): randomiza os Tiles gerados 
             SET col = col + 1;
         END WHILE;
         SET row_idx = row_idx + 1;
     END WHILE;
 
-    -- 3. Cria Construções Importantes em tiles presetados
+    -- 3. CRIAR AS CONSTRUÇÕES OBRIGATÓRIAS DO GRID
+
     -- Portão de Entrada | idBuilding = 60 | posição =  (4,0)
     UPDATE tile SET idBuilding = 60 
-    WHERE idPark = new_park_id AND position_col = 4 AND position_row = 0;
+    WHERE idPark = v_parkId AND position_col = 4 AND position_row = 0;
     
     -- Centro de Visitantes | idBuilding = 61 | posição =  (0,1)
     UPDATE tile SET idBuilding = 61 
-    WHERE idPark = new_park_id AND position_col = 0 AND position_row = 1;
+    WHERE idPark = v_parkId AND position_col = 0 AND position_row = 1;
     
     -- Laboratório de Incubação | idBuilding = 62 | posição =  (0,2)
     UPDATE tile SET idBuilding = 62 
-    WHERE idPark = new_park_id AND position_col = 0 AND position_row = 2;
+    WHERE idPark = v_parkId AND position_col = 0 AND position_row = 2;
     
     -- Cercado Nível 1 | idBuilding = 40 | posição =  (2,1)
     UPDATE tile SET idBuilding = 40 
-    WHERE idPark = new_park_id AND position_col = 2 AND position_row = 1;
+    WHERE idPark = v_parkId AND position_col = 2 AND position_row = 1;
 
-    -- 4. Cria um registro na tabela 'enclosure'
-    -- Primeiro, pega o ID do Tile que foi convertido em cercado
-    SELECT id INTO tile_id_for_enclosure 
-    FROM tile 
-    WHERE idPark = new_park_id AND position_col = 2 AND position_row = 1;
+    -- 4. CRIAR CERCADO E DINOSSAURO INICIAIS
+    SELECT id INTO v_tileId FROM tile 
+    WHERE idPark = v_parkId AND position_col = 2 AND position_row = 1;
 
     INSERT INTO enclosure (idTile, durability, hp) 
-    VALUES (tile_id_for_enclosure, 100, 100);
-    
-    SET new_enclosure_id = LAST_INSERT_ID();
+    VALUES (v_tileId, 100, 100);
+    SET v_enclosureId = LAST_INSERT_ID();
 
-    -- 5. Adiciona um Dinossauro Inicial | id = 6 - Parassaurolofo
+    SELECT id INTO v_speciesId FROM species
+    WHERE name = "parassaurolofo";
+
     INSERT INTO dinosaur (idEnclosure, idSpecies) 
-    VALUES (new_enclosure_id, 6);
-
+    VALUES (v_enclosureId, v_speciesId);
 END$$
-
 DELIMITER ;
 */
 
