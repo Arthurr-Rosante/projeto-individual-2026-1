@@ -15,7 +15,6 @@ CREATE TABLE IF NOT EXISTS `user`(
 );
 
 CREATE TABLE IF NOT EXISTS park(
-	id 			INT NOT NULL AUTO_INCREMENT,
     idUser 		INT NOT NULL UNIQUE,
     
     name 		VARCHAR(120) NOT NULL,
@@ -25,8 +24,8 @@ CREATE TABLE IF NOT EXISTS park(
     createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
     updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
 
-    PRIMARY KEY (id, idUser),
-    CONSTRAINT fkParkUser 		FOREIGN KEY (idUser) REFERENCES `user`(id) ON DELETE CASCADE,
+    PRIMARY KEY (idUser),
+    CONSTRAINT fkParkUser FOREIGN KEY (idUser) REFERENCES `user`(id) ON DELETE CASCADE,
     
     -- | CHECK Constraints | --
     CONSTRAINT chkParkRating 	CHECK(rating BETWEEN 0 AND 5),
@@ -34,12 +33,13 @@ CREATE TABLE IF NOT EXISTS park(
 );
 
 CREATE TABLE IF NOT EXISTS building(
-	id 				INT NOT NULL,						-- único campo ID sem AUTO_INCREMENT: quero ter a liberdade de escolher o ID de cada tipo de construção
+	id 				INT NOT NULL AUTO_INCREMENT,
     
     name 			VARCHAR(120) NOT NULL,
     translatedName 	VARCHAR(120) NOT NULL,
     description 	VARCHAR(255) NOT NULL,
     purpose 		VARCHAR(120) NOT NULL,
+    category        VARCHAR(45)  NOT NULL,
 	baseCost 		INTEGER NOT NULL DEFAULT 0,
     maxUnits 		INTEGER NULL,
     removable 		TINYINT NOT NULL DEFAULT 1,
@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS building(
     PRIMARY KEY (id),
     
 	-- | CHECK Constraints | --
+    CONSTRAINT chkBuildingCategory CHECK(category IN('terrain', 'path', 'enclosure', 'building')),
     CONSTRAINT chkBuildingBaseCost CHECK(baseCost >= 0)
 );
 
@@ -104,114 +105,41 @@ CREATE TABLE IF NOT EXISTS species(
 );
 
 CREATE TABLE IF NOT EXISTS tile(
-	id 				INT NOT NULL AUTO_INCREMENT,
     idPark 			INT NOT NULL,
-	idBuilding		INT NOT NULL,
-    
     position_col 	INT NOT NULL,
     position_row 	INT NOT NULL,
+
+	idBuilding		INT NOT NULL,
+    durability 	    INT NULL,
+    hp 			    INT NULL,
     
     createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
     updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
 
-    PRIMARY KEY (id, idPark),
-    CONSTRAINT fkTilePark 		FOREIGN KEY (idPark) REFERENCES park(id) ON DELETE CASCADE,
-    CONSTRAINT fkTileBuilding 	FOREIGN KEY (idBuilding) REFERENCES building(id)
-);
+    PRIMARY KEY (idPark, position_col, position_row),
+    CONSTRAINT fkTilePark 		FOREIGN KEY (idPark) REFERENCES park(idUser) ON DELETE CASCADE,
+    CONSTRAINT fkTileBuilding 	FOREIGN KEY (idBuilding) REFERENCES building(id),
 
-CREATE TABLE IF NOT EXISTS enclosure(
-	id 			INT NOT NULL AUTO_INCREMENT,
-    idTile 		INT NOT NULL UNIQUE,
-    
-    durability 	INT NOT NULL DEFAULT 100,
-    hp 			INT NOT NULL,
-    
-    createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
-    updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
-
-    PRIMARY KEY (id, idTile),
-    CONSTRAINT fkEnclosureTile FOREIGN KEY (idTile) REFERENCES tile(id) ON DELETE CASCADE
+    -- | CHECK Constraints | --
+    CONSTRAINT chkTileDurability CHECK(durability >= 0),
+    CONSTRAINT chkTileHp CHECK(hp >= 0)
 );
 
 CREATE TABLE IF NOT EXISTS dinosaur(
-	id          INT NOT NULL AUTO_INCREMENT,
-    idEnclosure INT NOT NULL UNIQUE,
-    idSpecies   INT NOT NULL, 
+    idPark 			INT NOT NULL,
+    tile_col 	    INT NOT NULL,
+    tile_row 	    INT NOT NULL,
+
+    idSpecies       INT NOT NULL, 
     
     createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
     updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
 
-    PRIMARY KEY (id, idEnclosure),
-    CONSTRAINT fkDinosaurEnclosure FOREIGN KEY (idEnclosure) REFERENCES enclosure(id) ON DELETE CASCADE,
-    CONSTRAINT fkDinosaurSpecies   FOREIGN KEY (idSpecies)   REFERENCES species(id)
+    PRIMARY KEY (idPark, tile_col, tile_row),
+    CONSTRAINT fkDinosaurTile FOREIGN KEY (idPark, tile_col, tile_row) 
+        REFERENCES tile(idPark, position_col, position_row) ON DELETE CASCADE,
+    CONSTRAINT fkDinosaurSpecies    FOREIGN KEY (idSpecies)     REFERENCES species(id)
 );
-
-/* -- | TRIGGER para registro de usuário | --
-DELIMITER $$
-CREATE TRIGGER after_user_insert
-AFTER INSERT ON `user`
-FOR EACH ROW
-BEGIN
-    -- VARIÁVEIS DO TRIGGER 
-    DECLARE v_parkId INT;
-    DECLARE v_tileId INT;
-    DECLARE v_enclosureId INT;
-    DECLARE v_speciesId INT;
-
-    -- VARIÁVEIS DO GRID(5x4) 
-    DECLARE col INT DEFAULT 0;
-    DECLARE row_idx INT DEFAULT 0;
-
-    -- 1. CRIAR PARQUE ATRELADO AO USUARIO INSERIDO
-    INSERT INTO park (idUser, name) 
-    VALUES (NEW.id, CONCAT("Parque de ", NEW.username));
-    SET v_parkId = LAST_INSERT_ID();
-
-    -- 2. CRIAR GRID(5x4) DE TILES ATRELADOS AO PARQUE CRIADO
-    WHILE row_idx < 4 DO
-        SET col = 0;
-        WHILE col < 5 DO
-            INSERT INTO tile (idPark, idBuilding, position_col, position_row)
-            VALUE (v_parkId, FLOOR(RAND() * 4), col, row_idx);               -- FLOOR(RAND() * 4): randomiza os Tiles gerados 
-            SET col = col + 1;
-        END WHILE;
-        SET row_idx = row_idx + 1;
-    END WHILE;
-
-    -- 3. CRIAR AS CONSTRUÇÕES OBRIGATÓRIAS DO GRID
-
-    -- Portão de Entrada | idBuilding = 60 | posição =  (4,0)
-    UPDATE tile SET idBuilding = 60 
-    WHERE idPark = v_parkId AND position_col = 4 AND position_row = 0;
-    
-    -- Centro de Visitantes | idBuilding = 61 | posição =  (0,1)
-    UPDATE tile SET idBuilding = 61 
-    WHERE idPark = v_parkId AND position_col = 0 AND position_row = 1;
-    
-    -- Laboratório de Incubação | idBuilding = 62 | posição =  (0,2)
-    UPDATE tile SET idBuilding = 62 
-    WHERE idPark = v_parkId AND position_col = 0 AND position_row = 2;
-    
-    -- Cercado Nível 1 | idBuilding = 40 | posição =  (2,1)
-    UPDATE tile SET idBuilding = 40 
-    WHERE idPark = v_parkId AND position_col = 2 AND position_row = 1;
-
-    -- 4. CRIAR CERCADO E DINOSSAURO INICIAIS
-    SELECT id INTO v_tileId FROM tile 
-    WHERE idPark = v_parkId AND position_col = 2 AND position_row = 1;
-
-    INSERT INTO enclosure (idTile, durability, hp) 
-    VALUES (v_tileId, 100, 100);
-    SET v_enclosureId = LAST_INSERT_ID();
-
-    SELECT id INTO v_speciesId FROM species
-    WHERE name = "parassaurolofo";
-
-    INSERT INTO dinosaur (idEnclosure, idSpecies) 
-    VALUES (v_enclosureId, v_speciesId);
-END$$
-DELIMITER ;
-*/
 
 -- | POPULANDO TABELA 'species' | --
 INSERT INTO species 
@@ -309,123 +237,123 @@ VALUES
     );
 
 -- | POPULANDO TABELA 'building' | --
-INSERT INTO building (id, name, translatedName, description, purpose, baseCost, maxUnits, removable, upgradeable) 
+INSERT INTO building (name, translatedName, description, purpose, category, baseCost, maxUnits, removable, upgradeable) 
 VALUES
 	-- | TERRENO | --
 	(
-		0,
 		'terrain-grass',
         'Terreno Grama', 
         'Toda a natureza intocada da Isla Nublar faz com que seus visitantes sintam como se tivessem retornado a 65 milhões de anos atrás.', 
-        'Apenas para a estética.', 
+        'Apenas para a estética.',
+        'terrain', 
         0, null, 1, 0
     ),
 	(
-		1,
 		'terrain-trees',
         'Terreno Árvores', 
         'Toda a natureza intocada da Isla Nublar faz com que seus visitantes sintam como se tivessem retornado a 65 milhões de anos atrás.', 
-        'Apenas para a estética.', 
+        'Apenas para a estética.',
+        'terrain',
         0, null, 1, 0
     ),
 	(
-		2,
 		'terrain-dirt',
         'Terreno Terra', 
         'Toda a natureza intocada da Isla Nublar faz com que seus visitantes sintam como se tivessem retornado a 65 milhões de anos atrás.', 
-        'Apenas para a estética.', 
+        'Apenas para a estética.',
+        'terrain',
         0, null, 1, 0
     ),
 	(
-		3,
 		'terrain-pond',
         'Terreno Lago', 
         'Toda a natureza intocada da Isla Nublar faz com que seus visitantes sintam como se tivessem retornado a 65 milhões de anos atrás.', 
-        'Apenas para a estética.', 
+        'Apenas para a estética.',
+        'terrain',
         0, null, 1, 0
     ),
     
 	-- | CAMINHO | --
 	(
-		20,
 		'path',
         'Caminho Padrão', 
         'Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.', 
-        'Apenas para a estética.', 
+        'Apenas para a estética.',
+        'path',
         50, null, 1, 0
     ),
 	(
-		21,
 		'path-l',
         'Caminho L', 
         'Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.', 
-        'Apenas para a estética.', 
+        'Apenas para a estética.',
+        'path',
         50, null, 1, 0
     ),
 	(
-		22,
 		'path-t',
         'Caminho T', 
         'Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.', 
-        'Apenas para a estética.', 
+        'Apenas para a estética.',
+        'path',
         50, null, 1, 0
     ),
 	(
-		23,
 		'path-cross',
         'Caminho Encruzilhada', 
         'Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.', 
-        'Apenas para a estética.', 
+        'Apenas para a estética.',
+        'path',
         50, null, 1, 0
     ),
 	-- | CERCADOS | --
 	(
-		40,
 		'enclosure-1',
         'Cercado Nível 1', 
         'Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...', 
-        'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.', 
+        'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.',
+        'enclosure',
         100, null, 1, 1
     ),
 	(
-		41,
 		'enclosure-2',
         'Cercado Nível 2', 
         'Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...', 
-        'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.', 
+        'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.',
+        'enclosure',
         250, null, 1, 1
     ),
 	(
-		42,
 		'enclosure-3',
         'Cercado Nível 3', 
         'Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...', 
-        'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.', 
+        'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.',
+        'enclosure',
         500, null, 1, 0
     ),
 	-- | CONSTRUÇÕES | --
 	(
-		60,
 		'entrance',
         'Portão de Entrada', 
         'Este portão de proporções colossais é como um bastião que guarda a entrada do seu Parque. Não há nada dentro da ilha (humano ou dinossauro) que não tenha passado por ele.', 
-        'Permite trocar o nome do Parque.', 
+        'Permite trocar o nome do Parque.',
+        'building',
         0, 1, 0, 0
     ),
 	(
-		61,
 		'visitor-center',
         'Centro de Visitantes', 
         'O coração de todo parque. O Centro de Visitantes não é apenas um grande hall pelo qual seus visitantes passam ao chegar no Parque, é um verdadeiro QG onde a Staff do Parque monitora tudo o que acontece na ilha.', 
-        'Permite visualizar a Avaliação do seu Parque e todas as Espécies nele.', 
+        'Permite visualizar a Avaliação do seu Parque e todas as Espécies nele.',
+        'building',
         0, 1, 0, 0
     ),
 	(
-		62,
 		'hatchery',
         'Laboratório de Incubação', 
         'Trazer um dinossauro de volta à vida não é uma tarefa fácil. Para realizar tal façanha diariamente, seus cientistas precisarão de um lugar adequado para trabalhar.', 
-        'Permite incubar até 1 espécie de dinossauro por vez.', 
+        'Permite incubar até 1 espécie de dinossauro por vez.',
+        'building',
         250, null, 1, 0
     );
-
+    
