@@ -137,7 +137,7 @@ button {
     font-weight: 700;
     letter-spacing: 0.06em;
     padding: 0.5rem 1rem;
-    transition: box-shadow 0.2s, transform 0.1s, gap 0.2s;
+    transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s, gap 0.2s;
 }
 
 button:active {

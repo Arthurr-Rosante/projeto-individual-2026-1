@@ -8,15 +8,176 @@
     <!-- === Importação de Estilos === -->
     <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/park.css">
-
+    <link rel="stylesheet" href="./styles/dev.css">
+    
     <!-- === Importação de funções === -->
+     <script src="./scripts/utils/storage.js"></script>
+     <script src="./scripts/utils/persistance.js"></script>
 
     <!-- === Importação de Bibliotecas === -->
     <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/index.min.js"></script>
 </head>
 <body>
-    
+    <div id="dev-screen" class="closed">
+        <h2>Tela do Desenvolvedor</h2>
+        <div class="dev-item">
+            <p>Tempo Até o Autosave: <span id="autosave-timer"></span></p>
+            <button onclick="save()">Salvar Manualmente</button>
+        </div>
+    </div>
+    <!-- Sidebar -->
+    <aside id="sidebar" class="closed">
+        <button id="navbar-toggler" onclick="toggleSidebar()">
+            <i class="ph-fill ph-caret-circle-left"></i>
+        </button>
+        <div class="sidebar-header">
+            <h1 class="logo font-jurassic">
+                <span>Jurassic Park</span>
+                <span>Web Genesis</span>
+            </h1>
+        </div>
+        <nav class="sidebar-body">
+            <button id="general-btn" class="sidebar-item" onclick="">
+                <i class="ph-fill ph-cards"></i>
+                <p>Visão Geral</p>
+            </button>
+            <button id="buildings-btn" class="sidebar-item" onclick="">
+                <i class="ph-fill ph-blueprint"></i>
+                <p>Construções</p>
+            </button>
+            <button id="autosave-btn" class="sidebar-item" onclick="save()">
+                <i class="ph-fill ph-floppy-disk"></i>
+                <p>Salvar</p>
+            </button>
+        </nav>
+        <div class="sidebar-footer">
+            <button id="logout-btn">
+                <i class="ph-fill ph-sign-out"></i>
+                <p>Sair</p>
+            </button>
+        </div>
+    </aside>
+    <!-- Status Bar -->
+    <aside class="statusbar">
+        <div id="park-name"></div>
+        <div id="park-rating"></div>
+        <div id="park-balance"></div>
+    </aside>
+    <!-- GRID -->
+    <main class="grid-wrapper">
+       <div id="grid">
+       </div>
+    </main>
 <!-- === SCRIPTS LOCAIS === -->
-<script></script>
+<script>
+    // sidebar toggler
+    function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        if(sidebar.classList.contains("open")) {
+            sidebar.classList.replace("open", "closed");
+            document.querySelector("#navbar-toggler i").classList.replace("ph-caret-circle-left", "ph-caret-circle-right");
+        } else {
+            sidebar.classList.replace("closed", "open");
+            document.querySelector("#navbar-toggler i").classList.replace("ph-caret-circle-right", "ph-caret-circle-left");
+        }
+    }
+
+
+    const GRID_MAX_COLS = 5;
+    const GRID_MAX_ROWS = 4;
+    const SAVE_INTERVAL_IN_MS = 5000;
+
+    const PARK_RATING = 2.5;
+    const PARK_BALANCE = 2500;
+    const PARK_NAME = "Parque de Dummy";
+
+    // === SISTEMA DE PERSISTÊNCIA === //
+    const autoSaveTimerLeft = document.getElementById("autosave-timer");
+    let timeUntilNextAutoSave = SAVE_INTERVAL_IN_MS;
+
+    function stopTimer(timer) {
+        clearInterval(timer);
+        console.log(`O timer ${timer} foi parado.`);
+    }
+
+    function save() {
+        timeUntilNextAutoSave = SAVE_INTERVAL_IN_MS;
+        const payload = {
+            user: getItem("JPWG_USER"),
+            park: getItem("JPWG_PARK"),
+        };
+        console.log("salvou | ", new Date().toLocaleString());
+    }
+
+    function startGameLoop() {
+        // 1. Carrega dados do sessionStorage
+
+        // 2. Inicia Timer de Save Automático
+        const saveIntervalTimer = setInterval(save, SAVE_INTERVAL_IN_MS);
+        const timeLeftUntilNextSaveInterval = setInterval(() => {
+            autoSaveTimerLeft.innerText = `${timeUntilNextAutoSave / 1000}s`;
+            timeUntilNextAutoSave-= 1000;
+        }, 1000);
+
+        // 3. Carrega o GRID
+        document.addEventListener("DOMContentLoaded", () => {
+            const grid = document.getElementById("grid");
+            for (let i = 0; i < GRID_MAX_ROWS; i++) {
+                const row = i;
+                const rowEl = document.createElement("div");
+                rowEl.classList.add("row", `row-${i+1}`);
+                for (let j = 0; j < GRID_MAX_COLS; j++) {
+                    const col = j;
+                    const types = ["trees", "pond", "grass", "dirt"]
+
+                    const colEl = document.createElement("div");
+                    colEl.classList.add("tile", `terrain-${types[Math.floor(Math.random() * types.length)]}`);
+                    rowEl.appendChild(colEl);
+                }
+                grid.appendChild(rowEl);
+            }
+        });
+
+        // 4. Carrega os dados de rating e dinoCoins e o Nome do Parque
+        for (let i = 0; i < 5; i++) {
+            const star = document.createElement("i");
+
+            if(PARK_RATING - i === 0.5) {
+                star.classList.add("rating", "ph-fill", "ph-star-half");
+            } else if(PARK_RATING - i <= 0) {
+                star.classList.add("rating", "ph", "ph-star");
+            }
+            else {
+                star.classList.add("rating", "ph-fill", "ph-star");
+            }
+            document.getElementById("park-rating").appendChild(star);
+        }
+
+        document.getElementById("park-balance").innerHTML = `
+            <i class="ph-fill ph-coins"></i>
+            ${Number(PARK_BALANCE).toLocaleString("pt-br")}
+        `;
+
+        document.getElementById("park-name").innerHTML = `
+            <i class="ph-fill ph-info"></i>
+            ${PARK_NAME}
+        `;
+
+        // 5. tela do desenvolvedor
+        document.addEventListener("keydown", (e) => {
+            if((e.ctrlKey || e.metaKey) && e.key === "k") {
+                const devScreen = document.getElementById("dev-screen");
+                if(devScreen.classList.contains("open")) {
+                    devScreen.classList.replace("open", "closed")
+                } else {
+                    devScreen.classList.replace("closed", "open")
+                }
+            }
+        });
+    }
+
+    startGameLoop();
+
+</script>
 </body>
 </html>

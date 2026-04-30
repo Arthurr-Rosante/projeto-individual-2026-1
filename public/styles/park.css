@@ -1,0 +1,341 @@
+:root {
+    --tile-w: 200px; 
+    --tile-h: 100px;
+}
+
+html {
+    overflow: hidden;
+}
+
+body {
+    background-color: var(--foreground);
+}
+
+.grid-wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1000px;
+    
+}
+
+#grid {
+    position: relative;
+    transform: translateX(50px);
+}
+
+.tile {
+    position: relative;
+    width: var(--tile-w);
+    height: var(--tile-w);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: filter 0.2s, transform 0.2s;
+    cursor: pointer;
+
+    /* background-color: rgba(0, 0, 255, 0.2); */
+    clip-path: polygon(
+        50% 0%,    /* 1. Topo */
+        100% 25%,  /* 2. Canto superior direito */
+        100% 75%,  /* 3. Canto inferior direito */
+        50% 100%,  /* 4. Base */
+        0% 75%,    /* 5. Canto inferior esquerdo */
+        0% 25%     /* 6. Canto superior esquerdo */
+    );
+    pointer-events: auto;
+
+    transform: rotateZ(-30deg);
+    margin: -2.25rem;
+}
+
+.tile:hover {
+    filter: brightness(1.5) drop-shadow(0 0 10px rgba(138, 114, 24, 0.6));
+    transform: translate(-2%, -5%) rotate(-30deg);
+    z-index: 999 !important;
+}
+
+.row {
+    display: flex;
+    transform: rotateZ(30deg);
+    margin: 1rem;
+}
+
+.row-1 {
+    transform: rotateZ(25deg) translate(20%, 0%);
+}
+
+.row-2 {
+    transform: rotateZ(25deg) translate(0%, 0%);
+}
+
+.row-3 {
+    transform: rotateZ(25deg) translate(-20%, 0%);
+}
+
+.row-4 {
+    transform: rotateZ(25deg) translate(-40%, 0%);
+}
+
+/* === SIDEBAR === */
+#sidebar {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    z-index: 10;
+
+    max-width: 320px;
+    width: fit-content;
+    height: 95vh;
+    
+    background-color: var(--background);
+    border: 2px solid var(--primary);
+    border-left: none;
+    border-radius: 0 1rem 1rem 0;
+    box-shadow: 0 0 0.25rem var(--background);
+    padding: 2rem 1rem 2rem 0.5rem;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    row-gap: 1rem;
+}
+
+#navbar-toggler {
+    position: absolute;
+    top: 20px;
+
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    font-size: 20px;
+    
+    border: 1px solid var(--border);
+    padding: 0.25rem;
+
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.sidebar-header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 0 1rem 0;
+    transform: scale(1.4);
+}
+
+.sidebar-header .logo {
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+}
+.sidebar-header .logo span {
+    margin: -1rem;
+}
+
+.sidebar-body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 2rem;
+}
+
+.sidebar-body .sidebar-item,
+.sidebar-footer #logout-btn {
+    width: 100%;
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    font-weight: normal;
+
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    column-gap: 0.5rem;
+}
+.sidebar-body .sidebar-item:hover,
+#navbar-toggler:hover {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+}
+
+.sidebar-footer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.sidebar-footer #logout-btn {
+    justify-content: center;
+}
+.sidebar-footer #logout-btn:hover {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--destructive-foreground);
+}
+
+#sidebar.closed .sidebar-header .logo span,
+#sidebar.closed .sidebar-body .sidebar-item p,
+#sidebar.closed .sidebar-footer #logout-btn p
+{
+    display: none;
+}
+
+#sidebar.open .sidebar-header .logo span,
+#sidebar.open .sidebar-body .sidebar-item p,
+#sidebar.open .sidebar-footer #logout-btn p
+{
+    display: block;
+}
+
+/* === STATUSBAR === */
+.statusbar {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 10;
+
+    background-color: var(--background);
+    border: 2px solid var(--primary);
+    border-bottom: none;
+    border-right: none;
+    border-radius: 1rem 0 0 0;
+    padding: 0.5rem 2rem 1rem 2rem;
+    box-shadow: 0 0 1rem var(--background);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    column-gap: 1.5rem;
+}
+
+#park-name,
+#park-rating,
+#park-balance {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--popover-foreground);
+}
+#park-name,
+#park-balance {
+    gap: 0.5rem;
+}
+
+#park-name i,
+#park-rating i,
+#park-balance i {
+    transition: color 0.2s;
+}
+
+#park-name:hover i,
+#park-rating:hover i,
+#park-balance:hover i {
+    color: var(--ring);
+}
+
+/* === TIPOS DE TILE === */
+/* Terrenos */
+.terrain-grass {
+    background-image: url("../assets/images/terrain/terrain-grass.png");
+}
+.terrain-trees {
+    background-image: url("../assets/images/terrain/terrain-trees.png");
+}
+.terrain-pond {
+    background-image: url("../assets/images/terrain/terrain-pond.png");
+}
+.terrain-dirt {
+    background-image: url("../assets/images/terrain/terrain-dirt.png");
+}
+
+/* Caminhos */
+.path {
+    background-image: url("../assets/images/paths/path.png");
+}
+.path-t {
+    background-image: url("../assets/images/paths/path-t.png");
+}
+.path-l {
+    background-image: url("../assets/images/paths/path-l.png");
+}
+.path-cross {
+    background-image: url("../assets/images/paths/path-cross.png");
+}
+
+/* Cercados */
+
+.enclosure-1 {
+    background-image: url("../assets/images/enclosures/enclosure-1.png");
+}
+.enclosure-2 {
+    background-image: url("../assets/images/enclosures/enclosure-2.png");
+}
+.enclosure-3 {
+    background-image: url("../assets/images/enclosures/enclosure-3.png");
+}
+
+/* Construções */
+.entrance {
+    background-image: url("../assets/images/buildings/entrance.png");
+}
+.visitor-center {
+    background-image: url("../assets/images/buildings/visitor-center.png");
+}
+.hatchery {
+    background-image: url("../assets/images/buildings/hatchery.png");
+}
+
+/* Dinosaurs */
+.dinosaur {
+    position: absolute;
+    bottom: 25%;
+    right: 20%;
+    pointer-events: none;
+    clip-path: none;
+    transform: translate(-50%, -50%) rotateZ(0deg) scale(0.5);
+}
+
+.anquilossauro {
+    background-image: url("../assets/images/dinosaurs/anquilossauro.png");
+}
+.braquiossauro {
+    background-image: url("../assets/images/dinosaurs/braquiossauro.png");
+}
+.ceratossauro {
+    background-image: url("../assets/images/dinosaurs/ceratossauro.png");
+}
+.coritossauro {
+    background-image: url("../assets/images/dinosaurs/coritossauro.png");
+}
+.compsognathus {
+    background-image: url("../assets/images/dinosaurs/compsognathus.png");
+}
+.dilofossauro {
+    background-image: url("../assets/images/dinosaurs/dilofossauro.png");
+}
+.espinossauro {
+    background-image: url("../assets/images/dinosaurs/espinossauro.png");
+}
+.estegossauro {
+    background-image: url("../assets/images/dinosaurs/estegossauro.png");
+}
+.parassaurolofo {
+    background-image: url("../assets/images/dinosaurs/parassaurolofo.png");
+}
+.tiranossauro {
+    background-image: url("../assets/images/dinosaurs/tiranossauro.png");
+}
+.triceratops {
+    background-image: url("../assets/images/dinosaurs/triceratops.png");
+}
+.velociraptor {
+    background-image: url("../assets/images/dinosaurs/velociraptor.png");
+}
