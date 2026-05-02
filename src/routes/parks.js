@@ -7,10 +7,10 @@ export const parkRoutes = express.Router();
 parkRoutes.post("/", (req, res) => parkController.create(req, res));
 
 // === ROTA: ATUALIZAR NOME === //
-parkRoutes.put("/:id/rename", (req, res) => parkController.updateName(req, res));
+parkRoutes.patch("/:idPark/name", (req, res) => parkController.updateName(req, res));
 
 // === ROTA: ATUALIZAR AVALIAÇÃO === //
-parkRoutes.put("/:id/reevaluate", (req, res) => parkController.updateRating(req, res));
+parkRoutes.patch("/:idPark/rating", (req, res) => parkController.updateRating(req, res));
 
 // === ROTA: ATUALIZAR QTD. MOEDAS === //
-parkRoutes.put("/:id/balance", (req, res) => parkController.updateDinoCoins(req, res));
+parkRoutes.patch("/:idPark/dinoCoins", (req, res) => parkController.updateDinoCoins(req, res));
