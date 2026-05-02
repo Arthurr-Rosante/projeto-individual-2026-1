@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="./styles/dev.css">
     
     <!-- === Importação de funções === -->
-     <script src="./scripts/utils/storage.js"></script>
-     <script src="./scripts/utils/persistance.js"></script>
+     <script defer src="./scripts/utils/storage.js"></script>
+     <script defer src="./scripts/utils/persistence.js"></script>
 
     <!-- === Importação de Bibliotecas === -->
     <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/index.min.js"></script>
@@ -22,13 +22,13 @@
         <h2>Tela do Desenvolvedor</h2>
         <div class="dev-item">
             <p>Tempo Até o Autosave: <span id="autosave-timer"></span></p>
-            <button onclick="save()">Salvar Manualmente</button>
+            <button id="manualsave-btn">Salvar Manualmente</button>
         </div>
     </div>
     <!-- Sidebar -->
     <aside id="sidebar" class="closed">
-        <button id="navbar-toggler" onclick="toggleSidebar()">
-            <i class="ph-fill ph-caret-circle-left"></i>
+        <button id="sidebar-toggler">
+            <i class="ph-fill ph-caret-circle-right"></i>
         </button>
         <div class="sidebar-header">
             <h1 class="logo font-jurassic">
@@ -37,15 +37,15 @@
             </h1>
         </div>
         <nav class="sidebar-body">
-            <button id="general-btn" class="sidebar-item" onclick="">
+            <button id="general-btn" class="sidebar-item">
                 <i class="ph-fill ph-cards"></i>
                 <p>Visão Geral</p>
             </button>
-            <button id="buildings-btn" class="sidebar-item" onclick="">
+            <button id="buildings-btn" class="sidebar-item">
                 <i class="ph-fill ph-blueprint"></i>
                 <p>Construções</p>
             </button>
-            <button id="autosave-btn" class="sidebar-item" onclick="save()">
+            <button id="autosave-btn" class="sidebar-item">
                 <i class="ph-fill ph-floppy-disk"></i>
                 <p>Salvar</p>
             </button>
@@ -70,23 +70,87 @@
     </main>
 <!-- === SCRIPTS LOCAIS === -->
 <script>
-    // sidebar toggler
-    function toggleSidebar() {
-        const sidebar = document.getElementById("sidebar");
-        if(sidebar.classList.contains("open")) {
-            sidebar.classList.replace("open", "closed");
-            document.querySelector("#navbar-toggler i").classList.replace("ph-caret-circle-left", "ph-caret-circle-right");
-        } else {
-            sidebar.classList.replace("closed", "open");
-            document.querySelector("#navbar-toggler i").classList.replace("ph-caret-circle-right", "ph-caret-circle-left");
-        }
+// === VARIÁVES === //
+const GRID_MAX_COLS = 5;
+const GRID_MAX_ROWS = 4;
+const AUTOSAVE_INTERVAL_MS = 1 * 60 * 1000; // [min] * [sec] * [ms]
+
+document.addEventListener("DOMContentLoaded", () => {
+    // === REDIRECIONAMENTO SE NÃO AUTENTICADO === //
+    if(!getItem("JPWG_DATA")) {
+       window.location = "./login.html";
     }
 
+    // === ELEMENTOS HTML e EVENTOS === //
+    const devScreen = document.getElementById("dev-screen");
+    const manualSaveBtn = getElementByIdAndAttachEvent("manualsave-btn", 'click', save);
+    const sidebarTogglerBtn = getElementByIdAndAttachEvent("sidebar-toggler", 'click', toggleSidebar);
 
-    const GRID_MAX_COLS = 5;
-    const GRID_MAX_ROWS = 4;
-    const SAVE_INTERVAL_IN_MS = 5000;
+    const generalBtn = getElementByIdAndAttachEvent("general-btn", 'click', toggleGeneralPanel);
+    const buildingsBtn = getElementByIdAndAttachEvent("buildings-btn", 'click', toggleBuildingsPanel);
+    const autoSaveBtn = getElementByIdAndAttachEvent("autosave-btn", 'click', save);
 
+    const parkNameDiv = document.getElementById("park-name");
+    const parkRatingDiv = document.getElementById("park-rating");
+    const parkBalanceDiv = document.getElementById("park-balance");
+
+    const logoutBtn = getElementByIdAndAttachEvent("logout-btn", 'click', logout);
+
+    document.addEventListener("keydown", (e) => toggleDevScreen(e));
+
+    // === GAME LOOP === //
+    // 1. Iniciar Timers
+
+});
+
+// === FUNÇÕES UTILITÁRIAS === //
+function getElementByIdAndAttachEvent(elementId, event, fn) {
+    const element = document.getElementById(elementId);
+    if(!element) return;
+
+    element.addEventListener(event, fn);
+    return element;
+}
+
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    if(sidebar.classList.contains("open")) {
+        sidebar.classList.replace("open", "closed");
+        document.querySelector("#sidebar-toggler i").classList.replace("ph-caret-circle-left", "ph-caret-circle-right");
+    } else {
+        sidebar.classList.replace("closed", "open");
+        document.querySelector("#sidebar-toggler i").classList.replace("ph-caret-circle-right", "ph-caret-circle-left");
+    }
+}
+
+function toggleGeneralPanel() {}
+
+function toggleBuildingsPanel() {}
+
+function toggleDevScreen(event) {
+    if((event.ctrlKey || event.metaKey) && event.key === "k") {
+        const devScreen = document.getElementById("dev-screen");
+        if(devScreen.classList.contains("open")) {
+            devScreen.classList.replace("open", "closed")
+        } else {
+            devScreen.classList.replace("closed", "open")
+        }
+    }
+}
+
+function logout() {
+    clearStorage();
+    setTimeout(() => {
+        window.location = "./login.html";
+    }, 250);
+}
+
+</script>
+</body>
+</html>
+
+<!-- 
+<script>
     const PARK_RATING = 2.5;
     const PARK_BALANCE = 2500;
     const PARK_NAME = "Parque de Dummy";
@@ -162,22 +226,9 @@
             <i class="ph-fill ph-info"></i>
             ${PARK_NAME}
         `;
-
-        // 5. tela do desenvolvedor
-        document.addEventListener("keydown", (e) => {
-            if((e.ctrlKey || e.metaKey) && e.key === "k") {
-                const devScreen = document.getElementById("dev-screen");
-                if(devScreen.classList.contains("open")) {
-                    devScreen.classList.replace("open", "closed")
-                } else {
-                    devScreen.classList.replace("closed", "open")
-                }
-            }
-        });
     }
 
     startGameLoop();
 
 </script>
-</body>
-</html>
+-->

@@ -91,6 +91,13 @@
 
 <!-- === SCRIPTS LOCAIS === -->
 <script>
+    // === REDIRECIONAMENTO SE JÁ ESTIVER LOGADO === //
+    document.addEventListener("DOMContentLoaded", () => {
+        if(getItem("JPWG_DATA") !== null) {
+            window.location = "./park.html";
+        }
+    });
+
     const frm = document.getElementById("auth-form");
     const authBtn = document.getElementById("submit-btn");
     const authMsg = document.getElementById("form-auth-message");
@@ -124,7 +131,7 @@
                 throw new Error(`Erro ao realizar Login: ${errorMsg}`);
             } else {
                 console.log("[login.html] | Sucesso!");
-                setItem("JPWG_USER", JSON.stringify(data));
+                setItem("JPWG_DATA", JSON.stringify({user: data[0]}));
 
                 window.location = "./park.html";
             }

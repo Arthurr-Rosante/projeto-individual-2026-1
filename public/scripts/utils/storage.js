@@ -6,9 +6,10 @@ function getItem(key) {
     return sessionStorage.getItem(key);
 };
 
-function removeItem(key) {
+function clearItem(key) {
+    if(!getItem(key)) return;
     sessionStorage.removeItem(key);
-};
+}
 
 function clearStorage() {
     sessionStorage.clear();

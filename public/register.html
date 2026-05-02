@@ -104,6 +104,13 @@
 
 <!-- === SCRIPTS LOCAIS === -->
 <script>
+    // === REDIRECIONAMENTO SE JÁ ESTIVER LOGADO === //
+    document.addEventListener("DOMContentLoaded", () => {
+        if(getItem("JPWG_DATA") !== null) {
+            window.location = "./park.html";
+        }
+    });
+
     const frm = document.getElementById("auth-form");
     const authBtn = document.getElementById("submit-btn");
     const authMsg = document.getElementById("form-auth-message");
