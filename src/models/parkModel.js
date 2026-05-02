@@ -50,3 +50,13 @@ export function updateDinoCoins(idPark, newCoinsCount) {
 
     return execute(instruction, [newCoinsCount, idPark]).then(res => res[1]);
 }
+
+// === INSTRUÇÃO: BUSCA POR ID DO USUÁRIO === //
+export function getOneParkById(idUser) {
+    const instruction = "SELECT * FROM park WHERE idUser = ?";
+
+    console.log("\n[parkModel.js | getOneParkById] - Executando SELECT...");
+    console.log(`\n[parkModel.js | getOneParkById] - Instrução: "${instruction}"`);
+
+    return execute(instruction, [idUser]);
+}

@@ -69,3 +69,18 @@ export function updateDinoCoins(req, res) {
             res.status(500).json(error.sqlMessage);
         });
 }
+
+// === INSTRUÇÃO: BUSCA POR ID DO USUÁRIO === //
+export function getOneParkById(req, res) {
+    const {idUser} = req.params;
+
+    if(isUndefined(idUser)) res.status(400).send("ID de Usuário não foi definido!");
+
+    parkModel.getOneParkById(idUser)
+        .then((result) => res.status(200).json(result))
+        .catch((error) => {
+            console.error(`\n[parkController.js | getOneParkById] - Erro: ${error}`);
+            console.error(`\n[parkController.js | getOneParkById] - SQL Message: ${error.sqlMessage}`);
+            res.status(500).json(error.sqlMessage);
+        });
+}

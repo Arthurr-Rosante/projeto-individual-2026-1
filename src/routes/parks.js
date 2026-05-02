@@ -6,6 +6,9 @@ export const parkRoutes = express.Router();
 // === ROTA: CRIAR === //
 parkRoutes.post("/", (req, res) => parkController.create(req, res));
 
+// === ROTA: BUSCAR POR ID DO USUÁRIO === //
+parkRoutes.get("/:idUser", (req, res) => parkController.getOneParkById(req, res));
+
 // === ROTA: ATUALIZAR NOME === //
 parkRoutes.patch("/:idPark/name", (req, res) => parkController.updateName(req, res));
 
