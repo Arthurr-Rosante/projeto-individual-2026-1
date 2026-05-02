@@ -7,10 +7,13 @@ export const tileRoutes = express.Router();
 tileRoutes.post("/", (req, res) => tileController.create(req, res));
 
 // === ROTA: ATUALIZAR TIPO === //
-tileRoutes.put("/:id/repurpose", (req, res) => tileController.create(req, res));
+tileRoutes.put("/:idPark", (req, res) => tileController.updateTileType(req, res));
 
-// === ROTA: BUSCAR TODOS === //
-tileRoutes.get("/", (req, res) => tileController.getAllTiles(req, res));
-
-// === ROTA: BUSCAR POR ID === //
-tileRoutes.get("/:id", (req, res) => tileController.getTileById(req, res));
+// === ROTA: BUSCAR === //
+tileRoutes.get("/:idPark", (req, res) => {
+    const {tileCol, tileRow} = req.query;
+    if(tileCol !== undefined && tileRow !== undefined) {
+        return tileController.getOneTileByParkId(req, res);
+    }
+    return tileController.getAllTileByParkId(req, res);
+});

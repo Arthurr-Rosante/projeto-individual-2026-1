@@ -6,7 +6,6 @@ import { tileRoutes } from "./tiles.js";
 import { speciesRoutes } from "./species.js";
 import { eventRoutes } from "./events.js";
 import { buildingRoutes } from "./buildings.js";
-import { enclosureRoutes } from "./enclosures.js";
 import { dinosaurRoutes } from "./dinosaurs.js";
 
 // === Router CENTRALIZADOR === //
@@ -19,5 +18,4 @@ routes.use("/tiles", tileRoutes);
 routes.use("/species", speciesRoutes);
 routes.use("/events", eventRoutes);
 routes.use("/buildings", buildingRoutes);
-routes.use("/enclosures", enclosureRoutes);
 routes.use("/dinosaurs", dinosaurRoutes);
