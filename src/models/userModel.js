@@ -60,7 +60,7 @@ export function register(username, email, password) {
         AND position_col = 0 AND position_row = 2;
 
     UPDATE tile	
-    SET idBuilding = 9, durability = 100, hp = 100
+    SET idBuilding = 9, hp = 100
     WHERE idPark = (SELECT id FROM \`user\` WHERE email = '${email}')			-- CERCADO NÍVEL 1
         AND position_col = 3 AND position_row = 2;
 

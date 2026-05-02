@@ -7,7 +7,7 @@ export const tileRoutes = express.Router();
 tileRoutes.post("/", (req, res) => tileController.create(req, res));
 
 // === ROTA: ATUALIZAR TIPO === //
-tileRoutes.put("/:idPark", (req, res) => tileController.updateTileType(req, res));
+tileRoutes.patch("/:idPark", (req, res) => tileController.updateTileType(req, res));
 
 // === ROTA: BUSCAR === //
 tileRoutes.get("/:idPark", (req, res) => {
