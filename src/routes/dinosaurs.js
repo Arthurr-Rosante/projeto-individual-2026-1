@@ -7,4 +7,14 @@ export const dinosaurRoutes = express.Router();
 dinosaurRoutes.post("/", (req, res) => dinosaurController.create(req, res));
 
 // === ROTA: DELETAR === //
-dinosaurRoutes.delete("/:id", (req, res) => dinosaurController.releaseDinosaur(req, res));
+dinosaurRoutes.delete("/:idPark", (req, res) => dinosaurController.releaseDinosaur(req, res));
+
+// === ROTA: BUSCAR DINOSSAUROS === //
+dinosaurRoutes.get("/:idPark", (req, res) => {
+    const {tileCol, tileRow} = req.query;
+    if(tileCol !== undefined && tileRow !== undefined) {
+        return dinosaurController.getOneDinosaurByParkId(req, res);
+    }
+
+    return dinosaurController.getAllDinosaurByParkId(req, res);
+});
