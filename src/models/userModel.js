@@ -81,13 +81,42 @@ export function register(username, email, password) {
 
 // === INSTRUÇÃO: AUTENTICAR === //
 export function authenticate(email, password) {
-    const instruction = 
-        `SELECT ${allowedFields} FROM user WHERE email = ? AND password = ?`;
+    const whereCondition = `email = "${email}" AND password = "${password}"`;
+
+    const instruction = `
+        -- 1. Seleciona Usuário
+        SELECT * FROM user WHERE ${whereCondition};
+
+        -- 2. Seleciona Parque
+        SELECT * FROM park WHERE idUser = (SELECT id FROM user WHERE ${whereCondition});
+        
+        -- 2. Seleciona Tiles do Parque
+        SELECT 
+            t.idPark, t.position_col, t.position_row, b.\`name\`, b.translatedName, b.category, 
+            b.durability, b.baseCost, b.maxUnits, b.removable, b.upgradeable
+        FROM tile t 
+        JOIN building b ON t.idBuilding = b.id 
+        WHERE idPark = (SELECT id FROM user WHERE ${whereCondition})
+        ORDER BY t.position_row;
+
+        SELECT 
+            d.*, s.name, s.aggressiveness 
+        FROM dinosaur d 
+        JOIN species s ON d.idSpecies = s.id 
+        WHERE idPark = (SELECT id FROM user WHERE ${whereCondition});
+    `;
     
     console.log("\n[userModel.js | authenticate] - Executando SELECT...");
     console.log(`\n[userModel.js | authenticate] - Instrução: "${instruction}"`);
     
-    return execute(instruction, [email, password]);
+    return execute(instruction).then(res => {
+        return {
+            user: res[0][0],
+            park: res[1][0],
+            tiles: res[2],
+            dinosaur: res[3]
+        }
+    });
 }
 
 // === INSTRUÇÃO: PROCURAR POR EMAIL === //

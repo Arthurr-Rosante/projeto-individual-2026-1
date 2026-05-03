@@ -131,7 +131,7 @@
                 throw new Error(`Erro ao realizar Login: ${errorMsg}`);
             } else {
                 console.log("[login.html] | Sucesso!");
-                setItem("JPWG_DATA", JSON.stringify({user: data[0]}));
+                setItem("JPWG_DATA", JSON.stringify(data));
 
                 window.location = "./park.html";
             }

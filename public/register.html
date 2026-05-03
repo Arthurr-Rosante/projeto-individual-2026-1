@@ -145,8 +145,6 @@
                 throw new Error(`Erro ao realizar Cadastro: ${errorMsg}`);
             } else {
                 console.log("[register.html] | Sucesso!");
-                setItem("JPWG_USER", JSON.stringify(data));
-
                 window.location = "./login.html";
             }
         }))
