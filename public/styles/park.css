@@ -27,6 +27,8 @@ body {
 }
 
 .tile {
+    --rotate-z: -30deg;
+
     position: relative;
     width: var(--tile-w);
     height: var(--tile-w);
@@ -47,7 +49,7 @@ body {
     );
     pointer-events: auto;
 
-    transform: rotateZ(-30deg);
+    transform: rotateZ(var(--rotate-z));
     margin: -2.25rem;
 }
 
@@ -165,6 +167,16 @@ body {
     background-color: var(--primary);
     color: var(--primary-foreground);
     box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+}
+
+#autosave-btn {
+    background-color: var(--secondary-foreground);
+    color: var(--secondary);
+}
+#autosave-btn:hover {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--secondary-foreground);
 }
 
 .sidebar-footer {
@@ -296,11 +308,12 @@ body {
 /* Dinosaurs */
 .dinosaur {
     position: absolute;
-    bottom: 25%;
-    right: 20%;
-    pointer-events: none;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-8%) rotateZ(0deg) scale(0.5);
     clip-path: none;
-    transform: translate(-50%, -50%) rotateZ(0deg) scale(0.5);
+    pointer-events: none;
+    inset: 0;
 }
 
 .anquilossauro {

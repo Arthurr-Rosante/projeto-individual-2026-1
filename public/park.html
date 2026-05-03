@@ -11,18 +11,42 @@
     <link rel="stylesheet" href="./styles/dev.css">
     
     <!-- === Importação de funções === -->
-     <script defer src="./scripts/utils/storage.js"></script>
-     <script defer src="./scripts/utils/persistence.js"></script>
+    <script defer src="./scripts/utils/storage.js"></script>
+    <script defer src="./scripts/events.js"></script>
 
     <!-- === Importação de Bibliotecas === -->
     <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/index.min.js"></script>
 </head>
 <body>
     <div id="dev-screen" class="closed">
-        <h2>Tela do Desenvolvedor</h2>
-        <div class="dev-item">
-            <p>Tempo Até o Autosave: <span id="autosave-timer"></span></p>
-            <button id="manualsave-btn">Salvar Manualmente</button>
+        <div class="dev-screen-header">
+            <h3 class="title">Tela do Desenvolvedor</h3>
+        </div>
+        <div class="dev-screen-body">
+            <ul class="dev-items">
+                <li class="dev-item">
+                    <p class="dev-item-title">PARQUE NOME</p>
+                    <input id="ipt-park-name" type="text">
+                    <button id="changeParkName-btn">Alterar Nome</button>
+                </li>
+                <li class="dev-item">
+                    <p class="dev-item-title">PARQUE AVALIAÇÃO</p>
+                    <input id="ipt-park-rating" type="number" min="0" max="5" step="0.5">
+                    <button id="changeParkRating-btn">Alterar Avaliação</button>
+                </li>
+                <li class="dev-item">
+                    <p class="dev-item-title">PARQUE SALDO</p>
+                    <input id="ipt-park-balance" type="number" min="0" max="5" step="0.5">
+                    <button id="changeParkBalance-btn">Alterar saldo</button>
+                </li>
+            </ul>
+        </div>
+        <div class="dev-screen-footer">
+                <div class="dev-item">
+                    <p class="dev-item-title">AUTOSAVE</p>
+                    <p>Próximo Autosave em: <span id="autosave-timer"></span></p>
+                    <button id="manualsave-btn">Salvar Manualmente</button>
+                </div>
         </div>
     </div>
     <!-- Sidebar -->
@@ -65,16 +89,25 @@
     </aside>
     <!-- GRID -->
     <main class="grid-wrapper">
-       <div id="grid">
-       </div>
+        <div id="grid">
+            <div class="row row-1"></div>
+            <div class="row row-2"></div>
+            <div class="row row-3"></div>
+            <div class="row row-4"></div>
+            <div class="row row-5"></div>
+        </div>
     </main>
 <!-- === SCRIPTS LOCAIS === -->
 <script>
 // === VARIÁVES === //
 const GRID_MAX_COLS = 5;
 const GRID_MAX_ROWS = 4;
-const AUTOSAVE_INTERVAL_MS = 1 * 60 * 1000; // [min] * [sec] * [ms]
 
+const AUTOSAVE_INTERVAL_MS = 1 * 60 * 1000; // [min] * [sec] * [ms]
+const INCREASE_BALANCE_INTERVAL_MS = 1 * 5 * 1000;
+const EVENTS_INTERVAL_MS = 1 * 30 * 1000;
+
+document.addEventListener("keydown", (e) => toggleDevScreen(e));
 document.addEventListener("DOMContentLoaded", () => {
     // === REDIRECIONAMENTO SE NÃO AUTENTICADO === //
     if(!getItem("JPWG_DATA")) {
@@ -82,24 +115,93 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // === ELEMENTOS HTML e EVENTOS === //
-    const devScreen = document.getElementById("dev-screen");
-    const manualSaveBtn = getElementByIdAndAttachEvent("manualsave-btn", 'click', save);
-    const sidebarTogglerBtn = getElementByIdAndAttachEvent("sidebar-toggler", 'click', toggleSidebar);
+    const grid = document.getElementById("grid");
 
+    // devScreen Elements //
+    const devScreen = document.getElementById("dev-screen");
+    const iptParkName = document.getElementById("ipt-park-name");
+    const iptParkRating = document.getElementById("ipt-park-rating");
+    const iptParkBalance = document.getElementById("ipt-park-balance");
+    const changeParkNameBtn = 
+        getElementByIdAndAttachEvent("changeParkName-btn", 'click', () => updatePark('name', iptParkName.value));
+    const changeParkRatingBtn = 
+        getElementByIdAndAttachEvent("changeParkRating-btn", 'click', () => updatePark('rating', iptParkRating.value));
+    const changeParkBalanceBtn = 
+        getElementByIdAndAttachEvent("changeParkBalance-btn", 'click', () => updatePark('dinoCoins', iptParkBalance.value));
+    const manualSaveBtn = getElementByIdAndAttachEvent("manualsave-btn", 'click', () => triggerEvent("save"));
+    
+    // Sidebar Elements //
+    const sidebarTogglerBtn = getElementByIdAndAttachEvent("sidebar-toggler", 'click', toggleSidebar);
     const generalBtn = getElementByIdAndAttachEvent("general-btn", 'click', toggleGeneralPanel);
     const buildingsBtn = getElementByIdAndAttachEvent("buildings-btn", 'click', toggleBuildingsPanel);
-    const autoSaveBtn = getElementByIdAndAttachEvent("autosave-btn", 'click', save);
-
-    const parkNameDiv = document.getElementById("park-name");
-    const parkRatingDiv = document.getElementById("park-rating");
-    const parkBalanceDiv = document.getElementById("park-balance");
-
+    const autoSaveBtn = getElementByIdAndAttachEvent("autosave-btn", 'click', () => triggerEvent("save"));
     const logoutBtn = getElementByIdAndAttachEvent("logout-btn", 'click', logout);
-
-    document.addEventListener("keydown", (e) => toggleDevScreen(e));
+    
+    // Statusbar Elements //
+    const parkNameDiv = getElementByIdAndAttachEvent("park-name", "storage", (e) => {
+        const {park} = JSON.parse(getItem("JPWG_DATA"));
+        this.innerHTML = park.name;
+    });
+    const parkRatingDiv = getElementByIdAndAttachEvent("park-rating", "storage", (e) => {
+        console.log("HEYA")
+        const {park} = JSON.parse(getItem("JPWG_DATA"));
+        loadRatingStars(park.rating);
+    });
+    const parkBalanceDiv = getElementByIdAndAttachEvent("park-balance", "storage", (e) => {
+        const {park} = JSON.parse(getItem("JPWG_DATA"));
+        this.innerHTML = park.dinoCoins;
+    });
 
     // === GAME LOOP === //
-    // 1. Iniciar Timers
+    // 1. Recebe informações do sessionStorage e cria uma Cópia
+    const data = JSON.parse(getItem("JPWG_DATA"));
+    triggerEvent("printStorage", ["JPWG_DATA"]);
+
+    // 2. Iniciar Timers (Autosave, dinoCoins, Eventos)
+    const autoSaveTimer = setInterval(() => triggerEvent("save"), AUTOSAVE_INTERVAL_MS);
+    const increaseBalanceTimer = setInterval(() => triggerEvent("increaseBalance"), INCREASE_BALANCE_INTERVAL_MS); 
+    const eventsTimer = setInterval(() => triggerEvent("randomEvent"), EVENTS_INTERVAL_MS); 
+
+    // 3. Montar Grid(5x4)
+    data.tiles.forEach((tile) => {
+        const t = document.createElement("div");
+        const tCol = tile.position_col;
+        const tRow = tile.position_row;
+        t.classList.add("tile", tile.category, tile.name);
+
+        data.dinosaur.forEach((dino) => {
+            if(dino.tile_col == tCol && dino.tile_row == tRow) {
+                const d = document.createElement("div");
+                d.classList.add("dinosaur", dino.name);
+                t.appendChild(d);
+            }
+        });
+
+        const row = document.querySelector(`.row.row-${tRow + 1}`)
+        row.appendChild(t);
+    });
+
+    // 4. Atribuir informações do Parque (Avaliação, Nome, Saldo)
+    let parkName = data.park.name;
+    let parkRating = data.park.rating;
+    let parkBalance = data.park.dinoCoins;
+
+    iptParkName.value = parkName;
+    iptParkRating.value = parkRating;
+    iptParkBalance.value = parkBalance;
+
+    // 4.1 Avaliação 
+    loadRatingStars(parkRating);
+
+    // 4.2 Saldo 
+    document.getElementById("park-balance").innerHTML = `
+    <i class="ph-fill ph-coins"></i>
+    ${Number(parkBalance).toLocaleString("pt-br")}`;
+
+    // 4.3 Nome 
+    document.getElementById("park-name").innerHTML = `
+        <i class="ph-fill ph-info"></i>
+        ${parkName}`;
 
 });
 
@@ -145,90 +247,28 @@ function logout() {
     }, 250);
 }
 
+function updatePark(field, value) {
+    console.log(`ATUALIZANDO PARQUE: ${field}`);
+    let data = JSON.parse(getItem("JPWG_DATA"));
+    data.park[field] = value;
+    setItem("JPWG_DATA", JSON.stringify(data));
+}
+
+function loadRatingStars(rating) {
+    for (let i = 0; i < 5; i++) {
+        const star = document.createElement("i");
+        if(rating - i === 0.5) {
+            star.classList.add("rating", "ph-fill", "ph-star-half");
+        } else if(rating - i <= 0) {
+            star.classList.add("rating", "ph", "ph-star");
+        }
+        else {
+            star.classList.add("rating", "ph-fill", "ph-star");
+        }
+        document.getElementById("park-rating").appendChild(star);
+    }
+}
+
 </script>
 </body>
 </html>
-
-<!-- 
-<script>
-    const PARK_RATING = 2.5;
-    const PARK_BALANCE = 2500;
-    const PARK_NAME = "Parque de Dummy";
-
-    // === SISTEMA DE PERSISTÊNCIA === //
-    const autoSaveTimerLeft = document.getElementById("autosave-timer");
-    let timeUntilNextAutoSave = SAVE_INTERVAL_IN_MS;
-
-    function stopTimer(timer) {
-        clearInterval(timer);
-        console.log(`O timer ${timer} foi parado.`);
-    }
-
-    function save() {
-        timeUntilNextAutoSave = SAVE_INTERVAL_IN_MS;
-        const payload = {
-            user: getItem("JPWG_USER"),
-            park: getItem("JPWG_PARK"),
-        };
-        console.log("salvou | ", new Date().toLocaleString());
-    }
-
-    function startGameLoop() {
-        // 1. Carrega dados do sessionStorage
-
-        // 2. Inicia Timer de Save Automático
-        const saveIntervalTimer = setInterval(save, SAVE_INTERVAL_IN_MS);
-        const timeLeftUntilNextSaveInterval = setInterval(() => {
-            autoSaveTimerLeft.innerText = `${timeUntilNextAutoSave / 1000}s`;
-            timeUntilNextAutoSave-= 1000;
-        }, 1000);
-
-        // 3. Carrega o GRID
-        document.addEventListener("DOMContentLoaded", () => {
-            const grid = document.getElementById("grid");
-            for (let i = 0; i < GRID_MAX_ROWS; i++) {
-                const row = i;
-                const rowEl = document.createElement("div");
-                rowEl.classList.add("row", `row-${i+1}`);
-                for (let j = 0; j < GRID_MAX_COLS; j++) {
-                    const col = j;
-                    const types = ["trees", "pond", "grass", "dirt"]
-
-                    const colEl = document.createElement("div");
-                    colEl.classList.add("tile", `terrain-${types[Math.floor(Math.random() * types.length)]}`);
-                    rowEl.appendChild(colEl);
-                }
-                grid.appendChild(rowEl);
-            }
-        });
-
-        // 4. Carrega os dados de rating e dinoCoins e o Nome do Parque
-        for (let i = 0; i < 5; i++) {
-            const star = document.createElement("i");
-
-            if(PARK_RATING - i === 0.5) {
-                star.classList.add("rating", "ph-fill", "ph-star-half");
-            } else if(PARK_RATING - i <= 0) {
-                star.classList.add("rating", "ph", "ph-star");
-            }
-            else {
-                star.classList.add("rating", "ph-fill", "ph-star");
-            }
-            document.getElementById("park-rating").appendChild(star);
-        }
-
-        document.getElementById("park-balance").innerHTML = `
-            <i class="ph-fill ph-coins"></i>
-            ${Number(PARK_BALANCE).toLocaleString("pt-br")}
-        `;
-
-        document.getElementById("park-name").innerHTML = `
-            <i class="ph-fill ph-info"></i>
-            ${PARK_NAME}
-        `;
-    }
-
-    startGameLoop();
-
-</script>
--->
