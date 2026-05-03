@@ -38,7 +38,7 @@ export function authenticate(req, res) {
 
     userModel.authenticate(email, password)
         .then((result) => {
-            if(result.length === 0) {
+            if(result["user"] === undefined) {
                 res.status(404).json({message: "Credenciais Inválidas ou Login inexistente!"});
             } else {
                 res.status(200).json(result);
