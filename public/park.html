@@ -103,7 +103,8 @@
 
     <!-- Painel Geral (abre com clique na construção "Visitor-Center" ou "Visão Geral") -->
     <div class="overlay closed">
-        <div id="general-panel">
+        <div id="general-panel" class="panel">
+            <h3 class="panel-title">Visão Geral do Parque</h3>
             <ul class="dinosaurs-list">
                 <!-- lista de dinossauros do parque... -->
             </ul>
@@ -111,7 +112,8 @@
     </div>
     <!-- Painel Construções (abre com clique em "Construções") -->
     <div class="overlay closed">
-        <div id="buildings-panel">
+        <div id="buildings-panel" class="panel">
+            <h3 class="panel-title">Construções Disponíveis</h3>
             <ul class="buildings-list">
                 <!-- lista de construções disponíveis... -->
             </ul>
@@ -119,8 +121,8 @@
     </div>
     <!-- Painel Nome Parque (abre com clique na construção "Entrance") -->
     <div class="overlay closed">
-        <div id="entrance-panel">
-            <h1 class="font-jurassic">Jurassic Park Web Genesis</h1>
+        <div id="entrance-panel" class="panel">
+            <h3 class="panel-title">Jurassic Park Web Genesis</h3>
             <form id="park-name-form">
                 <label for="ipt-park-name">Alterar Nome do seu Parque</label>
                 <input id="ipt-park-name" type="text" required>
@@ -130,7 +132,8 @@
     </div>
     <!-- Painel Incubação (abre com clique na construção "Hatchery") -->
     <div class="overlay closed">
-        <div id="hatchery-panel">
+        <div id="hatchery-panel" class="panel">
+            <h3 class="panel-title">Laboratorio de Incubacao</h3>
             <ul class="hatchery-slots">
                 <li id="hatch-slot-1" class="hatchery-slot"></li>
             </div>
@@ -151,7 +154,7 @@
 
     <!-- Painel Cercado (abre com clique em qualquer tile da categoria "Enclosure") -->
     <div class="overlay closed">
-        <div id="enclosure-panel">
+        <div id="enclosure-panel" class="panel">
             <!-- informações sobre cercado e dinossauro, se houver -->
         </div>
     </div>
@@ -160,6 +163,22 @@
 <script>
     // === TELA DO DESENVOLVEDOR === //
     document.addEventListener("keydown", (e) => toggleDevScreen(e));
+
+    document.querySelectorAll(".overlay").forEach((el) => {
+        el.addEventListener("click", (e) => {
+            if(e.currentTarget === e.target) {
+                el.classList.replace("open", "closed");
+            }
+        });
+    });
+
+    document.addEventListener("click", (e) => {
+        const clickedElement = e.target;
+        if(clickedElement.classList.contains("visitor-center")) { togglePanel("general-panel") };
+        if(clickedElement.classList.contains("entrance")) { togglePanel("entrance-panel") };
+        if(clickedElement.classList.contains("hatchery")) { togglePanel("hatchery-panel") };
+        if(clickedElement.classList.contains("enclosure")) { togglePanel("enclosure-panel") };
+    });
 
     document.addEventListener("DOMContentLoaded", () => {
         // === REDIRECIONAMENTO SE NÃO AUTENTICADO === //
@@ -245,10 +264,10 @@
 
         if(isOpen) {
             element.classList.replace("open", "closed");
-            icon.classList.replace("ph-caret-circle-left", "ph-caret-circle-right");
+            icon && icon.classList.replace("ph-caret-circle-left", "ph-caret-circle-right");
         } else {
             element.classList.replace("closed", "open");
-            icon.classList.replace("ph-caret-circle-right", "ph-caret-circle-left");
+            icon && icon.classList.replace("ph-caret-circle-right", "ph-caret-circle-left");
         }
     }
 
@@ -269,8 +288,6 @@
             window.location = "./login.html";
         }, 250);
     }
-
-
 
     function loadStatusBar(name = "SEM NOME", rating = 0, balance = 0) {
         const pParkName = document.getElementById("park-name");
@@ -300,13 +317,15 @@
             const tCol = tile.position_col;
             const tRow = tile.position_row;
             t.classList.add("tile", tile.category, tile.name);
+            t.dataset.tileCol = tCol;
+            t.dataset.tileRow = tRow;
 
             dinosaur.forEach((dino) => {
-                if(dino.tile_col == tCol && dino.tile_row == tRow) {
-                    const d = document.createElement("div");
-                    d.classList.add("dinosaur", dino.name);
-                    t.appendChild(d);
-                }
+                    if(dino.tile_col == tCol && dino.tile_row == tRow) {
+                        const d = document.createElement("div");
+                        d.classList.add("dinosaur", dino.name);
+                        t.appendChild(d);
+                    }
             });
 
             const row = document.querySelector(`.row.row-${tRow + 1}`)
@@ -352,8 +371,6 @@
 </script>
 </body>
 </html>
-
-<!-- 
 <script>
 function updatePark(field, value, updateFn) {
     console.log(`ATUALIZANDO PARQUE: ${field} | valor: ${value}`);
