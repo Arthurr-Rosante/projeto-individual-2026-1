@@ -11,13 +11,16 @@
     <link rel="stylesheet" href="./styles/dev.css">
     
     <!-- === Importação de funções === -->
+    <script src="./constants.js"></script>
+    <script defer src="./scripts/event-trigger.js"></script>
     <script defer src="./scripts/utils/storage.js"></script>
-    <script defer src="./scripts/events.js"></script>
+    <script defer src="./scripts/utils/formatDinoFields.js"></script>
 
     <!-- === Importação de Bibliotecas === -->
     <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/index.min.js"></script>
 </head>
 <body>
+    <!-- Dev Screen -->
     <div id="dev-screen" class="closed">
         <div class="dev-screen-header">
             <h3 class="title">Tela do Desenvolvedor</h3>
@@ -26,18 +29,18 @@
             <ul class="dev-items">
                 <li class="dev-item">
                     <p class="dev-item-title">PARQUE NOME</p>
-                    <input id="ipt-park-name" type="text">
-                    <button id="changeParkName-btn">Alterar Nome</button>
+                    <input id="dev-ipt-park-name" type="text">
+                    <button id="dev-park-name-btn">Alterar Nome</button>
                 </li>
                 <li class="dev-item">
                     <p class="dev-item-title">PARQUE AVALIAÇÃO</p>
-                    <input id="ipt-park-rating" type="number" min="0" max="5" step="0.5">
-                    <button id="changeParkRating-btn">Alterar Avaliação</button>
+                    <input id="dev-ipt-park-rating" type="number" min="0" max="5" step="0.5">
+                    <button id="dev-park-rating-btn">Alterar Avaliação</button>
                 </li>
                 <li class="dev-item">
                     <p class="dev-item-title">PARQUE SALDO</p>
-                    <input id="ipt-park-balance" type="number" min="0" max="5" step="0.5">
-                    <button id="changeParkBalance-btn">Alterar saldo</button>
+                    <input id="dev-ipt-park-balance" type="number" min="0" max="999999">
+                    <button id="dev-park-balance-btn">Alterar saldo</button>
                 </li>
             </ul>
         </div>
@@ -45,7 +48,7 @@
                 <div class="dev-item">
                     <p class="dev-item-title">AUTOSAVE</p>
                     <p>Próximo Autosave em: <span id="autosave-timer"></span></p>
-                    <button id="manualsave-btn">Salvar Manualmente</button>
+                    <button id="dev-autosave-btn">Salvar Manualmente</button>
                 </div>
         </div>
     </div>
@@ -61,11 +64,11 @@
             </h1>
         </div>
         <nav class="sidebar-body">
-            <button id="general-btn" class="sidebar-item">
+            <button id="general-panel-toggler" class="sidebar-item">
                 <i class="ph-fill ph-cards"></i>
                 <p>Visão Geral</p>
             </button>
-            <button id="buildings-btn" class="sidebar-item">
+            <button id="buildings-panel-toggler" class="sidebar-item">
                 <i class="ph-fill ph-blueprint"></i>
                 <p>Construções</p>
             </button>
@@ -82,10 +85,10 @@
         </div>
     </aside>
     <!-- Status Bar -->
-    <aside class="statusbar">
-        <div id="park-name"></div>
-        <div id="park-rating"></div>
-        <div id="park-balance"></div>
+    <aside id="statusbar">
+        <p id="park-name"></p>
+        <p id="park-rating"></p>
+        <p id="park-balance"></p>
     </aside>
     <!-- GRID -->
     <main class="grid-wrapper">
@@ -97,178 +100,279 @@
             <div class="row row-5"></div>
         </div>
     </main>
+
+    <!-- Painel Geral (abre com clique na construção "Visitor-Center" ou "Visão Geral") -->
+    <div class="overlay closed">
+        <div id="general-panel">
+            <ul class="dinosaurs-list">
+                <!-- lista de dinossauros do parque... -->
+            </ul>
+        </div>
+    </div>
+    <!-- Painel Construções (abre com clique em "Construções") -->
+    <div class="overlay closed">
+        <div id="buildings-panel">
+            <ul class="buildings-list">
+                <!-- lista de construções disponíveis... -->
+            </ul>
+        </div>
+    </div>
+    <!-- Painel Nome Parque (abre com clique na construção "Entrance") -->
+    <div class="overlay closed">
+        <div id="entrance-panel">
+            <h1 class="font-jurassic">Jurassic Park Web Genesis</h1>
+            <form id="park-name-form">
+                <label for="ipt-park-name">Alterar Nome do seu Parque</label>
+                <input id="ipt-park-name" type="text" required>
+                <button id="park-name-btn" type="submit">Alterar</button>
+            </form>
+        </div>
+    </div>
+    <!-- Painel Incubação (abre com clique na construção "Hatchery") -->
+    <div class="overlay closed">
+        <div id="hatchery-panel">
+            <ul class="hatchery-slots">
+                <li id="hatch-slot-1" class="hatchery-slot"></li>
+            </div>
+            <ul class="dinosaurs-list">
+                <!-- lista de dinossauros disponíveis... -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Tile Switcher (abre com clique em qualquer tile) -->
+    <div class="overlay closed">
+        <div id="tile-switcher">
+            <ul class="tile-list">
+                <!-- lista com demais tiles para trocar -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Painel Cercado (abre com clique em qualquer tile da categoria "Enclosure") -->
+    <div class="overlay closed">
+        <div id="enclosure-panel">
+            <!-- informações sobre cercado e dinossauro, se houver -->
+        </div>
+    </div>
+
 <!-- === SCRIPTS LOCAIS === -->
 <script>
-// === VARIÁVES === //
-const GRID_MAX_COLS = 5;
-const GRID_MAX_ROWS = 4;
+    // === TELA DO DESENVOLVEDOR === //
+    document.addEventListener("keydown", (e) => toggleDevScreen(e));
 
-const AUTOSAVE_INTERVAL_MS = 1 * 60 * 1000; // [min] * [sec] * [ms]
-const INCREASE_BALANCE_INTERVAL_MS = 1 * 5 * 1000;
-const EVENTS_INTERVAL_MS = 1 * 30 * 1000;
+    document.addEventListener("DOMContentLoaded", () => {
+        // === REDIRECIONAMENTO SE NÃO AUTENTICADO === //
+        if(!getItem(JPWG_DATA)) {
+           window.location = "./login.html";
+        }
 
-document.addEventListener("keydown", (e) => toggleDevScreen(e));
-document.addEventListener("DOMContentLoaded", () => {
-    // === REDIRECIONAMENTO SE NÃO AUTENTICADO === //
-    if(!getItem("JPWG_DATA")) {
-       window.location = "./login.html";
-    }
+        // === ELEMENTOS E EVENTOS HTML === //
+        const grid = document.getElementById("grid");
 
-    // === ELEMENTOS HTML e EVENTOS === //
-    const grid = document.getElementById("grid");
+        // Dev Screen
+        const devAutosaveBtn = getElementByIdAndAttachEvent("dev-autosave-btn", "click", () => triggerEvent("save"));
 
-    // devScreen Elements //
-    const devScreen = document.getElementById("dev-screen");
-    const iptParkName = document.getElementById("ipt-park-name");
-    const iptParkRating = document.getElementById("ipt-park-rating");
-    const iptParkBalance = document.getElementById("ipt-park-balance");
-    const changeParkNameBtn = 
-        getElementByIdAndAttachEvent("changeParkName-btn", 'click', () => updatePark('name', iptParkName.value));
-    const changeParkRatingBtn = 
-        getElementByIdAndAttachEvent("changeParkRating-btn", 'click', () => updatePark('rating', iptParkRating.value));
-    const changeParkBalanceBtn = 
-        getElementByIdAndAttachEvent("changeParkBalance-btn", 'click', () => updatePark('dinoCoins', iptParkBalance.value));
-    const manualSaveBtn = getElementByIdAndAttachEvent("manualsave-btn", 'click', () => triggerEvent("save"));
-    
-    // Sidebar Elements //
-    const sidebarTogglerBtn = getElementByIdAndAttachEvent("sidebar-toggler", 'click', toggleSidebar);
-    const generalBtn = getElementByIdAndAttachEvent("general-btn", 'click', toggleGeneralPanel);
-    const buildingsBtn = getElementByIdAndAttachEvent("buildings-btn", 'click', toggleBuildingsPanel);
-    const autoSaveBtn = getElementByIdAndAttachEvent("autosave-btn", 'click', () => triggerEvent("save"));
-    const logoutBtn = getElementByIdAndAttachEvent("logout-btn", 'click', logout);
-    
-    // Statusbar Elements //
-    const parkNameDiv = getElementByIdAndAttachEvent("park-name", "storage", (e) => {
-        const {park} = JSON.parse(getItem("JPWG_DATA"));
-        this.innerHTML = park.name;
-    });
-    const parkRatingDiv = getElementByIdAndAttachEvent("park-rating", "storage", (e) => {
-        console.log("HEYA")
-        const {park} = JSON.parse(getItem("JPWG_DATA"));
-        loadRatingStars(park.rating);
-    });
-    const parkBalanceDiv = getElementByIdAndAttachEvent("park-balance", "storage", (e) => {
-        const {park} = JSON.parse(getItem("JPWG_DATA"));
-        this.innerHTML = park.dinoCoins;
-    });
-
-    // === GAME LOOP === //
-    // 1. Recebe informações do sessionStorage e cria uma Cópia
-    const data = JSON.parse(getItem("JPWG_DATA"));
-    triggerEvent("printStorage", ["JPWG_DATA"]);
-
-    // 2. Iniciar Timers (Autosave, dinoCoins, Eventos)
-    const autoSaveTimer = setInterval(() => triggerEvent("save"), AUTOSAVE_INTERVAL_MS);
-    const increaseBalanceTimer = setInterval(() => triggerEvent("increaseBalance"), INCREASE_BALANCE_INTERVAL_MS); 
-    const eventsTimer = setInterval(() => triggerEvent("randomEvent"), EVENTS_INTERVAL_MS); 
-
-    // 3. Montar Grid(5x4)
-    data.tiles.forEach((tile) => {
-        const t = document.createElement("div");
-        const tCol = tile.position_col;
-        const tRow = tile.position_row;
-        t.classList.add("tile", tile.category, tile.name);
-
-        data.dinosaur.forEach((dino) => {
-            if(dino.tile_col == tCol && dino.tile_row == tRow) {
-                const d = document.createElement("div");
-                d.classList.add("dinosaur", dino.name);
-                t.appendChild(d);
-            }
+        const devIptParkName = document.getElementById("dev-ipt-park-name");
+        const devParkNameBtn = getElementByIdAndAttachEvent("dev-park-name-btn", 'click', () => {
+            let newName = String(devIptParkName.value);
+            updateResource("park", "name", newName, () => updateUi("park"));
+        });
+        
+        const devIptParkRating = document.getElementById("dev-ipt-park-rating");
+        const devParkRatingBtn = getElementByIdAndAttachEvent("dev-park-rating-btn", 'click', () => {
+            let newRating = Number(devIptParkRating.value);
+            if(newRating > 5) newRating = 5;
+            if(newRating < 0) newRating = 0;
+            updateResource("park", "rating", newRating, () => updateUi("park"));
+        });
+        
+        const devIptParkBalance = document.getElementById("dev-ipt-park-balance");
+        const devParkBalanceBtn = getElementByIdAndAttachEvent("dev-park-balance-btn", 'click', () => {
+            let newBalance = Number(devIptParkBalance.value);
+            if(newBalance > MAX_DINO_COINS_COUNT) newBalance = MAX_DINO_COINS_COUNT;
+            updateResource("park", "dinoCoins", newBalance, () => updateUi("park"));
         });
 
-        const row = document.querySelector(`.row.row-${tRow + 1}`)
-        row.appendChild(t);
+        // Togglers
+        const sidebarToggler = getElementByIdAndAttachEvent("sidebar-toggler", 'click', () => togglePanel("sidebar", false));
+        const generalPanelToggler = getElementByIdAndAttachEvent("general-panel-toggler", 'click', () => togglePanel("general-panel"));
+        const buildingsPanelToggler = getElementByIdAndAttachEvent("buildings-panel-toggler", 'click', () => togglePanel("buildings-panel"));
+
+        // Sidebar
+        const autosaveBtn = getElementByIdAndAttachEvent("autosave-btn", "click", () => triggerEvent("save"));
+        const logoutBtn = getElementByIdAndAttachEvent("logout-btn", 'click', logout);
+
+        // === GAME LOOP === //
+        // 1. RECEBE INFORMAÇÕES DO BD E SESSION STORAGE; CRIA CÓPIA DE TUDO (evento save chamga "copyStorage")
+        const {user, park, tiles, dinosaur} = JSON.parse(getItem(JPWG_DATA));
+        triggerEvent("save");
+
+        // 2. CARREGA UI
+        loadDevScreen({user, park, tiles, dinosaur});
+        loadStatusBar(park.name, park.rating, park.dinoCoins);
+        loadGrid(tiles, dinosaur);
+
+        // 3. INICIA TIMERS
+        const autosaveTimer = setInterval(() => triggerEvent("save"), AUTOSAVE_INTERVAL_MS);
+        const randomEventsTimer = setInterval(() => triggerEvent("randomEvent"), EVENTS_INTERVAL_MS);
+        const balanceTimer = setInterval(() => {
+            const {park} = JSON.parse(getItem(JPWG_DATA));
+            let amount = Math.ceil((MIN_BALANCE_INCREASE * park.rating)) + park.dinoCoins;
+            if(amount > MAX_DINO_COINS_COUNT) amount = MAX_DINO_COINS_COUNT;
+
+            updateResource("park", "dinoCoins", amount, () => updateUi("park"));
+        }, INCREASE_BALANCE_INTERVAL_MS);
     });
 
-    // 4. Atribuir informações do Parque (Avaliação, Nome, Saldo)
-    let parkName = data.park.name;
-    let parkRating = data.park.rating;
-    let parkBalance = data.park.dinoCoins;
+    // === FUNÇÕES UTILITÁRIAS === //
+    function getElementByIdAndAttachEvent(elementId, event, fn) {
+        const element = document.getElementById(elementId);
+        if(!element) return;
 
-    iptParkName.value = parkName;
-    iptParkRating.value = parkRating;
-    iptParkBalance.value = parkBalance;
-
-    // 4.1 Avaliação 
-    loadRatingStars(parkRating);
-
-    // 4.2 Saldo 
-    document.getElementById("park-balance").innerHTML = `
-    <i class="ph-fill ph-coins"></i>
-    ${Number(parkBalance).toLocaleString("pt-br")}`;
-
-    // 4.3 Nome 
-    document.getElementById("park-name").innerHTML = `
-        <i class="ph-fill ph-info"></i>
-        ${parkName}`;
-
-});
-
-// === FUNÇÕES UTILITÁRIAS === //
-function getElementByIdAndAttachEvent(elementId, event, fn) {
-    const element = document.getElementById(elementId);
-    if(!element) return;
-
-    element.addEventListener(event, fn);
-    return element;
-}
-
-function toggleSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    if(sidebar.classList.contains("open")) {
-        sidebar.classList.replace("open", "closed");
-        document.querySelector("#sidebar-toggler i").classList.replace("ph-caret-circle-left", "ph-caret-circle-right");
-    } else {
-        sidebar.classList.replace("closed", "open");
-        document.querySelector("#sidebar-toggler i").classList.replace("ph-caret-circle-right", "ph-caret-circle-left");
+        element.addEventListener(event, fn);
+        return element;
     }
-}
 
-function toggleGeneralPanel() {}
+    function togglePanel(elementId, withOverlay = true) {
+        let element = document.getElementById(elementId);
+        if(withOverlay) {
+            element = element.closest(".overlay");
+        }
 
-function toggleBuildingsPanel() {}
+        const icon = document.querySelector(`#${elementId}-toggler i`);
+        const isOpen = element.classList.contains("open");
 
-function toggleDevScreen(event) {
-    if((event.ctrlKey || event.metaKey) && event.key === "k") {
-        const devScreen = document.getElementById("dev-screen");
-        if(devScreen.classList.contains("open")) {
-            devScreen.classList.replace("open", "closed")
+        if(isOpen) {
+            element.classList.replace("open", "closed");
+            icon.classList.replace("ph-caret-circle-left", "ph-caret-circle-right");
         } else {
-            devScreen.classList.replace("closed", "open")
+            element.classList.replace("closed", "open");
+            icon.classList.replace("ph-caret-circle-right", "ph-caret-circle-left");
         }
     }
-}
 
-function logout() {
-    clearStorage();
-    setTimeout(() => {
-        window.location = "./login.html";
-    }, 250);
-}
-
-function updatePark(field, value) {
-    console.log(`ATUALIZANDO PARQUE: ${field}`);
-    let data = JSON.parse(getItem("JPWG_DATA"));
-    data.park[field] = value;
-    setItem("JPWG_DATA", JSON.stringify(data));
-}
-
-function loadRatingStars(rating) {
-    for (let i = 0; i < 5; i++) {
-        const star = document.createElement("i");
-        if(rating - i === 0.5) {
-            star.classList.add("rating", "ph-fill", "ph-star-half");
-        } else if(rating - i <= 0) {
-            star.classList.add("rating", "ph", "ph-star");
+    function toggleDevScreen(event) {
+        if((event.ctrlKey || event.metaKey) && event.key === "k") {
+            const devScreen = document.getElementById("dev-screen");
+            if(devScreen.classList.contains("open")) {
+                devScreen.classList.replace("open", "closed")
+            } else {
+                devScreen.classList.replace("closed", "open")
+            }
         }
-        else {
-            star.classList.add("rating", "ph-fill", "ph-star");
-        }
-        document.getElementById("park-rating").appendChild(star);
     }
-}
+
+    function logout() {
+        clearStorage();
+        setTimeout(() => {
+            window.location = "./login.html";
+        }, 250);
+    }
+
+
+
+    function loadStatusBar(name = "SEM NOME", rating = 0, balance = 0) {
+        const pParkName = document.getElementById("park-name");
+        const pParkRating = document.getElementById("park-rating");
+        const pParkBalance = document.getElementById("park-balance");
+        
+        pParkRating.innerHTML = "";
+        pParkName.innerHTML = `<i class="ph-fill ph-info"></i> ${name}`;
+        pParkBalance.innerHTML = `<i class="ph-fill ph-coins"></i> ${Number(balance).toLocaleString("pt-br")}`;
+        for (let i = 0; i < 5; i++) {
+            const star = document.createElement("i");
+            if(rating - i === 0.5) {
+                star.classList.add("rating", "ph-fill", "ph-star-half");
+            } else if(rating - i <= 0) {
+                star.classList.add("rating", "ph", "ph-star");
+            }
+            else {
+                star.classList.add("rating", "ph-fill", "ph-star");
+            }
+            pParkRating.appendChild(star);
+        }
+    }
+
+    function loadGrid(tiles = [], dinosaur = []) {
+        tiles.forEach((tile) => {
+            const t = document.createElement("div");
+            const tCol = tile.position_col;
+            const tRow = tile.position_row;
+            t.classList.add("tile", tile.category, tile.name);
+
+            dinosaur.forEach((dino) => {
+                if(dino.tile_col == tCol && dino.tile_row == tRow) {
+                    const d = document.createElement("div");
+                    d.classList.add("dinosaur", dino.name);
+                    t.appendChild(d);
+                }
+            });
+
+            const row = document.querySelector(`.row.row-${tRow + 1}`)
+            row.appendChild(t);
+        });
+    }
+
+    function loadDevScreen(data) {
+        const devIptParkName = document.getElementById("dev-ipt-park-name");
+        const devIptParkRating = document.getElementById("dev-ipt-park-rating");
+        const devIptParkBalance = document.getElementById("dev-ipt-park-balance");
+        
+        devIptParkName.value = data.park.name;
+        devIptParkRating.value = data.park.rating;
+        devIptParkBalance.value = data.park.dinoCoins;
+    }
+
+    function updateResource(resource, field, newValue, updateUiFn = () => {}) {
+        const data = JSON.parse(getItem(JPWG_DATA));
+
+        data[resource][field] = newValue;
+        setItem(JPWG_DATA, JSON.stringify(data));
+        console.log(`Atualizando Recurso: [${resource}] | Campo: [${field}] | Novo Valor: ${newValue}`);
+
+        if(typeof updateUiFn === "function") {
+            updateUiFn();
+        }
+    }
+
+    // resource pode ser "all", "park", "grid"
+    function updateUi(resource = "all") {
+        const {user, park, tiles, dinosaur} = JSON.parse(getItem(JPWG_DATA));
+        if(resource === "all") {
+            loadStatusBar(park.name, park.rating, park.dinoCoins);
+            loadGrid(tiles, dinosaur);
+        } else if (resource === "park") {
+            loadStatusBar(park.name, park.rating, park.dinoCoins);
+        } else if (resource === "grid") {
+            loadGrid(tiles, dinosaur);
+        }
+    }
 
 </script>
 </body>
 </html>
+
+<!-- 
+<script>
+function updatePark(field, value, updateFn) {
+    console.log(`ATUALIZANDO PARQUE: ${field} | valor: ${value}`);
+    let data = JSON.parse(getItem(JPWG_DATA));
+    data.park[field] = value;
+    setItem(JPWG_DATA, JSON.stringify(data));
+
+    if(typeof updateFn === "function") {
+        updateFn();
+    }
+}
+
+function calcIncreaseAmount() {
+    const {park} = JSON.parse(getItem(JPWG_DATA));
+    const currentRating = park.rating;
+    const currentBalance = park.dinoCoins;
+
+    const amount = Math.ceil(5 * currentRating);
+    return currentBalance + amount;
+}
+</script>
+-->
