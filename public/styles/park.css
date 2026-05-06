@@ -211,7 +211,7 @@ body {
 /* === STATUSBAR === */
 #statusbar {
     position: absolute;
-    bottom: 26px;
+    bottom: 0;
     right: 0;
     z-index: 10;
 
@@ -253,67 +253,6 @@ body {
 #park-balance:hover i {
     color: var(--ring);
 }
-
-/* === OVERLAYS & PANELS === */
-.overlay.closed { display: none; pointer-events: none; }
-.overlay.open { display: grid; cursor: pointer; }
-.overlay {
-    position: absolute;
-    inset: 0;
-    place-content: center;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 999 !important;
-}
-.overlay * {
-    cursor: default;
-}
-
-.panel {
-    background-color: var(--popover);
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-
-    border: 2px solid var(--primary);
-    border-radius: 1rem;
-
-    height: 600px;
-    min-width: 1000px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: start;
-    row-gap: 1rem;
-    padding: 1rem 2rem;
-}
-
-.panel-title {
-    font-family: "Jurassic Park", sans-serif;
-    font-weight: normal;
-    font-size: 2rem;
-    letter-spacing: 5px;
-}
-
-#general-panel {
-    background-image: url("../assets/images/visitor-center-inside.png");
-}
-#buildings-panel {
-    background-image: url("../assets/images/entrance-background.png");
-}
-#entrance-panel {
-    background-image: url("../assets/images/entrance-background.png");
-}
-#hatchery-panel {
-    background-image: url("../assets/images/hatchery-inside.png");
-}
-#enclosure-panel {
-    background-image: url("../assets/images/enclosure-background.png");
-}
-#enclosure-panel.broken {
-    background-image: url("../assets/images/enclosure-broken-background.png");
-}
-
 
 /* === TIPOS DE TILE === */
 /* Terrenos */

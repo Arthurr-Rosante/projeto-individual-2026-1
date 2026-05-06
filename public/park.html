@@ -8,6 +8,7 @@
     <!-- === Importação de Estilos === -->
     <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/park.css">
+    <link rel="stylesheet" href="./styles/panels.css">
     <link rel="stylesheet" href="./styles/dev.css">
     
     <!-- === Importação de funções === -->
@@ -18,6 +19,7 @@
 
     <!-- === Importação de Bibliotecas === -->
     <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/index.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.min.js" integrity="sha512-n/G+dROKbKL3GVngGWmWfwK0yPctjZQM752diVYnXZtD/48agpUKLIn0xDQL9ydZ91x6BiOmTIFwWjjFi2kEFg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
     <!-- Dev Screen -->
@@ -104,7 +106,7 @@
     <!-- Painel Geral (abre com clique na construção "Visitor-Center" ou "Visão Geral") -->
     <div class="overlay closed">
         <div id="general-panel" class="panel">
-            <h3 class="panel-title">Visão Geral do Parque</h3>
+            <h3 class="panel-title">Visao Geral do Parque</h3>
             <ul class="dinosaurs-list">
                 <!-- lista de dinossauros do parque... -->
             </ul>
@@ -113,7 +115,7 @@
     <!-- Painel Construções (abre com clique em "Construções") -->
     <div class="overlay closed">
         <div id="buildings-panel" class="panel">
-            <h3 class="panel-title">Construções Disponíveis</h3>
+            <h3 class="panel-title">Construcoes Disponiveis</h3>
             <ul class="buildings-list">
                 <!-- lista de construções disponíveis... -->
             </ul>
@@ -122,7 +124,7 @@
     <!-- Painel Nome Parque (abre com clique na construção "Entrance") -->
     <div class="overlay closed">
         <div id="entrance-panel" class="panel">
-            <h3 class="panel-title">Jurassic Park Web Genesis</h3>
+            <h3 class="panel-title">Portao de Entrada</h3>
             <form id="park-name-form">
                 <label for="ipt-park-name">Alterar Nome do seu Parque</label>
                 <input id="ipt-park-name" type="text" required>
@@ -136,7 +138,7 @@
             <h3 class="panel-title">Laboratorio de Incubacao</h3>
             <ul class="hatchery-slots">
                 <li id="hatch-slot-1" class="hatchery-slot"></li>
-            </div>
+            </ul>
             <ul class="dinosaurs-list">
                 <!-- lista de dinossauros disponíveis... -->
             </ul>
@@ -155,15 +157,56 @@
     <!-- Painel Cercado (abre com clique em qualquer tile da categoria "Enclosure") -->
     <div class="overlay closed">
         <div id="enclosure-panel" class="panel">
-            <!-- informações sobre cercado e dinossauro, se houver -->
+            <div class="enclosure-dinosaur">
+                <img src="./assets/images/dinosaurs/ceratossauro.png" alt="[dinosaur]">
+                <div class="enclosure-dinosaur-card">
+                    <div class="card-image">
+                        <img src="./assets/images/dinosaurs/ceratossauro_icon.png" alt="[dinosaur]">
+                        <img src="./assets/images/frame.png" alt="frame">
+                    </div>
+                    <h2>[Ceratossauro]</h2>
+                </div>
+            </div>
+            <div class="enclosure-status">
+                <div class="enclosure-status-header">
+                    <h2>Cercado [ID]</h2>
+                </div>
+                <div class="enclosure-status-body">
+                    <div class="enclosure-radar">
+                        <canvas id="enclosure-radar-chart"></canvas>
+                    </div>
+                    <h3><i class="ph ph-info"></i> Informação</h3>
+                    <ul>
+                        <li>Era: <span>[temporalRange]</span></li>
+                        <li>Locomoção: <span>[locomotionType]</span></li>
+                        <li>Dieta: <span>[diet]</span></li>
+                        <li>Altura: <span>[height]</span></li>
+                        <li>Peso: <span>[weight]</span></li>
+                        <li>Agressividade: <span>[aggressiveness]</span></li>
+                        <li>Custo de Incubação: <span>[hatchCost]</span></li>
+                        <li>Tempo de Eclosão: <span>[hatchTimeInSeconds]</span></li>
+                        <li>Chance de Eclosão: <span>[hatchSuccessRatio]</span></li>
+                    </ul>
+                </div>
+                <div class="enclosure-status-footer">
+                    <button id="release-dinosaur-btn">Soltar [Ceratossauro]</button>
+                    <button id="upgrade-enclosure-btn">Melhorar Cercado ([baseCost])</button>
+                </div>
+            </div>
         </div>
     </div>
 
 <!-- === SCRIPTS LOCAIS === -->
 <script>
     // === TELA DO DESENVOLVEDOR === //
-    document.addEventListener("keydown", (e) => toggleDevScreen(e));
+    document.addEventListener("keydown", (e) => {
+        if((e.ctrlKey || e.metaKey) && event.key === "k") {
+            togglePanel("dev-screen", false);
+            return;
+        }
+    });
 
+    // === PAINÉIS E OVERLAYS === //
     document.querySelectorAll(".overlay").forEach((el) => {
         el.addEventListener("click", (e) => {
             if(e.currentTarget === e.target) {
@@ -180,6 +223,7 @@
         if(clickedElement.classList.contains("enclosure")) { togglePanel("enclosure-panel") };
     });
 
+    // === FUNÇÃO PRINCIPAL === //
     document.addEventListener("DOMContentLoaded", () => {
         // === REDIRECIONAMENTO SE NÃO AUTENTICADO === //
         if(!getItem(JPWG_DATA)) {
@@ -188,6 +232,13 @@
 
         // === ELEMENTOS E EVENTOS HTML === //
         const grid = document.getElementById("grid");
+
+        const iptParkName = document.getElementById("ipt-park-name");
+        const parkNameForm = getElementByIdAndAttachEvent("park-name-form", 'submit', (e) => {
+            e.preventDefault();
+            let newName = String(iptParkName.value);
+            updateResource("park", "name", newName, () => updateUi("park"));
+        });
 
         // Dev Screen
         const devAutosaveBtn = getElementByIdAndAttachEvent("dev-autosave-btn", "click", () => triggerEvent("save"));
@@ -226,6 +277,27 @@
         // 1. RECEBE INFORMAÇÕES DO BD E SESSION STORAGE; CRIA CÓPIA DE TUDO (evento save chamga "copyStorage")
         const {user, park, tiles, dinosaur} = JSON.parse(getItem(JPWG_DATA));
         triggerEvent("save");
+
+        fetch("/api/species")
+            .then((res) => res.json())
+            .then((data) => setItem("JPWG_SPECIES", JSON.stringify(data)))
+            .catch((error) => {
+                console.log(error);
+            });
+
+        fetch("/api/buildings")
+            .then((res) => res.json())
+            .then((data) => setItem("JPWG_BUILDINGS", JSON.stringify(data)))
+            .catch((error) => {
+                console.log(error);
+            });
+
+        fetch("/api/events")
+            .then((res) => res.json())
+            .then((data) => setItem("JPWG_EVENTS", JSON.stringify(data)))
+            .catch((error) => {
+                console.log(error);
+            });
 
         // 2. CARREGA UI
         loadDevScreen({user, park, tiles, dinosaur});
@@ -268,17 +340,6 @@
         } else {
             element.classList.replace("closed", "open");
             icon && icon.classList.replace("ph-caret-circle-right", "ph-caret-circle-left");
-        }
-    }
-
-    function toggleDevScreen(event) {
-        if((event.ctrlKey || event.metaKey) && event.key === "k") {
-            const devScreen = document.getElementById("dev-screen");
-            if(devScreen.classList.contains("open")) {
-                devScreen.classList.replace("open", "closed")
-            } else {
-                devScreen.classList.replace("closed", "open")
-            }
         }
     }
 
@@ -368,28 +429,15 @@
         }
     }
 
+    function loadEnclosureData(tileCol, tileRow) {
+        const {dinosaur} = JSON.parse(getItem(JPWG_DATA));
+        const dino = dinosaur.find((dino) => dino.tile_col === tileCol && dino.tile_row === tileRow);
+        const enclosure = document.querySelector(`.tile[data-tile-col='${tileCol}'][data-tile-row='${tileRow}']`);
+
+
+    }
+
 </script>
 </body>
 </html>
 <script>
-function updatePark(field, value, updateFn) {
-    console.log(`ATUALIZANDO PARQUE: ${field} | valor: ${value}`);
-    let data = JSON.parse(getItem(JPWG_DATA));
-    data.park[field] = value;
-    setItem(JPWG_DATA, JSON.stringify(data));
-
-    if(typeof updateFn === "function") {
-        updateFn();
-    }
-}
-
-function calcIncreaseAmount() {
-    const {park} = JSON.parse(getItem(JPWG_DATA));
-    const currentRating = park.rating;
-    const currentBalance = park.dinoCoins;
-
-    const amount = Math.ceil(5 * currentRating);
-    return currentBalance + amount;
-}
-</script>
--->
