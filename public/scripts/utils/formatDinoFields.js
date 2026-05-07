@@ -40,13 +40,15 @@ function formatDinoAggressiveness(aggressiveness) {     // dado que aggressivene
 function formatDinoHatchTime(hatchTime) {   // dado que hatchTime é passado em Segundos, por padrão
     if(!isValid(hatchTime)) return "[erro de parâmetro]"
 
-    if(hatchTime < 60) {
-        return String(hatchTime + "s");
-    } else if (hatchTime < 3599) {
-        return String((hatchTime / 60) + "min");
-    } else {
-        return String((hatchTime / 3600) + "hr");
-    }
+    let seconds = String(hatchTime % 60).split('.')[0].padStart(2, "0");
+    let minutes = String((hatchTime / 60) % 60).split('.')[0].padStart(2, "0");
+    let hours = String(hatchTime / 3600).split('.')[0].padStart(2, "0");
+    
+    if((hatchTime / 3600) < 1) {
+        return `${minutes}:${seconds}`;
+    } 
+
+    return `${hours}:${minutes}:${seconds}`;
 }
 
 function formatDinoHatchSuccess(hatchSuccess) {     // dado que hatchSuccess é passado na faixa 0-1
