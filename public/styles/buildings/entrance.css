@@ -1,6 +1,6 @@
 /* === PAINEL ENTRADA === */
 #entrance-panel {
-    background-image: url('../assets/images/entrance-background.png');
+    background-image: url('../../assets/images/entrance-background.png');
     display: grid;
     place-content: center;
 }

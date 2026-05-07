@@ -1,6 +1,6 @@
 /* === PAINEL CERCADO === */
 #enclosure-panel {
-    background-image: url('../assets/images/enclosure-background.png');
+    background-image: url('../../assets/images/enclosure-background.png');
     
     flex-direction: row;
     align-items: stretch;
@@ -10,7 +10,7 @@
 }
 
 #enclosure-panel.broken {
-    background-image: url('../assets/images/enclosure-broken-background.png');
+    background-image: url('../../assets/images/enclosure-broken-background.png');
 }
 
 /* Cercado - Coluna da Esquerda */
