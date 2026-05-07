@@ -191,7 +191,11 @@
         const clickedElement = e.target;
         if(clickedElement.classList.contains("visitor-center")) { togglePanel("general-panel") };
         if(clickedElement.classList.contains("entrance")) { togglePanel("entrance-panel") };
-        if(clickedElement.classList.contains("hatchery")) { togglePanel("hatchery-panel") };
+        if(clickedElement.classList.contains("hatchery")) { 
+            togglePanel("hatchery-panel");
+            loadHatcheryData();
+        };
+
         if(clickedElement.classList.contains("enclosure")) { 
             togglePanel("enclosure-panel");
             loadEnclosureData(e.target.dataset.tileCol, e.target.dataset.tileRow, "enclosure-panel");
@@ -406,6 +410,10 @@
         }
     }
 
+    function openHatchery() {
+        togglePanel("enclosure-panel")
+        togglePanel("hatchery-panel")
+    }
     function loadEnclosureData(tileCol, tileRow, elementId) {
         const panel = document.getElementById(elementId);
         panel.innerHTML = "";
@@ -417,7 +425,37 @@
         const enclosure = tiles.find((t) => t.position_col == tileCol && t.position_row == tileRow);
         
         if(!dino) {
+            const enclosureTemplate = `
+            <h3 class="panel-title">Cercado Vazio</h3>
+
+            <div class="enclosure-dinosaur">
+            </div>
             
+            <div class="enclosure-status">
+                <div class="enclosure-status-header">
+                    <h2>${enclosure.translatedName}</h2>
+                </div>
+                <div class="enclosure-status-body">
+                    <div class="empty-enclosure">
+                        <p>Não Há Dinossauros Neste Cercado</p>
+                        <button onclick="openHatchery()">Ir para a Incubadora</button>  
+                    </div>
+                </div>
+                <div class="enclosure-status-footer">
+                    <div class="enclosure-health">
+                        <span>HP:</span>
+                        <div id="enclosure-healthbar">
+                            <span>${enclosure.hp}/${enclosure.durability}</span>
+                        </div>
+                        <div class="enclosure-actions">
+                            <button id="repair-enclosure-btn"><i class="ph-fill ph-wrench"></i>Reparar (${enclosure.durability})</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        panel.innerHTML = enclosureTemplate;
         } else {
             const species = speciesList.find((sp) => sp.id == dino.idSpecies);
 
@@ -531,6 +569,34 @@
             const chartElement = document.getElementById('enclosure-radar-chart');
             const chart = new Chart(chartElement, config);
         }
+    }
+
+    function loadHatcheryData() {
+        const hatcherySlots = document.getElementById("hatchery-slots");
+        const hatcheryList = document.getElementById("hatchery-list");
+
+        hatcherySlots.innerHTML = "";
+        hatcheryList.innerHTML = "";
+
+        const data = JSON.parse(getItem("JPWG_SPECIES"));
+        if(!data) {}
+
+        data.forEach((species) => {
+            hatcheryList.innerHTML += `
+                <li class="hatchery-item" style="background-image: url('./assets/images/dinosaurs/${species.name}_icon.png');">
+                    <p class="hatchery-title">${species.name}</p>
+                    <div class="hatchery-item-info">
+                        <p><span><i class="ph-fill ph-coins"></i> ${species.hatchCost}</span></p>
+                        <p><span><i class="ph-fill ph-timer"></i> ${formatDinoHatchTime(species.hatchTimeInSeconds)}</span></p>
+                        <p><span><i class="ph-fill ph-scales"></i> ${formatDinoHatchSuccess(species.hatchSuccessRate)}</span></p>
+                    </div>
+                    <div class="hatchery-item-footer">
+                        <button><i class="ph ph-egg-crack"></i> Incubar</button>
+                    </div>
+                </li>
+            `;
+        });
+
     }
 
 </script>
