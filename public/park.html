@@ -19,7 +19,7 @@
 
     <!-- === Importação de Bibliotecas === -->
     <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/index.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.min.js" integrity="sha512-n/G+dROKbKL3GVngGWmWfwK0yPctjZQM752diVYnXZtD/48agpUKLIn0xDQL9ydZ91x6BiOmTIFwWjjFi2kEFg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- Dev Screen -->
@@ -157,42 +157,7 @@
     <!-- Painel Cercado (abre com clique em qualquer tile da categoria "Enclosure") -->
     <div class="overlay closed">
         <div id="enclosure-panel" class="panel">
-            <div class="enclosure-dinosaur">
-                <img src="./assets/images/dinosaurs/ceratossauro.png" alt="[dinosaur]">
-                <div class="enclosure-dinosaur-card">
-                    <div class="card-image">
-                        <img src="./assets/images/dinosaurs/ceratossauro_icon.png" alt="[dinosaur]">
-                        <img src="./assets/images/frame.png" alt="frame">
-                    </div>
-                    <h2>[Ceratossauro]</h2>
-                </div>
-            </div>
-            <div class="enclosure-status">
-                <div class="enclosure-status-header">
-                    <h2>Cercado [ID]</h2>
-                </div>
-                <div class="enclosure-status-body">
-                    <div class="enclosure-radar">
-                        <canvas id="enclosure-radar-chart"></canvas>
-                    </div>
-                    <h3><i class="ph ph-info"></i> Informação</h3>
-                    <ul>
-                        <li>Era: <span>[temporalRange]</span></li>
-                        <li>Locomoção: <span>[locomotionType]</span></li>
-                        <li>Dieta: <span>[diet]</span></li>
-                        <li>Altura: <span>[height]</span></li>
-                        <li>Peso: <span>[weight]</span></li>
-                        <li>Agressividade: <span>[aggressiveness]</span></li>
-                        <li>Custo de Incubação: <span>[hatchCost]</span></li>
-                        <li>Tempo de Eclosão: <span>[hatchTimeInSeconds]</span></li>
-                        <li>Chance de Eclosão: <span>[hatchSuccessRatio]</span></li>
-                    </ul>
-                </div>
-                <div class="enclosure-status-footer">
-                    <button id="release-dinosaur-btn">Soltar [Ceratossauro]</button>
-                    <button id="upgrade-enclosure-btn">Melhorar Cercado ([baseCost])</button>
-                </div>
-            </div>
+            <!-- Dados carregados dinamicamente... -->
         </div>
     </div>
 
@@ -220,7 +185,10 @@
         if(clickedElement.classList.contains("visitor-center")) { togglePanel("general-panel") };
         if(clickedElement.classList.contains("entrance")) { togglePanel("entrance-panel") };
         if(clickedElement.classList.contains("hatchery")) { togglePanel("hatchery-panel") };
-        if(clickedElement.classList.contains("enclosure")) { togglePanel("enclosure-panel") };
+        if(clickedElement.classList.contains("enclosure")) { 
+            togglePanel("enclosure-panel");
+            loadEnclosureData(e.target.dataset.tileCol, e.target.dataset.tileRow, "enclosure-panel");
+        };
     });
 
     // === FUNÇÃO PRINCIPAL === //
@@ -308,12 +276,14 @@
         const autosaveTimer = setInterval(() => triggerEvent("save"), AUTOSAVE_INTERVAL_MS);
         const randomEventsTimer = setInterval(() => triggerEvent("randomEvent"), EVENTS_INTERVAL_MS);
         const balanceTimer = setInterval(() => {
+
             const {park} = JSON.parse(getItem(JPWG_DATA));
             let amount = Math.ceil((MIN_BALANCE_INCREASE * park.rating)) + park.dinoCoins;
             if(amount > MAX_DINO_COINS_COUNT) amount = MAX_DINO_COINS_COUNT;
 
             updateResource("park", "dinoCoins", amount, () => updateUi("park"));
         }, INCREASE_BALANCE_INTERVAL_MS);
+
     });
 
     // === FUNÇÕES UTILITÁRIAS === //
@@ -429,12 +399,131 @@
         }
     }
 
-    function loadEnclosureData(tileCol, tileRow) {
-        const {dinosaur} = JSON.parse(getItem(JPWG_DATA));
-        const dino = dinosaur.find((dino) => dino.tile_col === tileCol && dino.tile_row === tileRow);
-        const enclosure = document.querySelector(`.tile[data-tile-col='${tileCol}'][data-tile-row='${tileRow}']`);
+    function loadEnclosureData(tileCol, tileRow, elementId) {
+        const panel = document.getElementById(elementId);
+        panel.innerHTML = "";
 
+        const {tiles, dinosaur} = JSON.parse(getItem(JPWG_DATA));
+        const speciesList = JSON.parse(getItem("JPWG_SPECIES"));
 
+        const dino = dinosaur.find((d) => d.tile_col == tileCol && d.tile_row == tileRow);
+        const enclosure = tiles.find((t) => t.position_col == tileCol && t.position_row == tileRow);
+        
+        if(!dino) {
+            
+        } else {
+            const species = speciesList.find((sp) => sp.id == dino.idSpecies);
+
+            const enclosureTemplate = `
+            <h3 class="panel-title">Cercado de ${dino.name}</h3>
+
+            <div class="enclosure-dinosaur">
+                <img src="./assets/images/dinosaurs/${dino.name}.png" alt="${dino.name}" class="species-img">
+                <div class="enclosure-dinosaur-card">
+                    <div class="card-image">
+                        <img src="./assets/images/dinosaurs/${dino.name}_icon.png" alt="${dino.name}" class="species-icon">
+                        <img src="./assets/images/frame.png" alt="frame" class="frame">
+                    </div>
+                    <button id="release-dinosaur-btn">Soltar ${dino.name}</button>
+                </div>
+            </div>
+            
+            <div class="enclosure-status">
+                <div class="enclosure-status-header">
+                    <h2>${enclosure.translatedName}</h2>
+                </div>
+                <div class="enclosure-status-body">
+                    <div class="enclosure-radar">
+                        <canvas id="enclosure-radar-chart"></canvas>
+                    </div>
+                    <div class="enclosure-info">
+                        <ul>
+                           <li>Era: <span>${species.temporalRange}</span></li>
+                            <li>Locomoção: <span>${species.locomotionType}</span></li>
+                            <li>Dieta: <span>${species.diet}</span></li>
+                            <li>Altura: <span>${formatDinoHeight(Number(species.heightInMeters))}</span></li>
+                            <li>Peso: <span>${formatDinoWeight(Number(species.weightInKilograms))}</span></li>
+                            <li>Agressividade: <span>${formatDinoAggressiveness(dino.aggressiveness)}</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="enclosure-status-footer">
+                    <div class="enclosure-health">
+                        <span>HP:</span>
+                        <div id="enclosure-healthbar">
+                            <span>${enclosure.hp}/${enclosure.durability}</span>
+                        </div>
+                    </div>
+                    <div class="enclosure-actions">
+                        <button id="repair-enclosure-btn"><i class="ph-fill ph-wrench"></i>Reparar (${enclosure.durability})</button>
+                        <button id="upgrade-enclosure-btn"><i class="ph-fill ph-coins"></i> Melhorar (${enclosure.baseCost})</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+            const data = {
+                labels: [
+                    'Custo Eclosão',
+                    'Tempo Eclosão',
+                    'Chance Eclosão',
+                    'Altura',
+                    'Peso',
+                    'Agressividade',
+                ],
+                datasets: [{
+                    label: dino.name,
+                    data: [species.hatchCost, species.hatchTimeInSeconds, species.hatchSuccessRate, Number(species.heightInMeters), Number(species.weightInKilograms), species.aggressiveness],
+                    fill: true,
+                    backgroundColor: 'rgba(184, 137, 26, 0.15)',
+                    borderColor: '#B8891A',
+                    pointBackgroundColor: '#B8891A',
+                    pointBorderColor: '#1A1407',
+                    pointHoverBackgroundColor: '#FDF3DC',
+                    pointHoverBorderColor: '#B8891A',
+                }]
+            };
+
+            const config = {
+                type: 'radar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    elements: {
+                        line: { borderWidth: 2 }
+                    },
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 100,
+                            ticks: {
+                                display: false,
+                                stepSize: 25,
+                            },
+                            grid: {
+                                color: 'rgba(217, 202, 171, 0.2)',
+                            },
+                            angleLines: {
+                                color: 'rgba(217, 202, 171, 0.25)',
+                            },
+                            pointLabels: {
+                                font: { family: "'Courier Prime', monospace", size: 10 },
+                                color: '#9E8060',
+                            },
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                    }
+                },
+            };
+
+            panel.innerHTML = enclosureTemplate;
+
+            const chartElement = document.getElementById('enclosure-radar-chart');
+            const chart = new Chart(chartElement, config);
+        }
     }
 
 </script>
