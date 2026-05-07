@@ -93,7 +93,7 @@ export function authenticate(email, password) {
         -- 2. Seleciona Tiles do Parque
         SELECT 
             t.idPark, t.position_col, t.position_row, b.\`name\`, b.translatedName, b.category, 
-            b.durability, b.baseCost, b.maxUnits, b.removable, b.upgradeable
+            b.durability, b.baseCost, b.maxUnits, b.removable, b.upgradeable, t.hp
         FROM tile t 
         JOIN building b ON t.idBuilding = b.id 
         WHERE idPark = (SELECT id FROM user WHERE ${whereCondition})
