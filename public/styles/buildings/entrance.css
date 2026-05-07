@@ -1,0 +1,14 @@
+/* === PAINEL ENTRADA === */
+#entrance-panel {
+    background-image: url('../assets/images/entrance-background.png');
+    display: grid;
+    place-content: center;
+}
+
+#park-name-form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+
+    font-weight: bold;
+}

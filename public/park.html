@@ -10,6 +10,13 @@
     <link rel="stylesheet" href="./styles/park.css">
     <link rel="stylesheet" href="./styles/panels.css">
     <link rel="stylesheet" href="./styles/dev.css">
+
+    <link rel="stylesheet" href="./styles/buildings/panels.css">
+    <link rel="stylesheet" href="./styles/buildings/general.css">
+    <link rel="stylesheet" href="./styles/buildings/hatchery.css">
+    <link rel="stylesheet" href="./styles/buildings/entrance.css">
+    <link rel="stylesheet" href="./styles/buildings/enclosure.css">
+    <link rel="stylesheet" href="./styles/buildings/structures.css">
     
     <!-- === Importação de funções === -->
     <script src="./constants.js"></script>
@@ -136,10 +143,10 @@
     <div class="overlay closed">
         <div id="hatchery-panel" class="panel">
             <h3 class="panel-title">Laboratorio de Incubacao</h3>
-            <ul class="hatchery-slots">
+            <ul id="hatchery-slots">
                 <li id="hatch-slot-1" class="hatchery-slot"></li>
             </ul>
-            <ul class="dinosaurs-list">
+            <ul id="hatchery-list">
                 <!-- lista de dinossauros disponíveis... -->
             </ul>
         </div>

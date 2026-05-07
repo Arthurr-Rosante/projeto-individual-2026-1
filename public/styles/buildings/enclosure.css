@@ -1,75 +1,3 @@
-/* === OVERLAYS & PANELS === */
-.overlay {
-    position: absolute;
-    inset: 0;
-    place-content: center;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 999;
-}
-.overlay.closed { display: none; pointer-events: none; }
-.overlay.open   { display: grid; cursor: pointer; }
-.panel {
-    position: relative;
-
-    background-color: var(--popover);
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    border: 2px solid var(--primary);
-    border-radius: 1rem;
-    
-    min-width: 900px;
-    width: 100%;
-    height: 600px;
-    padding: 1rem 2rem;
-    
-    display: flex;
-    flex-direction: column;
-    row-gap: 1rem;
-}
-
-.panel-title {
-    position: absolute;
-    top: -10%;
-    width: 100%;
-
-    font-family: 'Jurassic Park', sans-serif;
-    font-weight: normal;
-    font-size: 2.5rem;
-    letter-spacing: 5px;
-    text-align: center;
-}
-
-/* === PAINEL VISÃO GERAL === */
-#general-panel {
-    background-image: url('../assets/images/visitor-center-inside.png');
-}
-
-/* === PAINEL CONSTRUÇÕES === */
-#buildings-panel {
-    background-image: url('../assets/images/entrance-background.png');
-}
-
-/* === PAINEL ENTRADA === */
-#entrance-panel {
-    background-image: url('../assets/images/entrance-background.png');
-    display: grid;
-    place-content: center;
-}
-
-#park-name-form {
-    display: flex;
-    flex-direction: column;
-    row-gap: 1rem;
-
-    font-weight: bold;
-}
-
-/* === PAINEL INCUBADORA === */
-#hatchery-panel {
-    background-image: url('../assets/images/hatchery-inside.png');
-}
-
 /* === PAINEL CERCADO === */
 #enclosure-panel {
     background-image: url('../assets/images/enclosure-background.png');
@@ -191,6 +119,15 @@
     overflow-x: hidden;
 }
 
+.empty-enclosure {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-content: center;
+
+    font-size: 2rem;
+}
+
 /* Cercado - Gráfico de Radar */
 .enclosure-radar {
     flex: 1;
@@ -223,7 +160,6 @@
     font-family: 'Courier Prime', monospace;
     font-size: 0.78rem;
     width: 100%;
-    display: flex;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0.3rem 0.75rem;
@@ -353,17 +289,4 @@
     color: var(--success-foreground);
     mix-blend-mode: difference;
     user-select: none;
-}
-
-/* === PAINEL SELEÇÃO DE TILES === */
-#tile-switcher {
-    position: absolute;
-    bottom: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: var(--background);
-    border: 1px solid var(--primary);
-    padding: 1rem;
-    width: 100px;
-    height: 50px;
 }
