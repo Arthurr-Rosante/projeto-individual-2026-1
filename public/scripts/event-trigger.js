@@ -1,3 +1,5 @@
+
+const SHOW_EVENT_LOGS = false;
 function triggerEvent(event, params = []) {
     const d = new Date().toLocaleString();
     const fn = eventList[event];
@@ -8,7 +10,7 @@ function triggerEvent(event, params = []) {
     }
 
     fn(...params);
-    console.log(`Evento: ${event} | ${d}`);
+    SHOW_EVENT_LOGS && console.log(`Evento: ${event} | ${d}`);
 }
 
 const eventList = {
