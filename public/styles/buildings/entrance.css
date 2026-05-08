@@ -6,9 +6,27 @@
 }
 
 #park-name-form {
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+
     display: flex;
     flex-direction: column;
     row-gap: 1rem;
+    padding: 2rem 1rem;
 
     font-weight: bold;
+    text-align: center;
+}
+
+#ipt-park-name {
+    font-family: "Courier Prime", monospace;
+}
+
+#park-name-btn {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+#park-name-btn:hover {
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--primary);
 }

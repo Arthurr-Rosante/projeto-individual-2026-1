@@ -33,6 +33,7 @@
     justify-content: center;
 
     transition: border-color 0.2s, background-color 0.2s;
+    cursor: pointer;
 }
 .hatchery-slot[data-slot-status="empty"]::after {
     content: "Vazio";
