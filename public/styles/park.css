@@ -9,7 +9,7 @@ html {
 
 body {
     position: relative;
-    background-color: var(--foreground);
+    background-color: var(--secondary-foreground);
 }
 
 .grid-wrapper {
@@ -215,6 +215,9 @@ body {
     right: 0;
     z-index: 10;
 
+    max-width: 35vw;
+    width: 100%;
+
     background-color: var(--background);
     border: 2px solid var(--primary);
     border-bottom: none;
@@ -257,16 +260,16 @@ body {
 /* === TIPOS DE TILE === */
 /* Terrenos */
 .terrain-grass {
-    background-image: url("../assets/images/terrain/terrain-grass.png");
+    background-image: url("../assets/images/terrains/terrain-grass.png");
 }
 .terrain-trees {
-    background-image: url("../assets/images/terrain/terrain-trees.png");
+    background-image: url("../assets/images/terrains/terrain-trees.png");
 }
 .terrain-pond {
-    background-image: url("../assets/images/terrain/terrain-pond.png");
+    background-image: url("../assets/images/terrains/terrain-pond.png");
 }
 .terrain-dirt {
-    background-image: url("../assets/images/terrain/terrain-dirt.png");
+    background-image: url("../assets/images/terrains/terrain-dirt.png");
 }
 
 /* Caminhos */

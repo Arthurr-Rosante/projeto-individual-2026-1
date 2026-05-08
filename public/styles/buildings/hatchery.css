@@ -1,72 +1,180 @@
 /* === PAINEL INCUBADORA === */
 #hatchery-panel {
-    background-image: url('../assets/images/hatchery-inside.png');
-    display: flex;
+    background-image: url('../../assets/images/hatchery-inside.png');
     flex-direction: column;
-    align-items: center;
-    row-gap: 1rem;
-}
+    align-items: stretch;
+    gap: 1rem;
 
+    padding: 1rem;
+}
+ 
 #hatchery-slots {
     background-color: rgba(26, 20, 7, 0.9);
     border: 1px solid var(--border);
     border-radius: 0.75rem;
-    
-    width: 100%;
-    min-height: 250px;
-    padding: 0.5rem;
+
+    height: 35%;
+    padding: 1rem;
     
     display: flex;
+    justify-content: center;
     column-gap: 1rem;
-    align-items: center;
-    justify-content: space-evenly;
 }
+ .hatchery-slot {
+    position: relative;
+    width: 100%;
+    
+    border-radius: 0.5rem;
+    border: 1px dashed var(--border);
+    background-color: rgba(26, 20, 7, 0.6);
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: border-color 0.2s, background-color 0.2s;
+}
+.hatchery-slot[data-slot-status="empty"]::after {
+    content: "Vazio";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-family: "Courier Prime", monospace;
+    transform: translate(-50%, -50%);
+}
+.hatchery-slot::before {
+    content: "Slot de Incubação";
+} 
+
+.hatchery-slot:hover {
+    border-color: rgba(184, 137, 26, 0.5);
+    background-color: rgba(184, 137, 26, 0.1);
+}
+ 
 #hatchery-list {
-    overflow-y: scroll;
     background-color: rgba(26, 20, 7, 0.9);
     border: 1px solid var(--border);
     border-radius: 0.75rem;
-
-    width: 100%;
-    padding: 0.5rem;
+    height: 65%;
     
+    overflow-y: auto;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    place-content: start;
-    gap: 1rem;
+    align-content: start;
+    gap: 0.75rem;
+    padding: 0.75rem;
 }
-
+ 
 .hatchery-item {
+    overflow: hidden;
     position: relative;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    
-    min-height: 140px;
+    min-height: 160px;
 
     background-color: var(--popover);
+    background-repeat: no-repeat;
+    background-size: contain;
     border: 1px solid var(--border);
     border-radius: 0.5rem;
+    
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    cursor: pointer;
+
+    transition: border-color 0.2s, transform 0.15s;
 }
-.hatchery-item .hatchery-title {
+ 
+.hatchery-item:hover {
+    border-color: var(--primary);
+}
+ 
+.hatchery-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top,rgba(0, 0, 0, 0.9) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+ 
+.hatchery-title,
+.hatchery-slot::before {
     position: absolute;
     top: 0;
-    left: 0;
-
+    right: 0;
+    padding: 0.2rem 0.5rem;
+    
+    background-color: var(--background);
+    border-bottom-left-radius: 0.35rem;
+    border-bottom: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+    
     font-family: 'Courier Prime', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--foreground);
 }
-
+ 
+.hatchery-item-info,
+.hatchery-item-footer {
+    position: relative;
+}
+ 
 .hatchery-item-info {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    justify-content: center;
+    padding: 0 0.5rem 0.3rem;
+    
     font-family: 'Courier Prime', monospace;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+}
+ 
+.hatchery-item-info p {
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    gap: 0.2rem;
+}
+ 
+.hatchery-item-info span {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-weight: 400;
+    color: var(--foreground);
+}
+ 
+.hatchery-item-info i {
+    color: var(--primary);
+    font-size: 0.8rem;
+}
+ 
+.hatchery-item-footer {
+    padding: 0.5rem;
+    display: flex;
+    justify-content: end;
+}
+ 
+.hatchery-item-footer button {
+    width: fit-content;
+    padding: 0.5rem 1rem;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.hatchery-item-footer button:disabled {
+    pointer-events: none;
+}
+
+.hatchery-item-footer button:hover {
+    background-color: var(--primary);
+    color: var(--foreground);
 }
