@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="./styles/buildings/hatchery.css">
     <link rel="stylesheet" href="./styles/buildings/entrance.css">
     <link rel="stylesheet" href="./styles/buildings/enclosure.css">
-    <link rel="stylesheet" href="./styles/buildings/structures.css">
     
     <!-- === Importação de funções === -->
     <script src="./constants.js"></script>
@@ -74,12 +73,12 @@
         </div>
         <nav class="sidebar-body">
             <button id="general-panel-toggler" class="sidebar-item">
-                <i class="ph-fill ph-cards"></i>
+                <i class="ph-fill ph-binoculars"></i>
                 <p>Visão Geral</p>
             </button>
-            <button id="buildings-panel-toggler" class="sidebar-item">
-                <i class="ph-fill ph-blueprint"></i>
-                <p>Construções</p>
+            <button id="editor-mode-toggler" class="sidebar-item">
+                <i class="ph-fill ph-hammer"></i>
+                <p>Modo Editor</p>
             </button>
             <button id="autosave-btn" class="sidebar-item">
                 <i class="ph-fill ph-floppy-disk"></i>
@@ -119,15 +118,6 @@
             </ul>
         </div>
     </div>
-    <!-- Painel Construções (abre com clique em "Construções") -->
-    <div class="overlay closed">
-        <div id="buildings-panel" class="panel">
-            <h3 class="panel-title">Construcoes Disponiveis</h3>
-            <ul class="buildings-list">
-                <!-- lista de construções disponíveis... -->
-            </ul>
-        </div>
-    </div>
     <!-- Painel Nome Parque (abre com clique na construção "Entrance") -->
     <div class="overlay closed">
         <div id="entrance-panel" class="panel">
@@ -143,9 +133,9 @@
     <div class="overlay closed">
         <div id="hatchery-panel" class="panel">
             <h3 class="panel-title">Laboratorio de Incubacao</h3>
-            <ul id="hatchery-slots">
-                <li id="hatch-slot-1" class="hatchery-slot"></li>
-            </ul>
+            <div id="hatchery-slots">
+                <!-- lista de slots para incubar... -->
+            </div>
             <ul id="hatchery-list">
                 <!-- lista de dinossauros disponíveis... -->
             </ul>
@@ -153,12 +143,10 @@
     </div>
 
     <!-- Tile Switcher (abre com clique em qualquer tile) -->
-    <div class="overlay closed">
-        <div id="tile-switcher">
-            <ul class="tile-list">
-                <!-- lista com demais tiles para trocar -->
-            </ul>
-        </div>
+    <div id="tile-switcher" class="closed">
+        <ul class="tile-list">
+            <!-- lista com demais tiles para trocar -->
+        </ul>
     </div>
 
     <!-- Painel Cercado (abre com clique em qualquer tile da categoria "Enclosure") -->
@@ -191,11 +179,7 @@
         const clickedElement = e.target;
         if(clickedElement.classList.contains("visitor-center")) { togglePanel("general-panel") };
         if(clickedElement.classList.contains("entrance")) { togglePanel("entrance-panel") };
-        if(clickedElement.classList.contains("hatchery")) { 
-            togglePanel("hatchery-panel");
-            loadHatcheryData();
-        };
-
+        if(clickedElement.classList.contains("hatchery")) { togglePanel("hatchery-panel")};
         if(clickedElement.classList.contains("enclosure")) { 
             togglePanel("enclosure-panel");
             loadEnclosureData(e.target.dataset.tileCol, e.target.dataset.tileRow, "enclosure-panel");
@@ -206,7 +190,7 @@
     document.addEventListener("DOMContentLoaded", () => {
         // === REDIRECIONAMENTO SE NÃO AUTENTICADO === //
         if(!getItem(JPWG_DATA)) {
-           window.location = "./login.html";
+        window.location = "./login.html";
         }
 
         // === ELEMENTOS E EVENTOS HTML === //
@@ -254,7 +238,7 @@
         // Togglers
         const sidebarToggler = getElementByIdAndAttachEvent("sidebar-toggler", 'click', () => togglePanel("sidebar", false));
         const generalPanelToggler = getElementByIdAndAttachEvent("general-panel-toggler", 'click', () => togglePanel("general-panel"));
-        const buildingsPanelToggler = getElementByIdAndAttachEvent("buildings-panel-toggler", 'click', () => togglePanel("buildings-panel"));
+        const editorModeToggler = getElementByIdAndAttachEvent("editor-mode-toggler", 'click', () => togglePanel("tile-switcher", false));
 
         // Sidebar
         const autosaveBtn = getElementByIdAndAttachEvent("autosave-btn", "click", () => {
@@ -293,6 +277,7 @@
         loadDevScreen({user, park, tiles, dinosaur});
         loadStatusBar(park.name, park.rating, park.dinoCoins);
         loadGrid(tiles, dinosaur);
+        loadHatcheryData();
 
         // 3. INICIA TIMERS
         const autosaveTimer = createTimer(() => triggerEvent("save"), AUTOSAVE_INTERVAL_MS);
@@ -450,7 +435,7 @@
                 </div>
                 <div class="enclosure-status-body">
                     <div class="empty-enclosure">
-                        <p>Não Há Dinossauros Neste Cercado</p>
+                        <p>Cercado Vazio</p>
                         <button onclick="openHatchery()">Ir para a Incubadora</button>  
                     </div>
                 </div>
@@ -496,7 +481,7 @@
                     </div>
                     <div class="enclosure-info">
                         <ul>
-                           <li>Era: <span>${species.temporalRange}</span></li>
+                        <li>Era: <span>${species.temporalRange}</span></li>
                             <li>Locomoção: <span>${species.locomotionType}</span></li>
                             <li>Dieta: <span>${species.diet}</span></li>
                             <li>Altura: <span>${formatDinoHeight(Number(species.heightInMeters))}</span></li>
@@ -591,28 +576,39 @@
         hatcherySlots.innerHTML = "";
         hatcheryList.innerHTML = "";
 
-        const data = JSON.parse(getItem("JPWG_SPECIES"));
-        if(!data) {}
+        const species = JSON.parse(getItem("JPWG_SPECIES"));
+        const {park} = JSON.parse(getItem(JPWG_DATA));
+        if(!species) {
+            // aviso: buscar por species novamente
+        }
 
-        data.forEach((species) => {
+        species.forEach((species) => {
             hatcheryList.innerHTML += `
                 <li class="hatchery-item" style="background-image: url('./assets/images/dinosaurs/${species.name}_icon.png');">
                     <p class="hatchery-title">${species.name}</p>
                     <div class="hatchery-item-info">
                         <p><span><i class="ph-fill ph-coins"></i> ${species.hatchCost}</span></p>
                         <p><span><i class="ph-fill ph-timer"></i> ${formatDinoHatchTime(species.hatchTimeInSeconds)}</span></p>
-                        <p><span><i class="ph-fill ph-scales"></i> ${formatDinoHatchSuccess(species.hatchSuccessRate)}</span></p>
+                        <p><span><i class="ph-fill ph-egg-crack"></i> ${formatDinoHatchSuccess(species.hatchSuccessRate)}</span></p>
                     </div>
                     <div class="hatchery-item-footer">
-                        <button><i class="ph ph-egg-crack"></i> Incubar</button>
+                        <button ${park.dinoCoins >= species.hatchCost ? "" : "disabled"} onclick="hatchDinosaur(${species.id})">Incubar</button>
                     </div>
                 </li>
             `;
         });
+
+        for (let i = 1; i <= 3; i++) {
+            hatcherySlots.innerHTML += `
+                <div id="hatchery-slot-${i}" class="hatchery-slot" data-slot-status="empty" data-slot-dinosaur="" data-time-left=""></div>
+            `;
+        }
+
+    }
+    function hatchDinosaur(idSpecies) {
 
     }
 
 </script>
 </body>
 </html>
-<script>
