@@ -114,9 +114,7 @@
     <div class="overlay closed">
         <div id="general-panel" class="panel">
             <h3 class="panel-title">Visao Geral do Parque</h3>
-            <ul class="dinosaurs-list">
-                <!-- lista de dinossauros do parque... -->
-            </ul>
+            <!-- dados carregados dinâmicamente... -->
         </div>
     </div>
     <!-- Painel Nome Parque (abre com clique na construção "Entrance") -->
@@ -124,8 +122,8 @@
         <div id="entrance-panel" class="panel">
             <h3 class="panel-title">Portao de Entrada</h3>
             <form id="park-name-form">
-                <label for="ipt-park-name">Alterar Nome do seu Parque</label>
-                <input id="ipt-park-name" type="text" required>
+                <label for="ipt-park-name">Mudar o nome do Parque</label>
+                <input id="ipt-park-name" type="text" placeholder="ex: Hammond's Dream" required>
                 <button id="park-name-btn" type="submit">Alterar</button>
             </form>
         </div>
@@ -178,7 +176,10 @@
 
     document.addEventListener("click", (e) => {
         const clickedElement = e.target;
-        if(clickedElement.classList.contains("visitor-center")) { togglePanel("general-panel") };
+        if(clickedElement.classList.contains("visitor-center")) {
+            loadGeneralData();
+            togglePanel("general-panel");
+        };
         if(clickedElement.classList.contains("entrance")) { togglePanel("entrance-panel") };
         if(clickedElement.classList.contains("hatchery")) { togglePanel("hatchery-panel")};
         if(clickedElement.classList.contains("enclosure")) { 
@@ -186,6 +187,8 @@
             loadEnclosureData(e.target.dataset.tileCol, e.target.dataset.tileRow, "enclosure-panel");
         };
     });
+
+
 
     // === FUNÇÃO PRINCIPAL === //
     document.addEventListener("DOMContentLoaded", () => {
@@ -238,7 +241,10 @@
 
         // Togglers
         const sidebarToggler = getElementByIdAndAttachEvent("sidebar-toggler", 'click', () => togglePanel("sidebar", false));
-        const generalPanelToggler = getElementByIdAndAttachEvent("general-panel-toggler", 'click', () => togglePanel("general-panel"));
+        const generalPanelToggler = getElementByIdAndAttachEvent("general-panel-toggler", 'click', () => {
+            loadGeneralData();
+            togglePanel("general-panel");
+        });
         const editorModeToggler = getElementByIdAndAttachEvent("editor-mode-toggler", 'click', () => togglePanel("tile-switcher", false));
 
         // Sidebar
@@ -293,6 +299,8 @@
         }, INCREASE_BALANCE_INTERVAL_MS);
 
     });
+
+
 
     // === FUNÇÕES UTILITÁRIAS === //
     function getElementByIdAndAttachEvent(elementId, event, fn) {
@@ -607,9 +615,167 @@
 
     }
     function hatchDinosaur(idSpecies) {
+    }
 
+    function loadGeneralData() {
+        const panel = document.getElementById("general-panel");
+        panel.innerHTML = "";
+        const {park, dinosaur, tiles} = JSON.parse(getItem(JPWG_DATA));
+        const species = JSON.parse(getItem("JPWG_SPECIES"));
+
+        const parkInfoTemplate = `
+            <div class="park-info">
+                <div class="park-info-header">
+                    <h1>${park.name}</h1>
+                </div>
+                <div class="park-info-body">
+                    <div class="park-info--left">
+                        <div class="rating-info">
+                            <h3>AVALIACAO</h3>
+                            <p><span>${park.rating}</span> <i class="ph-fill ph-star-half"></i></p>
+                        </div>
+                        <ul class="kpi-list">
+                            <li class="kpi-card">
+                                <div class="kpi-main">
+                                    <p>${dinosaur.length}</p>
+                                    <span>Dinossauros no Parque</span>
+                                </div>
+                                <div class="kpi-footer">
+                                    <p>de um total de ${species.length}</p>
+                                </div>
+                            </li>
+                            <li class="kpi-card">
+                                <div class="kpi-main">
+                                    <p>2</p>
+                                    <span>Imprevistos ocorrendo</span>
+                                </div>
+                                <div class="kpi-footer">
+                                    <p>Chuva Torrencial, Sabotagem</p>
+                                </div>
+                            </li>
+                            <li class="kpi-card">
+                                <div class="kpi-main">
+                                    <p>0</p>
+                                    <span>Dinossauros na Incubadora</span>
+                                </div>
+                                <div class="kpi-footer">
+                                    <p>Velociraptor, Velociraptor</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="park-info--right">
+                        <div class="balance-info">
+                            <p>Saldo Atual</p>
+                            <span><i class="ph-fill ph-coins"></i>$${park.dinoCoins}</span>
+                        </div>
+                        <div class="graph-info">
+                            <canvas id="dino-diet-graph"></canvas>
+                            <canvas id="dino-hatch-graph"></canvas>
+                        </div>
+                        <ul id="dinosaur-info">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        panel.innerHTML = parkInfoTemplate;
+
+        const dinoInfo = document.getElementById("dinosaur-info");
+        dinoInfo.innerHTML = "";
+
+        dinosaur.forEach((dino) => {
+        dinoInfo.innerHTML += `
+            <li class="general-dinosaur-card">
+                <div class="card-image">
+                    <img src="./assets/images/dinosaurs/${dino.name}.png" alt="${dino.name}.png" class="species-icon">
+                    <img src="./assets/images/frame.png" alt="frame" class="frame">
+                </div>
+                <div class="card-info">
+                    <p class="dino-name">${dino.name}</p>
+                    <p class="enclosure-name">${tiles.find((t) => t.position_col == dino.tile_col && t.position_row == dino.tile_row).translatedName}</p>
+                    <div class="enclosure-position">
+                        <p>Coluna: ${dino.tile_col}</p>
+                        <p>Linha: ${dino.tile_row}</p>
+                    </div>
+                </div>
+            </li>
+        `;
+        });
     }
 
 </script>
 </body>
 </html>
+
+<!-- 
+            <div class="park-info">
+                <div class="park-info-header">
+                    <h1>Hammond's Dream</h1>
+                </div>
+                <div class="park-info-body">
+                    <div class="park-info--left">
+                        <div class="rating-info">
+                            <h3>AVALIACAO</h3>
+                            <p><span>3.5</span> <i class="ph-fill ph-star"></i></p>
+                        </div>
+                        <ul class="kpi-list">
+                            <li class="kpi-card">
+                                <div class="kpi-main">
+                                    <p>4</p>
+                                    <span>Dinossauros no Parque</span>
+                                </div>
+                                <div class="kpi-footer">
+                                    <p>de um total de 12</p>
+                                </div>
+                            </li>
+                            <li class="kpi-card">
+                                <div class="kpi-main">
+                                    <p>2</p>
+                                    <span>Imprevistos ocorrendo</span>
+                                </div>
+                                <div class="kpi-footer">
+                                    <p>Chuva Torrencial, Sabotagem</p>
+                                </div>
+                            </li>
+                            <li class="kpi-card">
+                                <div class="kpi-main">
+                                    <p>0</p>
+                                    <span>Dinossauros na Incubadora</span>
+                                </div>
+                                <div class="kpi-footer">
+                                    <p>Velociraptor, Velociraptor</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="park-info--right">
+                        <div class="balance-info">
+                            <p>Saldo Atual</p>
+                            <span><i class="ph-fill ph-coins"></i>$98.000</span>
+                        </div>
+                        <div class="graph-info">
+                            <canvas id="dino-diet-graph"></canvas>
+                            <canvas id="dino-hatch-graph"></canvas>
+                        </div>
+                        <ul class="dinosaur-info">
+                            <li class="general-dinosaur-card">
+                                <div class="card-image">
+                                    <img src="./assets/images/dinosaurs/velociraptor.png" alt="velociraptor.png" class="species-icon">
+                                    <img src="./assets/images/frame.png" alt="frame" class="frame">
+                                </div>
+                                <div class="card-info">
+                                    <p class="dino-name">Velociraptor</p>
+                                    <p class="enclosure-name">Cercado Nível 2</p>
+                                    <div class="enclosure-position">
+                                        <p>Coluna: 2</p>
+                                        <p>Linha: 3</p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+-->
