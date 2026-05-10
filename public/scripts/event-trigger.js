@@ -1,49 +1,44 @@
+import { storage } from "./utils/storage.js";
+import { updateParkBalance } from "./update-park.js";
 
-const SHOW_EVENT_LOGS = false;
-function triggerEvent(event, params = []) {
-    const d = new Date().toLocaleString();
-    const fn = eventList[event];
-
-    if(typeof fn !== "function") {
-        console.log(`[event.js] Erro: "${event}" não é um evento válido!`);
-        return;
-    }
-
-    fn(...params);
-    SHOW_EVENT_LOGS && console.log(`Evento: ${event} | ${d}`);
-}
-
-const eventList = {
+export const events = {
     save: () => {
-        const data = retrieveJPWGData();
-
-        // fetch("/api/users/save", {
-        //     method: "PUT",
-        //     headers: {"Content-Type": "application/json"},
-        //     body: {data}
-        // })
-        // .then((res) => {
-        //     if(!res.ok) {
-        //         // tratar erro...
-        //     }
-
-        //     console.log("[DADOS SALVOS NO BANCO!]");
-        //     triggerEvent("copyStorage", ["JPWG_DATA"])
-        // })
-        // .catch((error) => {})
-
-        triggerEvent("copyStorage", ["JPWG_DATA"]);
+        console.log("SALVOU! ", new Date().toLocaleString());
+        const data = storage.get("JPWG_DATA");
+        if(!data) {}
+        
+        events.copyStorage("JPWG_DATA");
     },
     copyStorage: (key) => {
-        const data = sessionStorage.getItem(key);
-        sessionStorage.setItem(`${key}_COPY`, data);
+        const data = storage.get(key);
+        storage.set(`${key}_COPY`, data);
+
+        console.log("COPIOU! ", new Date().toLocaleString());
+    },
+    increaseBalance: () => {
+        const { park } = storage.get("JPWG_DATA");
+        if(!park) {}
+        
+        let newBalance = Math.ceil(5 * park.rating) + park.dinoCoins;
+        updateParkBalance(newBalance);
+
+        console.log("INCREMENTOU SALDO! ", new Date().toLocaleString());
     },
     randomEvent: () => {},
     sabotage: () => {},
     pouringRain: () => {}
-
 };
 
-function retrieveJPWGData() {
-    return JSON.parse(sessionStorage.getItem("JPWG_DATA"));
-}
+// const SHOW_EVENT_LOGS = false;
+// function triggerEvent(event, params = []) {
+//     const d = new Date().toLocaleString();
+//     const fn = events[event];
+
+//     if(typeof fn !== "function") {
+//         console.log(`[event.js] Erro: "${event}" não é um evento válido!`);
+//         return;
+//     }
+
+//     fn(...params);
+//     SHOW_EVENT_LOGS && console.log(`Evento: ${event} | ${d}`);
+// }
