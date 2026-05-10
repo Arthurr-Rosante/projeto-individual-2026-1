@@ -1,4 +1,4 @@
-function togglePanel(elementId, withOverlay = true) {
+export function togglePanel(elementId, withOverlay = true) {
     let element = document.getElementById(elementId);
     if(withOverlay) {
         element = element.closest(".overlay");
