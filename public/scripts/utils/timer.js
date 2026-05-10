@@ -1,6 +1,7 @@
 const DECREASE_INTERVAL = 1000;
 const SHOW_TIMER_LOGS = false;
-function createTimer(fn, interval) {
+
+export function createTimer(fn, interval) {
     if(typeof fn !== "function") {
         console.error("[timer.js] Erro: Paramêtro 'fn' não é uma função!");
         return;
