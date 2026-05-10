@@ -3,7 +3,7 @@ function isValid(num) {
     return true;
 }
 
-function formatDinoWeight(weight) {         // dado que weight é passado em Kg, por padrão
+export function formatDinoWeight(weight) {         // dado que weight é passado em Kg, por padrão
     if(!isValid(weight)) return "[erro de parâmetro]"
 
     if(weight < 1) {
@@ -15,7 +15,7 @@ function formatDinoWeight(weight) {         // dado que weight é passado em Kg,
     }
 }
 
-function formatDinoHeight(height) {         // dado que height é passado em Metros, por padrão
+export function formatDinoHeight(height) {         // dado que height é passado em Metros, por padrão
     if(!isValid(height)) return "[erro de parâmetro]"
 
     if(height < 1) {
@@ -25,7 +25,7 @@ function formatDinoHeight(height) {         // dado que height é passado em Met
     }
 }
 
-function formatDinoAggressiveness(aggressiveness) {     // dado que aggressiveness é passado na faixa 0-1
+export function formatDinoAggressiveness(aggressiveness) {     // dado que aggressiveness é passado na faixa 0-1
     if(!isValid(aggressiveness)) return "[erro de parâmetro]"
 
     if(aggressiveness <= 0.4) {
@@ -37,7 +37,7 @@ function formatDinoAggressiveness(aggressiveness) {     // dado que aggressivene
     }
 }
 
-function formatDinoHatchTime(hatchTime) {   // dado que hatchTime é passado em Segundos, por padrão
+export function formatDinoHatchTime(hatchTime) {   // dado que hatchTime é passado em Segundos, por padrão
     if(!isValid(hatchTime)) return "[erro de parâmetro]"
 
     let seconds = String(hatchTime % 60).split('.')[0].padStart(2, "0");
@@ -51,7 +51,7 @@ function formatDinoHatchTime(hatchTime) {   // dado que hatchTime é passado em 
     return `${hours}:${minutes}:${seconds}`;
 }
 
-function formatDinoHatchSuccess(hatchSuccess) {     // dado que hatchSuccess é passado na faixa 0-1
+export function formatDinoHatchSuccess(hatchSuccess) {     // dado que hatchSuccess é passado na faixa 0-1
     if(!isValid(hatchSuccess)) return "[erro de parâmetro]"
 
     return String((hatchSuccess * 100) + "%")

@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="./styles/landing.css">
 
     <!-- === Importação de funções === -->
-    <script defer src="./scripts/utils/formatDinoFields.js"></script>
 
     <!-- === Importação de Bibliotecas === -->
     <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/index.min.js"></script>
@@ -129,7 +128,9 @@
         </div>
     </footer>
 
-<script>
+<script type="module">
+    import { formatDinoHeight, formatDinoWeight, formatDinoAggressiveness, formatDinoHatchTime, formatDinoHatchSuccess } from "./scripts/utils/formatDinoFields.js";
+
     // === Evento que carrega a lista de espécies disponíveis === //
     document.addEventListener("DOMContentLoaded", () => {
         const dinosaurSectionList = document.querySelector("#dinosaurs-section .dinosaurs-list");
