@@ -14,7 +14,6 @@
     <script defer src="./scripts/auth/toggle-password.js"></script>
     <script defer src="./scripts/auth/foliage-shake.js"></script>
     <script defer src="./scripts/auth/validations.js"></script>
-    <script defer src="./scripts/utils/storage.js"></script>
 
     <!-- === Importação de Bibliotecas === -->
     <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/index.min.js"></script>
@@ -104,10 +103,15 @@
     </div>
 
 <!-- === SCRIPTS LOCAIS === -->
-<script>
+<script type="module">
+    import { storage } from "./scripts/utils/storage.js";
+
     // === REDIRECIONAMENTO SE JÁ ESTIVER LOGADO === //
     document.addEventListener("DOMContentLoaded", () => {
-        if(getItem("JPWG_DATA") !== null) {
+        // if(getItem("JPWG_DATA") !== null) {
+        //     window.location = "./park.html";
+        // }
+        if(storage.get("JPWG_DATA") !== null) {
             window.location = "./park.html";
         }
     });
