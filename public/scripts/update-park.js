@@ -1,4 +1,5 @@
 import { storage } from "./utils/storage.js";
+import { updateUi } from "./utils/ui-updater.js";
 
 function updatePark(updateCallback) {
     try {
@@ -17,6 +18,7 @@ function updatePark(updateCallback) {
 
 export function updateParkName(newName) {
     updatePark(park => park.name = newName);
+    updateUi("park", "name");
 }
 
 export function updateParkBalance(newBalance) {
@@ -26,6 +28,8 @@ export function updateParkBalance(newBalance) {
         if(newBalance > 999999) finalBalance = 999999;
         park.dinoCoins = finalBalance
     });
+    updateUi("park", "dinoCoins");
+    
 }
 
 export function updateParkRating(newRating) {
@@ -35,4 +39,5 @@ export function updateParkRating(newRating) {
         if(newRating > 5) finalRating = 5;
         park.rating = finalRating
     });
+    updateUi("park", "rating");
 }

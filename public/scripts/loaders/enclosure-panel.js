@@ -12,7 +12,7 @@ export function loadEnclosure(tileCol, tileRow) {
     const data = getResourceFromStorage("data");
     const speciesData = getResourceFromStorage("species");
     if (!data || !speciesData) {
-        console.warn("[loadHatchery] Dados necessários não foram encontrados no Storage.");
+        console.warn("[loadEnclosure] Dados necessários não foram encontrados no Storage.");
         return;
     };
 

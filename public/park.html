@@ -62,9 +62,9 @@
 
 <!-- === STATUSBAR === -->
     <aside id="statusbar">
-        <p><i class="ph-fill ph-info"></i><span id="park-name"></span></p>
+        <p><i class="ph-fill ph-info"></i><span id="park-name" data-ui-resource="park:name"></span></p>
         <span id="park-rating"></span>
-        <p><i class="ph-fill ph-coins"></i><span id="park-balance"></span></p>
+        <p><i class="ph-fill ph-coins"></i><span id="park-balance" data-ui-resource="park:dinoCoins"></span></p>
     </aside>
 
 <!-- === GRID(5x4) === -->
@@ -84,7 +84,7 @@
             <h3 class="panel-title">Portao de Entrada</h3>
             <form id="park-name-form">
                 <label for="ipt-park-name">Mudar o nome do Parque</label>
-                <input id="ipt-park-name" type="text" placeholder="ex: Hammond's Dream" required>
+                <input id="ipt-park-name" data-ui-resource="park:name" type="text" placeholder="ex: Hammond's Dream" required>
                 <button id="park-name-btn" type="submit">Alterar</button>
             </form>
         </div>
@@ -96,13 +96,13 @@
             <h3 class="panel-title">Visao Geral do Parque</h3>
             <div class="park-info">
                 <div class="park-info-header">
-                    <h1 id="general-park-name"></h1>
+                    <h1 id="general-park-name" data-ui-resource="park:name"></h1>
                 </div>
                 <div class="park-info-body">
                     <div class="park-info--left">
                         <div class="rating-info">
                             <h3>AVALIACAO</h3>
-                            <p><span id="general-park-rating"></span> <i class="ph-fill ph-star-half"></i></p>
+                            <p><span id="general-park-rating" data-ui-resource="park:rating"></span> <i class="ph-fill ph-star-half"></i></p>
                         </div>
                         <ul class="kpi-list">
                             <li class="kpi-card">
@@ -137,7 +137,7 @@
                     <div class="park-info--right">
                         <div class="balance-info">
                             <p>Saldo Atual</p>
-                            <p><i class="ph-fill ph-coins"></i><span id="general-park-balance"></span></p>
+                            <p><i class="ph-fill ph-coins"></i><span id="general-park-balance" data-ui-resource="park:dinoCoins"></span></p>
                         </div>
                         <div class="graph-info">
                             <canvas id="dino-diet-graph"></canvas>
@@ -188,17 +188,17 @@
             <ul class="dev-items">
                 <li class="dev-item">
                     <p class="dev-item-title">PARQUE NOME</p>
-                    <input id="dev-ipt-park-name" type="text">
+                    <input id="dev-ipt-park-name" data-ui-resource="park:name" type="text">
                     <button id="dev-park-name-btn">Alterar Nome</button>
                 </li>
                 <li class="dev-item">
                     <p class="dev-item-title">PARQUE AVALIAÇÃO</p>
-                    <input id="dev-ipt-park-rating" type="number" min="0" max="5" step="0.5">
+                    <input id="dev-ipt-park-rating" data-ui-resource="park:rating" type="number" min="0" max="5" step="0.5">
                     <button id="dev-park-rating-btn">Alterar Avaliação</button>
                 </li>
                 <li class="dev-item">
                     <p class="dev-item-title">PARQUE SALDO</p>
-                    <input id="dev-ipt-park-balance" type="number" min="0" max="999999">
+                    <input id="dev-ipt-park-balance" data-ui-resource="park:dinoCoins" type="number" min="0" max="999999">
                     <button id="dev-park-balance-btn">Alterar saldo</button>
                 </li>
             </ul>
@@ -249,7 +249,10 @@
             togglePanel("general-panel");
         };
         if(hasClass(clickedElement, "entrance")) { togglePanel("entrance-panel") };
-        if(hasClass(clickedElement, "hatchery")) { togglePanel("hatchery-panel")};
+        if(hasClass(clickedElement, "hatchery")) { 
+            loadHatchery();
+            togglePanel("hatchery-panel");
+        };
         if(hasClass(clickedElement, "enclosure")) { 
             loadEnclosure(clickedElement.dataset.tileCol, clickedElement.dataset.tileRow);
             togglePanel("enclosure-panel");
@@ -286,6 +289,7 @@
         const devParkRatingBtn = getElementByIdAndAttachEvent("dev-park-rating-btn", 'click', () => {
             let newRating = Number(document.getElementById("dev-ipt-park-rating").value);
             updateParkRating(newRating);
+            loadStatusBar();
         });
         const devParkBalanceBtn = getElementByIdAndAttachEvent("dev-park-balance-btn", 'click', () => {
             let newBalance = Number(document.getElementById("dev-ipt-park-balance").value);

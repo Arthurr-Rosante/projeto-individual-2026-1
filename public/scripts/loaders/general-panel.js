@@ -21,13 +21,13 @@ export function loadGeneral() {
     const parkInfoTemplate = `
         <div class="park-info">
             <div class="park-info-header">
-                <h1>${park.name}</h1>
+                <h1 data-ui-resource="park:name">${park.name}</h1>
             </div>
             <div class="park-info-body">
                 <div class="park-info--left">
                     <div class="rating-info">
                         <h3>AVALIAÇÃO</h3>
-                        <p><span>${park.rating}</span> <i class="ph-fill ph-star-half"></i></p>
+                        <p><span data-ui-resource="park:rating">${park.rating}</span> <i class="ph-fill ph-star-half"></i></p>
                     </div>
                     <ul class="kpi-list">
                         <li class="kpi-card">
@@ -62,7 +62,7 @@ export function loadGeneral() {
                 <div class="park-info--right">
                     <div class="balance-info">
                         <p>Saldo Atual</p>
-                        <span><i class="ph-fill ph-coins"></i>$${park.dinoCoins}</span>
+                        <b><i class="ph-fill ph-coins"></i><span data-ui-resource="park:dinoCoins">${Number(park.dinoCoins).toLocaleString("pt-br")}</span></b>
                     </div>
                     <div class="graph-info">
                         <canvas id="dino-diet-graph"></canvas>

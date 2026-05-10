@@ -19,7 +19,7 @@ export const events = {
         const { park } = storage.get("JPWG_DATA");
         if(!park) {}
         
-        let newBalance = Math.ceil(5 * park.rating) + park.dinoCoins;
+        let newBalance = (5 + Math.ceil(5 * park.rating)) + park.dinoCoins;
         updateParkBalance(newBalance);
 
         console.log("INCREMENTOU SALDO! ", new Date().toLocaleString());
