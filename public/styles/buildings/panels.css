@@ -42,21 +42,19 @@
 }
 
 /* === TILE SWITCHER === */
-#tile-switcher.closed { display: none;}
-#tile-switcher.open { display: block; position: absolute;}
-
 #tile-switcher {
-    bottom: 10%;
-    left: 50%;
-    transform: translateX(-50%);
+    position: absolute;
+    top: 50%;
+    left: 5%;
+    transform: translateY(-50%);
 
     display: flex;
+    flex-direction: column;
     align-items: center;
-    column-gap: 1rem;
-    overflow-x: auto;
+    row-gap: 1rem;
 
-    width: 720px;
-    height: 120px;
+    height: 720px;
+    width: 180px;
     background-color: var(--background);
     border: 1px solid var(--ring);
     border-radius: 1rem;
@@ -65,6 +63,111 @@
     z-index: 997 !important;
 }
 
-#tile-switcher .tile-item {
+#tile-switcher #tile-list {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    row-gap: 0.5rem;
+    padding: 0.5rem;
+    overflow-y: auto;
+}
+
+#tile-list .tile-item {
+    background-color: var(--popover);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 0.5rem;
     
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+#tile-list .tile-item:hover {
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--primary);
+}
+
+#tile-list .tile-item[data-tile-selected="true"] { 
+    background-color: var(--secondary);
+    border: 4px dashed var(--secondary-foreground);
+    user-select: none; 
+    pointer-events: none; 
+}
+
+#tile-list .tile-item[data-can-change-tile="false"] {
+    filter: grayscale(1); 
+    user-select: none;
+    pointer-events: none;
+ }
+
+.tile-item .tile-header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+#tile-list .tile-item img {
+    max-width: 100px;
+    width: 100%;
+    height: auto;
+    padding: 0.2rem;
+
+    background-color: var(--info);
+    border: 1px solid var(--primary);
+    border-radius: 0.5rem;
+}
+.tile-item .tile-footer {
+    width: 100%;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+}
+.tile-item .tile-footer .tile-price {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+.tile-item .tile-footer .tile-price i { color: var(--primary); }
+
+.tile-actions {
+    position: absolute;
+    top: 10%;
+    left: 18%;
+    transform: translateY(-50%);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 1rem;
+}
+
+#change-tile-btn i,
+#tile-switcher-toggler i { font-size: 1.2rem; }
+
+#change-tile-btn {
+    background-color: var(--secondary-foreground);
+    color: var(--secondary);
+}
+#change-tile-btn:hover {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--secondary-foreground);
+}
+
+#tile-switcher-toggler {
+    background-color: var(--destructive-foreground);
+    color: var(--destructive);
+}
+#tile-switcher-toggler:hover {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--destructive-foreground);
 }

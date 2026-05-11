@@ -173,10 +173,16 @@
     </div>
 
 <!-- === TILE SWITCHER === -->
-    <div id="tile-switcher" class="closed">
-        <ul class="tile-list">
-            <!-- carregado dinâmicamente... -->
-        </ul>
+    <div class="overlay closed">
+        <div id="tile-switcher">
+            <ul id="tile-list">
+                <!-- carregado dinâmicamente... -->
+            </ul>
+        </div>
+        <div class="tile-actions">
+            <button id="change-tile-btn"><i class="ph-fill ph-swap"></i></button>
+            <button id="tile-switcher-toggler"><i class="ph-fill ph-x-circle"></i></button>
+        </div>
     </div>
 
 <!-- === PAINEL DESENVOLVEDOR === -->
@@ -219,7 +225,7 @@
     import { createTimer } from "./scripts/utils/timer.js";
     import { togglePanel } from "./scripts/utils/toggler.js";
     import { updateParkName, updateParkBalance, updateParkRating } from "./scripts/update-park.js";
-    import { loadDevScreen, loadEnclosure, loadGrid, loadStatusBar, loadHatchery, loadGeneral } from './scripts/loaders/index.js';
+    import { loadDevScreen, loadEnclosure, loadGrid, loadStatusBar, loadHatchery, loadGeneral, loadTileSwitcher } from './scripts/loaders/index.js';
 
     // === OUVINTES DE EVENTO === //
     // 1. DevScreen
@@ -244,25 +250,40 @@
         const clickedElement = e.target;
         const hasClass = (element, className) => element.classList.contains(className);
 
+        // Se Modo Editor estiver ativo, Habilita Tile Switcher
+        if(hasClass(clickedElement, "tile") && storage.get("JPWG_EDITOR_MODE")) {
+            loadTileSwitcher(clickedElement.dataset.tileCol, clickedElement.dataset.tileRow);
+            togglePanel("tile-switcher");
+            return;
+        }
+
+        // Se não, faz demais verificações
         if(hasClass(clickedElement, "visitor-center")) {
             loadGeneral();
             togglePanel("general-panel");
+            return;
         };
-        if(hasClass(clickedElement, "entrance")) { togglePanel("entrance-panel") };
+        if(hasClass(clickedElement, "entrance")) { 
+            togglePanel("entrance-panel");
+            return;
+        };
         if(hasClass(clickedElement, "hatchery")) { 
             loadHatchery();
             togglePanel("hatchery-panel");
+            return;
         };
         if(hasClass(clickedElement, "enclosure")) { 
             loadEnclosure(clickedElement.dataset.tileCol, clickedElement.dataset.tileRow);
             togglePanel("enclosure-panel");
+            return;
         };
     });
 
     // === LOOP PRINCIPAL === //
     document.addEventListener("DOMContentLoaded", () => {
-        // Redirecionamento
+        // Redirecionamento e Desliga Modo Editor
         if(!storage.get(JPWG_DATA)) window.location = "./login.html";
+        storage.set("JPWG_EDITOR_MODE", false);
 
         // Eventos
         const autosaveBtn = getElementByIdAndAttachEvent("autosave-btn", "click", () => {
@@ -302,7 +323,7 @@
             loadGeneral();
             togglePanel("general-panel");
         });
-        const editorModeToggler = getElementByIdAndAttachEvent("editor-mode-toggler", 'click', () => togglePanel("tile-switcher", false));
+        const editorModeToggler = getElementByIdAndAttachEvent("editor-mode-toggler", 'click', toggleEditorMode);
 
         // Game Looop
         // 1. RECEBE INFORMAÇÕES DO SESSION STORAGE; CRIA CÓPIA DE TUDO;
@@ -337,6 +358,18 @@
         setTimeout(() => {
             window.location = "./login.html";
         }, 250);
+    }
+
+    function toggleEditorMode() {
+        const editorModeOn = storage.get("JPWG_EDITOR_MODE");
+        const editorModeToggler = document.getElementById("editor-mode-toggler");
+        if(editorModeOn) {
+            storage.set("JPWG_EDITOR_MODE", false);
+            editorModeToggler.classList.remove("active");
+        } else {
+            storage.set("JPWG_EDITOR_MODE", true);
+            editorModeToggler.classList.add("active");
+        }
     }
 </script>
 </body>
