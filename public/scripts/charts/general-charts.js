@@ -6,8 +6,6 @@ export function renderGeneralCharts(dinosaur, species) {
         return {...dino, diet}
     })
 
-    console.log(dinosaursWithDiet)
-
     const dietCtx = document.getElementById("dino-diet-graph");
     const hatchCtx = document.getElementById("dino-hatch-graph");
 

@@ -60,7 +60,7 @@
     border-radius: 1rem;
     box-shadow: 0 0 0.25rem var(--background);
 
-    z-index: 997 !important;
+    z-index: 999 !important;
 }
 
 #tile-switcher #tile-list {
@@ -99,7 +99,7 @@
     pointer-events: none; 
 }
 
-#tile-list .tile-item[data-can-change-tile="false"] {
+#tile-list .tile-item[data-tile-changeable="false"] {
     filter: grayscale(1); 
     user-select: none;
     pointer-events: none;
@@ -150,7 +150,7 @@
 }
 
 #change-tile-btn i,
-#tile-switcher-toggler i { font-size: 1.2rem; }
+#remove-tile-btn i { font-size: 1.2rem; }
 
 #change-tile-btn {
     background-color: var(--secondary-foreground);
@@ -162,11 +162,11 @@
     box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--secondary-foreground);
 }
 
-#tile-switcher-toggler {
+#remove-tile-btn {
     background-color: var(--destructive-foreground);
     color: var(--destructive);
 }
-#tile-switcher-toggler:hover {
+#remove-tile-btn:hover {
     background-color: var(--destructive);
     color: var(--destructive-foreground);
     box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--destructive-foreground);
