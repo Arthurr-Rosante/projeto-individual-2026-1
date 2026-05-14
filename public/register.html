@@ -104,14 +104,12 @@
 
 <!-- === SCRIPTS LOCAIS === -->
 <script type="module">
+    import { toast } from "./scripts/utils/toast'.js";
     import { storage } from "./scripts/utils/storage.js";
 
     // === REDIRECIONAMENTO SE JÁ ESTIVER LOGADO === //
     document.addEventListener("DOMContentLoaded", () => {
-        // if(getItem("JPWG_DATA") !== null) {
-        //     window.location = "./park.html";
-        // }
-        if(storage.get("JPWG_DATA") !== null) {
+        if(storage.get("JPWG_DATA")) {
             window.location = "./park.html";
         }
     });
@@ -150,11 +148,22 @@
                 throw new Error(`Erro ao realizar Cadastro: ${errorMsg}`);
             } else {
                 console.log("[register.html] | Sucesso!");
-                window.location = "./login.html";
+
+                toast({
+                    variant: "success", 
+                    title: "Cadastro Realizado com Sucesso!", 
+                    message: "Redirecionando para login..."
+                });
+                setTimeout(() => window.location = "./login.html", 1000);
             }
         }))
         .catch((err) => {
             console.error("[register.html] | Falha no Cadastro:", err.message);
+            toast({
+                variant: "destructive", 
+                title: "Erro ao Realizar Cadastro", 
+                message: err.message
+            });
         });
     });
 </script>

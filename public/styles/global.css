@@ -73,6 +73,7 @@ html {
 }
 
 body {
+    position: relative;
     background-color: var(--background);
     color: var(--foreground);
     font-family: 'Playfair Display', serif;
@@ -202,4 +203,79 @@ button:focus-visible {
 * {
     scrollbar-width: thin;
     scrollbar-color: var(--primary) transparent;
+}
+
+/* Toast */
+
+/* Container que alinha e empilha os toasts na tela */
+#toast-container {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    z-index: 999 !important;
+    pointer-events: none;
+}
+
+/* Base do Toast */
+.toast {
+    pointer-events: auto;
+    width: max-content;
+    max-width: 320px;
+    min-width: 240px;
+    
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem 1.2rem;
+    
+    background-color: var(--background); 
+    border: 1px solid; 
+    border-radius: 0.5rem;
+    
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+}
+
+.toast.toast--show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.toast-content {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+}
+
+.toast-title {
+    font-size: 1rem;
+}
+
+.toast-message {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+/* Variantes de Cores */
+.toast--default {
+    border-color: var(--border);
+    color: var(--muted-foreground);
+}
+.toast--success {
+    border-color: var(--secondary);
+    color: var(--secondary);
+}
+.toast--warn {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+.toast--destructive {
+    border-color: var(--destructive);
+    color: var(--destructive);
 }

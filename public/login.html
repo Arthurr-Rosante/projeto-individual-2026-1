@@ -91,14 +91,12 @@
 
 <!-- === SCRIPTS LOCAIS === -->
 <script type="module">
+    import { toast } from "./scripts/utils/toast.js";
     import { storage } from "./scripts/utils/storage.js";
 
     // === REDIRECIONAMENTO SE JÁ ESTIVER LOGADO === //
     document.addEventListener("DOMContentLoaded", () => {
-        // if(getItem("JPWG_DATA") !== null) {
-        //     window.location = "./park.html";
-        // }
-        if(storage.get("JPWG_DATA") !== null) {
+        if(storage.get("JPWG_DATA")) {
             window.location = "./park.html";
         }
     });
@@ -136,13 +134,26 @@
                 throw new Error(`Erro ao realizar Login: ${errorMsg}`);
             } else {
                 console.log("[login.html] | Sucesso!");
-                storage.set("JPWG_DATA", data);
+                
+                toast({
+                    variant: "success", 
+                    title: "Sucesso ao Realizar Login!", 
+                    message: "Redirecionando para parque..."
+                });
 
-                window.location = "./park.html";
+                setTimeout(() => {
+                    storage.set("JPWG_DATA", data);
+                    window.location = "./park.html";
+                }, 1000);
             }
         }))
         .catch((err) => {
             console.error("[login.html] | Falha no login:", err.message);
+            toast({
+                variant: "destructive", 
+                title: "Erro ao Realizar Login", 
+                message: err.message
+            });
         });
     });
 </script>
