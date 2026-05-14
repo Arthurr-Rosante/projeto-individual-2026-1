@@ -1,12 +1,24 @@
+import { toast } from "./utils/toast.js";
 import { storage } from "./utils/storage.js";
 import { updateParkBalance } from "./update-park.js";
+import { getResourceFromStorage } from "./utils/getResourceFromStorage.js";
 
 export const events = {
     save: () => {
         console.log("SALVOU! ", new Date().toLocaleString());
-        const data = storage.get("JPWG_DATA");
-        if(!data) {}
+        const gameData = storage.get("JPWG_DATA");
         
+        if(!gameData) {
+            console.warn("[save] Aviso: Objeto JPWG_DATA está incompleto...");
+            return;
+        }
+
+        // Salvando dados no banco
+        
+        toast({
+            variant: "success",
+            title: "Jogo Salvo!"
+        });
         events.copyStorage("JPWG_DATA");
     },
     copyStorage: (key) => {
@@ -17,28 +29,30 @@ export const events = {
     },
     increaseBalance: () => {
         const { park } = storage.get("JPWG_DATA");
-        if(!park) {}
+        if(!park) {
+            console.warn("[increaseBalance] Aviso: Objeto JPWG_DATA está incompleto...");
+            return;
+        }
         
         let newBalance = (5 + Math.ceil(5 * park.rating)) + park.dinoCoins;
         updateParkBalance(newBalance);
 
         console.log("INCREMENTOU SALDO! ", new Date().toLocaleString());
     },
-    randomEvent: () => {},
+    randomEvent: () => {
+        const eventList = getResourceFromStorage("events");
+        if(!eventList) {
+            return;
+        }
+        const currentEvent = eventList[Math.floor(Math.random() * eventList.length)]; 
+
+        toast({
+            variant: "warn",
+            title: `Evento: ${currentEvent.translatedName}`,
+            message: currentEvent.consequences,
+            duration: 5000
+        })
+    },
     sabotage: () => {},
     pouringRain: () => {}
 };
-
-// const SHOW_EVENT_LOGS = false;
-// function triggerEvent(event, params = []) {
-//     const d = new Date().toLocaleString();
-//     const fn = events[event];
-
-//     if(typeof fn !== "function") {
-//         console.log(`[event.js] Erro: "${event}" não é um evento válido!`);
-//         return;
-//     }
-
-//     fn(...params);
-//     SHOW_EVENT_LOGS && console.log(`Evento: ${event} | ${d}`);
-// }

@@ -1,5 +1,6 @@
-import { getResourceFromStorage } from "../utils/getResourceFromStorage.js";
+import {toast} from "../utils/toast.js";
 import { togglePanel } from "../utils/toggler.js";
+import { getResourceFromStorage } from "../utils/getResourceFromStorage.js";
 
 export function loadTileSwitcher(tileCol, tileRow) {
     const tileSwitcherList = document.getElementById("tile-list");
@@ -43,6 +44,15 @@ export function loadTileSwitcher(tileCol, tileRow) {
         const selectedOption = tileSwitcherList.querySelector(".tile-item[data-tile-selected='true']");
         if (!selectedOption) return;
 
+        if(!currentTileData.removable) {
+            toast({
+                variant: "warn",
+                title: "Tile Especial",
+                message: "Este tile não pode ser removido no momento!"
+            });
+            return;
+        }
+        
         changeTile(tileElement, currentTileData, selectedOption, buildingsData);
         closeSwitcher(tileElement);
     };
@@ -78,6 +88,5 @@ function renderTileOption(tile, currentTile, changeable) {
 function changeTile(currentTileElement, currentTileData, newTileOption, buildings) {
     const newBuildingType = buildings.find((b) => b.name === newTileOption.dataset.tileType);
     
-    currentTileElement.classList.remove(currentTileData.category, currentTileData.name);
-    currentTileElement.classList.add(newBuildingType.category, newBuildingType.name);
+    currentTileElement.classList = `tile ${newBuildingType.category} ${newBuildingType.name}`;
 }

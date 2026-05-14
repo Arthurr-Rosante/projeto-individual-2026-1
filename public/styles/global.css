@@ -231,7 +231,7 @@ button:focus-visible {
     gap: 0.8rem;
     padding: 0.8rem 1.2rem;
     
-    background-color: var(--background); 
+    background-color: var(--popover); 
     border: 1px solid; 
     border-radius: 0.5rem;
     
