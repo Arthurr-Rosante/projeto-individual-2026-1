@@ -1,6 +1,6 @@
 import { execute } from "../database/config.js";
 
-const fieldsToReturn = "t.*, b.\`name\`, b.translatedName, b.category, b.durability, b.baseCost, b.maxUnits, b.removable, b.upgradeable";
+const fieldsToReturn = "t.*, b.\`name\`, b.translatedName, b.category, b.durability, b.baseCost, b.upgradeCost, t.removable, b.upgradeable, b.maxUnits";
 
 // === INSTRUÇÃO: CRIAR === //
 export function create(idPark, tileCol, tileRow, idBuilding) {
@@ -17,24 +17,28 @@ export function updateTileType(newIdBuilding, idPark, tileCol, tileRow) {
     const instruction = `
         UPDATE tile 
         SET idBuilding = ${newIdBuilding},
-            hp = CASE
+            maxHp = CASE
+                WHEN (SELECT category FROM building WHERE id = ${newIdBuilding}) = "enclosure" THEN 100
+                ELSE NULL
+            END,
+            currentHp = CASE
                 WHEN (SELECT category FROM building WHERE id = ${newIdBuilding}) = "enclosure" THEN 100
                 ELSE NULL
             END
         WHERE idPark = ${idPark} AND position_col = ${tileCol} AND position_row = ${tileRow};
 
-        SELECT ${fieldsToReturn} FROM tile t JOIN building b ON t.idBuilding = b.id WHERE idPark = ${idPark} AND position_col = ${tileCol} AND position_row = ${tileRow};
+        SELECT * FROM vw_tiles WHERE idPark = ${idPark} AND position_col = ${tileCol} AND position_row = ${tileRow};
     `;
     
     console.log("\n[tileModel.js | updateTileType] - Executando UPDATE...");
     console.log(`\n[tileModel.js | updateTileType] - Instrução: "${instruction}"`);
     
-    return execute(instruction, [newIdBuilding, idPark, tileCol, tileRow]).then(res => res[1]);
+    return execute(instruction).then(res => res[1]);
 }
 
 // === INSTRUÇÃO: BUSCAR TODOS EM UM PARQUE === //
 export function getAllTileByParkId(idPark) {
-    const instruction = `SELECT ${fieldsToReturn} FROM tile t JOIN building b ON t.idBuilding = b.id WHERE idPark = ?`;
+    const instruction = `SELECT * FROM vw_tiles WHERE idPark = ?`;
     
     console.log("\n[tileModel.js | getAllTileByParkId] - Executando SELECT...");
     console.log(`\n[tileModel.js | getAllTileByParkId] - Instrução: "${instruction}"`);
@@ -44,7 +48,7 @@ export function getAllTileByParkId(idPark) {
 
 // === INSTRUÇÃO: BUSCAR POR POSIÇÃO EM UM PARQUE === //
 export function getOneTileByParkId(idPark, tileCol, tileRow) {
-    const instruction = `SELECT ${fieldsToReturn} FROM tile t JOIN building b ON t.idBuilding = b.id WHERE idPark = ? AND position_col = ? AND position_row = ?`;
+    const instruction = `SELECT * FROM vw_tiles WHERE idPark = ? AND position_col = ? AND position_row = ?`;
     
     console.log("\n[tileModel.js | getOneTileByParkId] - Executando SELECT...");
     console.log(`\n[tileModel.js | getOneTileByParkId] - Instrução: "${instruction}"`);

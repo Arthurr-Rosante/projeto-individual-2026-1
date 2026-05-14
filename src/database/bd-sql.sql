@@ -127,8 +127,8 @@ CREATE TABLE IF NOT EXISTS tile(
     CONSTRAINT fkTileBuilding 	FOREIGN KEY (idBuilding) REFERENCES building(id),
 
     -- | CHECK Constraints | --
-    CONSTRAINT chkTileCurrentHp CHECK(currentHp >= 0),
-    CONSTRAINT chkTileMaxHp CHECK(maxHp >= 0)
+    CONSTRAINT chkTileCurrentHp CHECK(currentHp >= 0 AND currentHp <= 100),
+    CONSTRAINT chkTileMaxHp CHECK(maxHp >= 0 AND maxHp <= 100)
 );
 
 CREATE TABLE IF NOT EXISTS dinosaur(
