@@ -91,19 +91,10 @@ export function authenticate(email, password) {
         SELECT * FROM park WHERE idUser = (SELECT id FROM user WHERE ${whereCondition});
         
         -- 2. Seleciona Tiles do Parque
-        SELECT 
-            t.idPark, t.position_col, t.position_row, b.\`name\`, b.translatedName, b.category, 
-            b.durability, b.baseCost, b.maxUnits, b.removable, b.upgradeable, t.hp
-        FROM tile t 
-        JOIN building b ON t.idBuilding = b.id 
-        WHERE idPark = (SELECT id FROM user WHERE ${whereCondition})
-        ORDER BY t.position_row;
+        SELECT * FROM vw_tiles WHERE idPark = (SELECT id FROM user WHERE ${whereCondition});
 
-        SELECT 
-            d.*, s.name, s.aggressiveness 
-        FROM dinosaur d 
-        JOIN species s ON d.idSpecies = s.id 
-        WHERE idPark = (SELECT id FROM user WHERE ${whereCondition});
+        -- 3. Dinossaros do Parque
+        SELECT * FROM vw_dinosaur WHERE idPark = (SELECT id FROM user WHERE ${whereCondition});
     `;
     
     console.log("\n[userModel.js | authenticate] - Executando SELECT...");

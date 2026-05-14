@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS park(
     idUser 		INT NOT NULL UNIQUE,
     
     name 		VARCHAR(120) NOT NULL,
-    rating 		INT NOT NULL DEFAULT 0,
+    rating 		FLOAT NOT NULL DEFAULT 0,
     dinoCoins 	INT NOT NULL DEFAULT 0,
     
     createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
@@ -40,10 +40,11 @@ CREATE TABLE IF NOT EXISTS building(
     description 	VARCHAR(255) NOT NULL,
     purpose 		VARCHAR(120) NOT NULL,
     category        VARCHAR(45)  NOT NULL,
-	durability 	    INTEGER NOT NULL DEFAULT 0,
-	baseCost 		INTEGER NOT NULL DEFAULT 0,
-    maxUnits 		INTEGER NULL,
-    removable 		TINYINT NOT NULL DEFAULT 1,
+    
+	durability 	    INT NOT NULL DEFAULT 0,
+	baseCost 		INT NOT NULL DEFAULT 0,
+    upgradeCost		INT NULL,
+    maxUnits 		INT NULL,
     upgradeable 	TINYINT NOT NULL DEFAULT 0,
     
     createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
@@ -54,6 +55,7 @@ CREATE TABLE IF NOT EXISTS building(
 	-- | CHECK Constraints | --
     CONSTRAINT chkBuildingCategory 		CHECK(category IN('terrain', 'path', 'enclosure', 'building')),
     CONSTRAINT chkBuildingBaseCost 		CHECK(baseCost >= 0),
+    CONSTRAINT chkBuildingUpgradeCost 	CHECK(upgradeCost >= 0),
 	CONSTRAINT chkBuildingDurability 	CHECK(durability >= 0)
 );
 
@@ -112,7 +114,10 @@ CREATE TABLE IF NOT EXISTS tile(
     position_row 	INT NOT NULL,
 
 	idBuilding		INT NOT NULL,
-    hp 			    INT NULL,
+
+    currentHp		INT NULL,
+    maxHp 			INT NULL,
+    removable 		TINYINT NOT NULL DEFAULT 1,
     
     createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP(),
     updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
@@ -122,7 +127,8 @@ CREATE TABLE IF NOT EXISTS tile(
     CONSTRAINT fkTileBuilding 	FOREIGN KEY (idBuilding) REFERENCES building(id),
 
     -- | CHECK Constraints | --
-    CONSTRAINT chkTileHp CHECK(hp >= 0)
+    CONSTRAINT chkTileCurrentHp CHECK(currentHp >= 0),
+    CONSTRAINT chkTileMaxHp CHECK(maxHp >= 0)
 );
 
 CREATE TABLE IF NOT EXISTS dinosaur(
@@ -237,7 +243,7 @@ VALUES
     );
 
 -- | POPULANDO TABELA 'building' | --
-INSERT INTO building (name, translatedName, description, purpose, category, durability, baseCost, maxUnits, removable, upgradeable) 
+INSERT INTO building (name, translatedName, description, purpose, category, durability, baseCost, maxUnits, upgradeCost, upgradeable) 
 VALUES
 	-- | TERRENO | --
 	(
@@ -246,7 +252,7 @@ VALUES
         'Toda a natureza intocada da Isla Nublar faz com que seus visitantes sintam como se tivessem retornado a 65 milhões de anos atrás.', 
         'Apenas para a estética.',
         'terrain', 
-        default, 0, null, 1, 0
+        default, 10, null, null, 0
     ),
 	(
 		'terrain-trees',
@@ -254,7 +260,7 @@ VALUES
         'Toda a natureza intocada da Isla Nublar faz com que seus visitantes sintam como se tivessem retornado a 65 milhões de anos atrás.', 
         'Apenas para a estética.',
         'terrain',
-        default, 0, null, 1, 0
+        default, 10, null, null, 0
     ),
 	(
 		'terrain-dirt',
@@ -262,7 +268,7 @@ VALUES
         'Toda a natureza intocada da Isla Nublar faz com que seus visitantes sintam como se tivessem retornado a 65 milhões de anos atrás.', 
         'Apenas para a estética.',
         'terrain',
-        default, 0, null, 1, 0
+        default, 10, null, null, 0
     ),
 	(
 		'terrain-pond',
@@ -270,7 +276,7 @@ VALUES
         'Toda a natureza intocada da Isla Nublar faz com que seus visitantes sintam como se tivessem retornado a 65 milhões de anos atrás.', 
         'Apenas para a estética.',
         'terrain',
-        default, 0, null, 1, 0
+        default, 10, null, null, 0
     ),
     
 	-- | CAMINHO | --
@@ -280,7 +286,7 @@ VALUES
         'Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.', 
         'Apenas para a estética.',
         'path',
-        default, 50, null, 1, 0
+        default, 50, null, null, 0
     ),
 	(
 		'path-l',
@@ -288,7 +294,7 @@ VALUES
         'Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.', 
         'Apenas para a estética.',
         'path',
-        default, 50, null, 1, 0
+        default, 50, null, null, 0
     ),
 	(
 		'path-t',
@@ -296,7 +302,7 @@ VALUES
         'Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.', 
         'Apenas para a estética.',
         'path',
-        default, 50, null, 1, 0
+        default, 50, null, null, 0
     ),
 	(
 		'path-cross',
@@ -304,7 +310,7 @@ VALUES
         'Por mais que caminhar pela mata ajudaria no aspecto da imersão, seus visitantes certamente ficariam mais confortáveis se tivessem caminhos pavimentados para andar pelo Parque.', 
         'Apenas para a estética.',
         'path',
-        default, 50, null, 1, 0
+        default, 50, null, null, 0
     ),
 	-- | CERCADOS | --
 	(
@@ -313,7 +319,7 @@ VALUES
         'Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...', 
         'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.',
         'enclosure',
-        100, 100, null, 1, 1
+        100, 100, null, 150, 1
     ),
 	(
 		'enclosure-2',
@@ -321,7 +327,7 @@ VALUES
         'Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...', 
         'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.',
         'enclosure',
-        150, 250, null, 1, 1
+        250, 250, null, 350, 1
     ),
 	(
 		'enclosure-3',
@@ -329,7 +335,7 @@ VALUES
         'Os cercados são imprescindíveis para a existência do seu Parque. Em última instância, eles são a última barreira entre nós e essas criaturas incríveis. Pelo menos, até que uma tempestade atinja a ilha...', 
         'Permite comportar até 1 espécie de dinossauro por vez. Pode receber upgrades.',
         'enclosure',
-        300, 500, null, 1, 0
+        500, 500, null, null, 0
     ),
 	-- | CONSTRUÇÕES | --
 	(
@@ -338,7 +344,7 @@ VALUES
         'Este portão de proporções colossais é como um bastião que guarda a entrada do seu Parque. Não há nada dentro da ilha (humano ou dinossauro) que não tenha passado por ele.', 
         'Permite trocar o nome do Parque.',
         'building',
-        default, 0, 1, 0, 0
+        default, 0, 1, null, 0
     ),
 	(
 		'visitor-center',
@@ -346,7 +352,7 @@ VALUES
         'O coração de todo parque. O Centro de Visitantes não é apenas um grande hall pelo qual seus visitantes passam ao chegar no Parque, é um verdadeiro QG onde a Staff do Parque monitora tudo o que acontece na ilha.', 
         'Permite visualizar a Avaliação do seu Parque e todas as Espécies nele.',
         'building',
-        default, 0, 1, 0, 0
+        default, 0, 1, null, 0
     ),
 	(
 		'hatchery',
@@ -354,6 +360,5 @@ VALUES
         'Trazer um dinossauro de volta à vida não é uma tarefa fácil. Para realizar tal façanha diariamente, seus cientistas precisarão de um lugar adequado para trabalhar.', 
         'Permite incubar até 1 espécie de dinossauro por vez.',
         'building',
-        default, 250, null, 1, 0
+        default, 250, null, null, 0
     );
-    
