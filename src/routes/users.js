@@ -10,4 +10,4 @@ userRoutes.post("/register", (req, res) => userController.register(req, res));
 userRoutes.post("/login", (req, res) => userController.authenticate(req, res));
 
 // === ROTA: RETORNAR DADOS SALVOS === //
-userRoutes.get("/data/:idUser", (req, res) => userController.getUserSaveData(req, res));
+userRoutes.get("/:idUser/data", (req, res) => userController.getUserSaveData(req, res));
