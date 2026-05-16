@@ -42,7 +42,7 @@ export function updateTileType(req, res) {
             
             // se não, prossegue
             tileModel.updateTileType(idBuilding, idPark, tileCol, tileRow)
-                .then((result) => res.status(200).json(result)) // retorna objeto com Tile atualizado
+                .then((result) => res.status(200).json(result)) // retorna lista de tiles com o tile atualizado
                 .catch((error) => {
                     console.error(`\n[tileController.js | updateTileType] - Erro: ${error}`);
                     console.error(`\n[tileController.js | updateTileType] - SQL Message: ${error.sqlMessage}`);

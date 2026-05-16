@@ -27,7 +27,7 @@ export function updateTileType(newIdBuilding, idPark, tileCol, tileRow) {
             END
         WHERE idPark = ${idPark} AND position_col = ${tileCol} AND position_row = ${tileRow};
 
-        SELECT * FROM vw_tiles WHERE idPark = ${idPark} AND position_col = ${tileCol} AND position_row = ${tileRow};
+        SELECT * FROM vw_tiles WHERE idPark = ${idPark};
     `;
     
     console.log("\n[tileModel.js | updateTileType] - Executando UPDATE...");
