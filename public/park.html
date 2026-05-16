@@ -282,7 +282,31 @@
     // === LOOP PRINCIPAL === //
     document.addEventListener("DOMContentLoaded", () => {
         // Redirecionamento e Desliga Modo Editor
-        if(!storage.get(JPWG_DATA)) window.location = "./login.html";
+        if(!storage.get(JPWG_DATA)) {
+            window.location = "./login.html";
+        } else {
+            const {user} = storage.get(JPWG_DATA);
+            fetch(`/api/users/${user.id}/data`)
+                .then((res) => res.json())
+                .then((data) => {
+                    storage.set(JPWG_DATA, {user, ...data});
+                    
+                    // CARREGA UI DINÂMICA COM DADOS MAIS ATUALIZADOS
+                    loadDevScreen();
+                    loadStatusBar();
+                    loadGrid();
+                    loadHatchery();
+                    loadGeneral();
+                })
+                .catch((error) => {
+                    console.error(error);
+                    toast({
+                        variant: "warn",
+                        title: "Dados Desatualizados!",
+                        message: "Não foi possível retornar os dados mais recentes do Banco de Dados. Tente logar-se novamente..."
+                    })
+                })
+        };
         storage.set("JPWG_EDITOR_MODE", false);
 
         // Eventos
@@ -341,13 +365,6 @@
         const devAutosaveTimer = setInterval(() => {
             document.getElementById("autosave-timer").innerHTML = String((autosaveTimer.getCurrentInterval() / 1000) + 's');
         }, 1000);
-
-        // 4. CARREGA UI DINÂMICA
-        loadDevScreen();
-        loadStatusBar();
-        loadGrid();
-        loadHatchery();
-        loadGeneral();
     });
 
     // === FUNÇÕES UTILITÁRIAS === //
