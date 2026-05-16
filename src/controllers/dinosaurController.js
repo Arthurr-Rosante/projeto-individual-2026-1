@@ -4,7 +4,8 @@ import isUndefined from '../utils/isUndefined.js';
 
 // === FUNÇÃO: CRIAR === //
 export function create(req, res) {
-    const {idPark, tileCol, tileRow, idSpecies} = req.body;
+    const {idPark} = req.params;
+    const {tileCol, tileRow, idSpecies} = req.body;
 
     if(isUndefined(idPark)) res.status(400).send("ID do Parque não foi definido!");
     if(isUndefined(tileCol)) res.status(400).send("Coluna do Tile não foi definida!");
