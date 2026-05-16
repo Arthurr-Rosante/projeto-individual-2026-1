@@ -50,3 +50,18 @@ export function authenticate(req, res) {
             res.status(500).json(error.sqlMessage);
         });
 }
+
+// === FUNÇÃO: AUTENTICAR === //
+export function getUserSaveData(req, res) {
+    const { idUser } = req.params;
+
+    if(isUndefined(idUser)) res.status(400).send("ID do usuário não foi definido!");
+
+    userModel.getUserSaveData(idUser)
+        .then((result) => res.status(200).json(result))
+        .catch((error) => {
+            console.error(`\n[userController.js | getUserSaveData] - Erro: ${error}`);
+            console.error(`\n[userController.js | getUserSaveData] - SQL Message: ${error.sqlMessage}`);
+            res.status(500).json(error.sqlMessage);
+        });
+}

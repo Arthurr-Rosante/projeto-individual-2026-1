@@ -85,15 +85,15 @@ export function authenticate(email, password) {
 
     const instruction = `
         -- 1. Seleciona Usuário
-        SELECT * FROM user WHERE ${whereCondition};
+        SELECT ${allowedFields} FROM user WHERE ${whereCondition};
 
         -- 2. Seleciona Parque
         SELECT * FROM park WHERE idUser = (SELECT id FROM user WHERE ${whereCondition});
         
-        -- 2. Seleciona Tiles do Parque
+        -- 3. Seleciona Tiles do Parque
         SELECT * FROM vw_tiles WHERE idPark = (SELECT id FROM user WHERE ${whereCondition});
 
-        -- 3. Dinossaros do Parque
+        -- 4. Dinossaros do Parque
         SELECT * FROM vw_dinosaur WHERE idPark = (SELECT id FROM user WHERE ${whereCondition});
     `;
     
@@ -106,6 +106,31 @@ export function authenticate(email, password) {
             park: res[1][0],
             tiles: res[2],
             dinosaur: res[3]
+        }
+    });
+}
+
+// === INSTRUÇÃO: RETORNAR DADOS SALVOS === //
+export function getUserSaveData(idUser) {
+    const instruction = `
+        -- 1. Seleciona Parque
+        SELECT * FROM park WHERE idUser = ${idUser};
+        
+        -- 2. Seleciona Tiles do Parque
+        SELECT * FROM vw_tiles WHERE idPark = (SELECT id FROM user WHERE id = ${idUser});
+
+        -- 3. Dinossaros do Parque
+        SELECT * FROM vw_dinosaur WHERE idPark = (SELECT id FROM user WHERE id = ${idUser});
+    `;
+    
+    console.log("\n[userModel.js | getUserSaveData] - Executando SELECT...");
+    console.log(`\n[userModel.js | getUserSaveData] - Instrução: "${instruction}"`);
+    
+    return execute(instruction).then(res => {
+        return {
+            park: res[0][0],
+            tiles: res[1],
+            dinosaur: res[2]
         }
     });
 }
