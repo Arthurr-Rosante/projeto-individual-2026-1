@@ -5,6 +5,8 @@ export function loadGrid() {
     if(!data) return;
 
     const {tiles, dinosaur} = data;
+    const rowElements = document.querySelectorAll(".row");
+    rowElements.forEach((el) => el.innerHTML = "");
 
     tiles.forEach((tile) => {
         const t = document.createElement("div");
