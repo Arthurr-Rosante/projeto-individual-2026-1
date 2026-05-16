@@ -12,6 +12,35 @@ export function create(idUser, name) {
     return execute(instruction, [idUser, name]);
 }
 
+// === INSTRUÇÃO: BUSCA POR ID DO USUÁRIO === //
+export function getOneParkById(idUser) {
+    const instruction = "SELECT * FROM park WHERE idUser = ?";
+
+    console.log("\n[parkModel.js | getOneParkById] - Executando SELECT...");
+    console.log(`\n[parkModel.js | getOneParkById] - Instrução: "${instruction}"`);
+
+    return execute(instruction, [idUser]);
+}
+
+export function updatePark(idUser, newName, newRating, newDinoCoins) {
+    const instruction = `
+        UPDATE park 
+        SET 
+            \`name\` = ?, 
+            rating = ?, 
+            dinoCoins = ? 
+        WHERE idUser = ${idUser};
+
+        SELECT * FROM park WHERE idUser = ${idUser};
+    `;
+    
+    console.log("\n[parkModel.js | updatePark] - Executando UPDATE...");
+    console.log(`\n[parkModel.js | updatePark] - Instrução: "${instruction}"`);
+    
+    return execute(instruction, [newName, newRating, newDinoCoins]).then(res => res[1]);
+}
+
+/*
 // === INSTRUÇÃO: ATUALIZAR NOME === //
 export function updateName(idPark, newName) {
     const instruction = `
@@ -51,12 +80,4 @@ export function updateDinoCoins(idPark, newCoinsCount) {
     return execute(instruction, [newCoinsCount, idPark]).then(res => res[1]);
 }
 
-// === INSTRUÇÃO: BUSCA POR ID DO USUÁRIO === //
-export function getOneParkById(idUser) {
-    const instruction = "SELECT * FROM park WHERE idUser = ?";
-
-    console.log("\n[parkModel.js | getOneParkById] - Executando SELECT...");
-    console.log(`\n[parkModel.js | getOneParkById] - Instrução: "${instruction}"`);
-
-    return execute(instruction, [idUser]);
-}
+*/ 

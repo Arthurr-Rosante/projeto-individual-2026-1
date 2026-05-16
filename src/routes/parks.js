@@ -9,11 +9,5 @@ parkRoutes.post("/", (req, res) => parkController.create(req, res));
 // === ROTA: BUSCAR POR ID DO USUÁRIO === //
 parkRoutes.get("/:idUser", (req, res) => parkController.getOneParkById(req, res));
 
-// === ROTA: ATUALIZAR NOME === //
-parkRoutes.patch("/:idPark/name", (req, res) => parkController.updateName(req, res));
-
-// === ROTA: ATUALIZAR AVALIAÇÃO === //
-parkRoutes.patch("/:idPark/rating", (req, res) => parkController.updateRating(req, res));
-
-// === ROTA: ATUALIZAR QTD. MOEDAS === //
-parkRoutes.patch("/:idPark/dinoCoins", (req, res) => parkController.updateDinoCoins(req, res));
+// === ROTA: ATUALIZAR PARQUE POR ID DO USUÁRIO === //
+parkRoutes.put("/:idUser/update", (req, res) => parkController.updatePark(req, res));
