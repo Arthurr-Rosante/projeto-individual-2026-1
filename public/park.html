@@ -152,7 +152,9 @@
         <div id="hatchery-panel" class="panel">
             <h3 class="panel-title">Laboratorio de Incubacao</h3>
             <div id="hatchery-slots">
-                <div id="hatchery-slot-1" class="hatchery-slot" data-slot-status="empty" data-slot-dinosaur="" data-time-left=""></div>
+                <div class="hatchery-slot" data-slot-id="1" data-slot-status="empty"></div>
+                <div class="hatchery-slot" data-slot-id="2" data-slot-status="empty"></div>
+                <div class="hatchery-slot" data-slot-id="3" data-slot-status="empty"></div>
             </div>
             <ul id="hatchery-list">
                 <!-- carregado dinâmicamente... -->
@@ -215,7 +217,7 @@
 
 <!-- === SCRIPTS LOCAIS === -->
 <script type="module">
-    import { toast } from "./scripts/utils/toast.js"; // Adicionado import que faltava
+    import { toast } from "./scripts/utils/toast.js";
     import { events } from "./scripts/event-trigger.js";
     import { storage } from "./scripts/utils/storage.js";
     import { createTimer } from "./scripts/utils/timer.js";

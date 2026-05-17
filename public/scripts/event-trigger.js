@@ -76,7 +76,7 @@ export const events = {
         const eventList = getResourceFromStorage("events");
         if (!eventList || eventList.length === 0) return;
 
-        const shouldTrigger = Math.floor(Math.random() * 10) === 1;
+        const shouldTrigger = Math.floor(Math.random() * 5) === 1;
         if (!shouldTrigger) return;
 
         const currentEvent = eventList[Math.floor(Math.random() * eventList.length)];    
@@ -87,6 +87,7 @@ export const events = {
             message: currentEvent.consequences,
             duration: 5000
         });
+        console.log(`[randomEvent]: "${currentEvent.translatedName}" ocorreu às ${new Date().toLocaleTimeString()}`);
     },
     sabotage: () => {},
     pouringRain: () => {}
