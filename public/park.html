@@ -17,11 +17,6 @@
     <link rel="stylesheet" href="./styles/buildings/entrance.css">
     <link rel="stylesheet" href="./styles/buildings/enclosure.css">
     
-    <!-- === Importação de funções === -->
-    <script src="./constants.js"></script>
-    <script defer src="./scripts/utils/fetch-resource.js"></script>
-    <script defer src="./scripts/utils/getElementByIdAndAttachEvent.js"></script>
-
     <!-- === Importação de Bibliotecas === -->
     <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/index.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -220,157 +215,142 @@
 
 <!-- === SCRIPTS LOCAIS === -->
 <script type="module">
+    import { toast } from "./scripts/utils/toast.js"; // Adicionado import que faltava
     import { events } from "./scripts/event-trigger.js";
     import { storage } from "./scripts/utils/storage.js";
     import { createTimer } from "./scripts/utils/timer.js";
     import { togglePanel } from "./scripts/utils/toggler.js";
+    import { fetchResource } from "./scripts/utils/fetch-resource.js";
     import { updateParkName, updateParkBalance, updateParkRating } from "./scripts/update-park.js";
     import { loadDevScreen, loadEnclosure, loadGrid, loadStatusBar, loadHatchery, loadGeneral, loadTileSwitcher } from './scripts/loaders/index.js';
 
+    // === CONSTANTES === //
+    const STORAGE_KEY = "JPWG_DATA";
+
+    // intervalos: [min] * [sec] * [ms]
+    const AUTOSAVE_INTERVAL_MS = 1 * 60 * 1000;
+    const INCREASE_BALANCE_INTERVAL_MS = 1 * 5 * 1000;
+    const EVENTS_INTERVAL_MS = 1 * 30 * 1000;
+
     // === OUVINTES DE EVENTO === //
-    // 1. DevScreen
+
+    // 1. Atalhos do Teclado (DevScreen)
     document.addEventListener("keydown", (e) => {
-        if((e.ctrlKey || e.metaKey) && event.key === "k") {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
             togglePanel("dev-screen", false);
-            return;
         }
     });
 
-    // 2. Overlays
-    document.querySelectorAll(".overlay").forEach((el) => {
-        el.addEventListener("click", (e) => {
-            if(e.currentTarget === e.target) {
-                el.classList.replace("open", "closed");
+    // 2. Fechamento de Overlays
+    document.querySelectorAll(".overlay").forEach((overlay) => {
+        overlay.addEventListener("click", (e) => {
+            if (e.currentTarget === e.target) {
+                overlay.classList.replace("open", "closed");
             }
         });
     });
 
     // 3. Tiles
     document.addEventListener("click", (e) => {
-        const clickedElement = e.target;
-        const hasClass = (element, className) => element.classList.contains(className);
+        const tile = e.target.closest(".tile");
+        if (!tile) return; 
 
-        // Se Modo Editor estiver ativo, Habilita Tile Switcher
-        if(hasClass(clickedElement, "tile") && storage.get("JPWG_EDITOR_MODE")) {
-            loadTileSwitcher(clickedElement.dataset.tileCol, clickedElement.dataset.tileRow);
+        // Se o Modo Editor estiver ativo, abre Tile-switcher
+        if (storage.get("JPWG_EDITOR_MODE")) {
+            loadTileSwitcher(tile.dataset.tileCol, tile.dataset.tileRow);
             togglePanel("tile-switcher");
             return;
         }
 
-        // Se não, faz demais verificações
-        if(hasClass(clickedElement, "visitor-center")) {
+        // Se não, prossegue com o comportamento padrão
+        if (tile.classList.contains("visitor-center")) {
             loadGeneral();
             togglePanel("general-panel");
-            return;
-        };
-        if(hasClass(clickedElement, "entrance")) { 
+        } else if (tile.classList.contains("entrance")) {
             togglePanel("entrance-panel");
-            return;
-        };
-        if(hasClass(clickedElement, "hatchery")) { 
+        } else if (tile.classList.contains("hatchery")) {
             loadHatchery();
             togglePanel("hatchery-panel");
-            return;
-        };
-        if(hasClass(clickedElement, "enclosure")) { 
-            loadEnclosure(clickedElement.dataset.tileCol, clickedElement.dataset.tileRow);
+        } else if (tile.classList.contains("enclosure")) {
+            loadEnclosure(tile.dataset.tileCol, tile.dataset.tileRow);
             togglePanel("enclosure-panel");
-            return;
-        };
+        }
     });
 
     // === LOOP PRINCIPAL === //
-    document.addEventListener("DOMContentLoaded", () => {
-        // Redirecionamento e Desliga Modo Editor
-        if(!storage.get(JPWG_DATA)) {
+    document.addEventListener("DOMContentLoaded", async () => {
+        // Redirecionamento caso não esteja logado
+        if(!storage.get(STORAGE_KEY)) {
             window.location = "./login.html";
-        } else {
-            const {user} = storage.get(JPWG_DATA);
-            fetch(`/api/users/${user.id}/data`)
-                .then((res) => res.json())
-                .then((data) => {
-                    storage.set(JPWG_DATA, {user, ...data});
-                    
-                    // CARREGA UI DINÂMICA COM DADOS MAIS ATUALIZADOS
-                    loadDevScreen();
-                    loadStatusBar();
-                    loadGrid();
-                    loadHatchery();
-                    loadGeneral();
-                })
-                .catch((error) => {
-                    console.error(error);
-                    toast({
-                        variant: "warn",
-                        title: "Dados Desatualizados!",
-                        message: "Não foi possível retornar os dados mais recentes do Banco de Dados. Tente logar-se novamente..."
-                    })
-                })
-        };
+            return;
+        }
+
+        // Inicializa Editor Mode desligado
         storage.set("JPWG_EDITOR_MODE", false);
 
-        // Eventos
-        const autosaveBtn = getElementByIdAndAttachEvent("autosave-btn", "click", () => {
-            events.save();
-            autosaveTimer.reset();
-        });
-        const logoutBtn = getElementByIdAndAttachEvent("logout-btn", 'click', logout);
+        // Sincroniza dados da sessão com Back-end
+        await events.save();
 
-        const entranceForm = getElementByIdAndAttachEvent("park-name-form", "submit", (e) => {
-            e.preventDefault();
-            let newName = String(document.getElementById("ipt-park-name").value).trim();
-            updateParkName(newName);
-        });
-        
-        const devAutosaveBtn = getElementByIdAndAttachEvent("dev-autosave-btn", "click", () => {
-            events.save();
-            autosaveTimer.reset();
-        });
+        // Carrega recursos essenciais do Back-end (Eventos, Espécies e Construções)
+        Promise.all([
+            fetchResource("/api/events"),
+            fetchResource("/api/species"),
+            fetchResource("/api/buildings")
+        ]).then(([eventsData, speciesData, buildingsData]) => {
+            storage.set("JPWG_EVENTS", eventsData);
+            storage.set("JPWG_SPECIES", speciesData);
+            storage.set("JPWG_BUILDINGS", buildingsData);
+        }).catch(error => console.error("[park.html] Erro:", error));
 
-        const devParkNameBtn = getElementByIdAndAttachEvent("dev-park-name-btn", 'click', () => {
-            let newName = String(document.getElementById("dev-ipt-park-name").value).trim();
-            updateParkName(newName);
-        });
-        const devParkRatingBtn = getElementByIdAndAttachEvent("dev-park-rating-btn", 'click', () => {
-            let newRating = Number(document.getElementById("dev-ipt-park-rating").value);
-            updateParkRating(newRating);
-            loadStatusBar();
-        });
-        const devParkBalanceBtn = getElementByIdAndAttachEvent("dev-park-balance-btn", 'click', () => {
-            let newBalance = Number(document.getElementById("dev-ipt-park-balance").value);
-            updateParkBalance(newBalance);
-        });
+        // Eventos HTML
+        attachEvent("autosave-btn", "click", () => { events.save(); autosaveTimer.reset(); });
+        attachEvent("dev-autosave-btn", "click", () => { events.save(); autosaveTimer.reset(); });
+        attachEvent("logout-btn", 'click', logout);
+        attachEvent("sidebar-toggler", 'click', () => togglePanel("sidebar", false));
+        attachEvent("editor-mode-toggler", 'click', toggleEditorMode);
 
-        // Togglers
-        const sidebarToggler = getElementByIdAndAttachEvent("sidebar-toggler", 'click', () => togglePanel("sidebar", false));
-        const generalPanelToggler = getElementByIdAndAttachEvent("general-panel-toggler", 'click', () => {
+        attachEvent("general-panel-toggler", 'click', () => {
             loadGeneral();
             togglePanel("general-panel");
         });
-        const editorModeToggler = getElementByIdAndAttachEvent("editor-mode-toggler", 'click', toggleEditorMode);
 
-        // Game Looop
-        // 1. RECEBE INFORMAÇÕES DO SESSION STORAGE; CRIA CÓPIA DE TUDO;
-        events.save();
+        attachEvent("park-name-form", "submit", (e) => {
+            e.preventDefault();
+            const newName = String(document.getElementById("ipt-park-name").value || "").trim();
+            if (newName) updateParkName(newName);
+        });
 
-        // 2. CONSULTA O BANCO POR INFORMAÇÕES DE Eventos, Construções e Espécies;
-        fetchResource("/api/events").then(data => storage.set("JPWG_EVENTS", data));
-        fetchResource("/api/species").then(data => storage.set("JPWG_SPECIES", data));
-        fetchResource("/api/buildings").then(data => storage.set("JPWG_BUILDINGS", data));
-        
-        // 3. INICIA TIMERS
+        attachEvent("dev-park-name-btn", 'click', () => {
+            const newName = String(document.getElementById("dev-ipt-park-name").value || "").trim();
+            if (newName) updateParkName(newName);
+        });
+
+        attachEvent("dev-park-rating-btn", 'click', () => {
+            const newRating = Number(document.getElementById("dev-ipt-park-rating").value || 0);
+            updateParkRating(newRating);
+            loadStatusBar();
+        });
+
+        attachEvent("dev-park-balance-btn", 'click', () => {
+            const newBalance = Number(document.getElementById("dev-ipt-park-balance").value || 0);
+            updateParkBalance(newBalance);
+        });
+
+        // Inicialização de Timers
         const autosaveTimer = createTimer(events.save, AUTOSAVE_INTERVAL_MS);
-        const randomEventsTimer = createTimer(events.randomEvent, EVENTS_INTERVAL_MS);
         const balanceTimer = createTimer(events.increaseBalance, INCREASE_BALANCE_INTERVAL_MS);
-        const devAutosaveTimer = setInterval(() => {
-            document.getElementById("autosave-timer").innerHTML = String((autosaveTimer.getCurrentInterval() / 1000) + 's');
+        const eventTimer = createTimer(events.randomEvent, EVENTS_INTERVAL_MS);
+
+        setInterval(() => {
+            const timerEl = document.getElementById("autosave-timer");
+            if (timerEl) {
+                timerEl.textContent = `${Math.ceil(autosaveTimer.getCurrentInterval() / 1000)}s`;
+            }
         }, 1000);
     });
 
     // === FUNÇÕES UTILITÁRIAS === //
     function logout() {
-        events.save();
-
         storage.clear();
         setTimeout(() => {
             window.location = "./login.html";
@@ -378,15 +358,17 @@
     }
 
     function toggleEditorMode() {
-        const editorModeOn = storage.get("JPWG_EDITOR_MODE");
-        const editorModeToggler = document.getElementById("editor-mode-toggler");
-        if(editorModeOn) {
-            storage.set("JPWG_EDITOR_MODE", false);
-            editorModeToggler.classList.remove("active");
-        } else {
-            storage.set("JPWG_EDITOR_MODE", true);
-            editorModeToggler.classList.add("active");
+        const currentMode = storage.get("JPWG_EDITOR_MODE");
+        storage.set("JPWG_EDITOR_MODE", !currentMode);
+        document.getElementById("editor-mode-toggler").classList.toggle("active");
+    }
+
+    function attachEvent(id, eventType, callback) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener(eventType, callback);
         }
+        return element;
     }
 </script>
 </body>

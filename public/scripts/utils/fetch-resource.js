@@ -1,4 +1,4 @@
-async function fetchResource(endpoint) {
+export async function fetchResource(endpoint) {
     try {
         const response = await fetch(endpoint);
 
