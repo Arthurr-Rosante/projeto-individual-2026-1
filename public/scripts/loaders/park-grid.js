@@ -12,9 +12,11 @@ export function loadGrid() {
         const t = document.createElement("div");
         const tCol = tile.position_col;
         const tRow = tile.position_row;
+
         t.classList.add("tile", tile.category, tile.name);
         t.dataset.tileCol = tCol;
         t.dataset.tileRow = tRow;
+        t.dataset.tileRemovable = tile.removable;
 
         dinosaur.forEach((dino) => {
                 if(dino.tile_col == tCol && dino.tile_row == tRow) {
