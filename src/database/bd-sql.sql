@@ -362,3 +362,29 @@ VALUES
         'building',
         default, 250, null, null, 0
     );
+    
+-- | VIEWS | --
+
+-- VIEW: Tiles ordenados por Linha
+CREATE OR REPLACE VIEW vw_tiles
+AS
+SELECT 
+	t.*,
+    b.name,
+    b.translatedName,
+    b.category,
+    b.durability,
+    b.upgradeCost
+FROM tile t 
+JOIN building b ON t.idBuilding = b.id 
+ORDER BY t.position_row;
+
+SELECT * FROM jurassicpark.vw_tiles;
+
+-- VIEW: Dinossauros
+CREATE OR REPLACE VIEW vw_dinosaur
+AS
+SELECT 
+	d.*, s.name, s.aggressiveness 
+FROM dinosaur d 
+JOIN species s ON d.idSpecies = s.id;
