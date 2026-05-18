@@ -104,7 +104,7 @@
 
 <!-- === SCRIPTS LOCAIS === -->
 <script type="module">
-    import { toast } from "./scripts/utils/toast'.js";
+    import { toast } from "./scripts/utils/toast.js";
     import { storage } from "./scripts/utils/storage.js";
 
     // === REDIRECIONAMENTO SE JÁ ESTIVER LOGADO === //
@@ -134,7 +134,6 @@
         const email = String(document.getElementById("ipt-email").value).trim();
         const password = String(document.getElementById("ipt-password").value).trim();
 
-        console.log("[register.html] | Iniciando Cadastro...");
 
         fetch("/api/users/register", {
             method: "POST",
