@@ -7,6 +7,11 @@ import { getResourceFromStorage } from "../utils/getResourceFromStorage.js";
 import { formatDinoHatchTime, formatDinoHatchSuccess } from "../utils/formatDinoFields.js";
 
 const STORAGE_KEY = "JPWG_HATCHING_SPECIES";
+let HATCH_SUCCESS_MULTIPLIER = 1;
+
+export function setHatchSuccessMultiplier(multiplier) {
+    HATCH_SUCCESS_MULTIPLIER = multiplier;
+}
 
 export function loadHatchery() {
     const hatcheryList = document.getElementById("hatchery-list");
@@ -52,7 +57,7 @@ function handleSlotActions(event) {
         const slot = discardBtn.closest(".hatchery-slot");
         if(slot) {
             cleanSlotAndStorage(slot.dataset.slotId, slot);
-            return;
+            clearInterval(slot.dataset.timerId);
         };
     }
 }
@@ -136,7 +141,7 @@ function resumeHatchingSlots() {
     const hatchingList = storage.get(STORAGE_KEY) || [];
     hatchingList.forEach(hatchItem => {
         const slot = document.querySelector(`.hatchery-slot[data-slot-id="${hatchItem.slotId}"]`);
-        if (slot) {
+        if (slot && slot.dataset.slotStatus !== "done") {
             slot.dataset.slotStatus = "hatching";
             startHatchTimer(hatchItem);
         }
@@ -163,11 +168,12 @@ function startHatchTimer(hatchItem) {
         slotElement.innerHTML = renderSlotHTML(hatchItem, "hatching", timeLeftInMs);
     }, 1000);
 
+    // Expõe o id do Timer para ser usado em outro lugar
     slotElement.dataset.timerId = timerInterval;
 }
 
-function concludeHatchProcess(hatchItem, slotElement) {
-    const success = Math.random() <= hatchItem.specie.hatchSuccessRate;
+export function concludeHatchProcess(hatchItem, slotElement) {
+    const success = Math.random() <= (hatchItem.specie.hatchSuccessRate * HATCH_SUCCESS_MULTIPLIER);
 
     if (!success) {
         toast({

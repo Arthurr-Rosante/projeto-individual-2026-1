@@ -204,6 +204,19 @@
                     <input id="dev-ipt-park-balance" data-ui-resource="park:dinoCoins" type="number" min="0" max="999999">
                     <button id="dev-park-balance-btn">Alterar saldo</button>
                 </li>
+                <li class="dev-item">
+                    <p class="dev-item-title">INCUBADORA CHANCE SUCESSO</p>
+                    <select id="dev-hatchery-success-rate">
+                        <option value="0">Nula</option>
+                        <option value="0.5">Baixa</option>
+                        <option value="1" selected>Normal</option>
+                        <option value="100">Infalível</option>
+                    </select>
+                </li>
+                <li class="dev-item">
+                    <p class="dev-item-title">INCUBADORA TEMPO</p>
+                    <button id="dev-hatchery-timer-btn">Concluir Incubações</button>
+                </li>
             </ul>
         </div>
         <div class="dev-screen-footer">
@@ -224,7 +237,7 @@
     import { togglePanel } from "./scripts/utils/toggler.js";
     import { fetchResource } from "./scripts/utils/fetch-resource.js";
     import { updateParkName, updateParkBalance, updateParkRating } from "./scripts/update-park.js";
-    import { loadDevScreen, loadEnclosure, loadGrid, loadStatusBar, loadHatchery, loadGeneral, loadTileSwitcher } from './scripts/loaders/index.js';
+    import { loadDevScreen, loadEnclosure, loadGrid, loadStatusBar, loadHatchery, loadGeneral, loadTileSwitcher, setHatchSuccessMultiplier, concludeHatchProcess } from './scripts/loaders/index.js';
 
     // === CONSTANTES === //
     const STORAGE_KEY = "JPWG_DATA";
@@ -336,6 +349,23 @@
         attachEvent("dev-park-balance-btn", 'click', () => {
             const newBalance = Number(document.getElementById("dev-ipt-park-balance").value || 0);
             updateParkBalance(newBalance);
+        });
+
+        attachEvent("dev-hatchery-success-rate", 'change', (e) => {
+            const multiplier = Number(e.target.value);
+            setHatchSuccessMultiplier(multiplier);
+        });
+
+        attachEvent("dev-hatchery-timer-btn", 'click', () => {
+            const hatchingList = storage.get("JPWG_HATCHING_SPECIES") || [];
+            if(!hatchingList) return;
+            
+            hatchingList.forEach((item) => {
+                const el = document.querySelector(`.hatchery-slot[data-slot-id="${item.slotId}"]`);
+                if(!el) return;
+                concludeHatchProcess(item, el);
+                clearInterval(el.dataset.timerId)
+            })
         });
 
         // Inicialização de Timers

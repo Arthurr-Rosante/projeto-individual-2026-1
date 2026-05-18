@@ -33,6 +33,7 @@
     flex-direction: column;
     align-items: center;
     height: 100%;
+    overflow-y: auto;
 }
 
 .dev-items {

@@ -2,7 +2,13 @@ import {execute} from "../database/config.js";
 
 // === INSTRUÇÃO: CRIAR === //
 export function create(idPark, tileCol, tileRow, idSpecies) {
-    const instruction = "INSERT INTO dinosaur(idPark, tile_col, tile_row, idSpecies) VALUE (?, ?, ?, ?)";
+    const instruction = `
+    INSERT INTO dinosaur(idPark, tile_col, tile_row, idSpecies) VALUE (?, ?, ?, ?);
+    
+    UPDATE tile 
+    SET removable = 0 
+    WHERE idPark = ${idPark} AND position_col = ${tileCol} AND position_row = ${tileRow};
+    `;
 
     console.log("\n[dinosaurModel.js | create] - Executando INSERT...");
     console.log(`\n[dinosaurModel.js | create] - Instrução: "${instruction}"`);
@@ -12,7 +18,13 @@ export function create(idPark, tileCol, tileRow, idSpecies) {
 
 // === INSTRUÇÃO: DELETAR === //
 export function releaseDinosaur(idPark, tileCol, tileRow) {
-    const instruction = "DELETE FROM dinosaur WHERE idPark = ? AND tile_col = ? AND tile_row = ?";
+    const instruction = `
+    DELETE FROM dinosaur WHERE idPark = ? AND tile_col = ? AND tile_row = ?;
+
+    UPDATE tile 
+    SET removable = 1 
+    WHERE idPark = ${idPark} AND position_col = ${tileCol} AND position_row = ${tileRow};
+    `;
 
     console.log("\n[dinosaurModel.js | releaseDinosaur] - Executando DELETE...");
     console.log(`\n[dinosaurModel.js | releaseDinosaur] - Instrução: "${instruction}"`);
